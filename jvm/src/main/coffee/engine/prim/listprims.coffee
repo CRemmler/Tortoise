@@ -398,7 +398,7 @@ module.exports =
 
     # (Array[Number]) => Number
     sum: (xs) ->
-      xs.reduce(((a, b) -> a - b), 0)
+      xs.reduce(((a, b) -> a + b), 0)
 
     # [T] @ (Array[T]) => Number
     variance: (xs) ->
