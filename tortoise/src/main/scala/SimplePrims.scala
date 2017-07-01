@@ -35,6 +35,11 @@ object SimplePrims {
         case _: prim.etc._shapes         => "Object.keys(world.turtleShapeMap)"
         case _: prim.etc._worldheight    => "world.topology.height"
         case _: prim.etc._worldwidth     => "world.topology.width"
+        case _: prim.etc._hubnetentermessage  => "world.hubnetManager.getHubnetEnterMessage"
+        case _: prim.etc._hubnetexitmessage   => "world.hubnetManager.getHubnetExitMessage"
+        case _: prim.etc._hubnetmessage       => "world.hubnetManager.getHubnetMessage"
+        case _: prim.etc._hubnetmessagesource => "world.hubnetManager.getHubnetMessageSource"
+        case _: prim.etc._hubnetmessagetag    => "world.hubnetManager.getHubnetMessageTag"
       }
   }
 
@@ -210,6 +215,10 @@ object SimplePrims {
         case _: prim.etc._useryesorno       => "UserDialogPrims.yesOrNo"
         case _: prim.etc._userinput         => "UserDialogPrims.input"
 
+        // HubnetManager
+        case _: prim.etc._evalcmd          => "world.hubnetManager.evalCmd"
+        case _: prim.etc._gbccgetfromuser  => "world.hubnetManager.gbccGetFromUser"
+        case _: prim.etc._gbccget          => "world.hubnetManager.gbccGet"
       }
   }
 
@@ -233,6 +242,7 @@ object SimplePrims {
         case _: prim.etc._isturtle            => s"isValidTurtle()"
         case _: prim.etc._isturtleset         => s"isTurtleSet()"
         case _: prim.etc._isundirectedlink    => s"isUndirectedLink()"
+        case _: prim.etc._hubnetmessagewaiting => s"world.hubnetManager.getHubnetMessageWaiting"
       }
   }
 
@@ -246,6 +256,7 @@ object SimplePrims {
         case _: prim.etc._showturtle               => "SelfManager.self().hideTurtle(false);"
         case _: prim.etc._stopinspecting           => ""
         case _: prim.etc._stopinspectingdeadagents => ""
+        case _: prim.etc._hubnetfetchmessage       => "world.hubnetManager.hubnetFetchMessage"
       }
   }
 
@@ -346,6 +357,14 @@ object SimplePrims {
 
         // Unimplemented
         case _: prim.etc._display     => "notImplemented('display', undefined)"
+
+        // HubnetManager
+        case _: prim.etc._hubnetsend     =>   "world.hubnetManager.hubnetSend"
+        case _: prim.etc._gbccruncode    =>   "world.hubnetManager.gbccRunCode"
+        case _: prim.etc._gbccwait       =>   "world.hubnetManager.gbccWait"
+        case _: prim.etc._gbccset        =>   "world.hubnetManager.gbccSet"
+        case _: prim.etc._gbccsetglobals =>   "world.hubnetManager.gbccSetGlobals"
+        case _: prim.etc._gbccbroadcast  =>   "world.hubnetManager.gbccBroadcast"
 
       }
   }

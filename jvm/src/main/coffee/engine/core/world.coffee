@@ -8,6 +8,7 @@ topologyFactory = require('./topology/factory')
 LinkManager     = require('./world/linkmanager')
 Ticker          = require('./world/ticker')
 TurtleManager   = require('./world/turtlemanager')
+HubnetManager   = require('./world/hubnetmanager')
 StrictMath      = require('shim/strictmath')
 NLMath          = require('util/nlmath')
 
@@ -28,6 +29,7 @@ module.exports =
     ticker:        undefined # Ticker
     topology:      undefined # Topology
     turtleManager: undefined # TurtleManager
+    hubnetManager: undefined # HubnetManager
 
     _patches:     undefined # Array[Patch]
     _plotManager: undefined # PlotManager
