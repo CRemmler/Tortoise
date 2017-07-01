@@ -60,7 +60,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
 
   val implementedOptimizations = {
     val commands  = (OCommand,  Seq("CroFast", "CrtFast", "Fd1", "FdLessThan1", "HatchFast", "SproutFast"))
-    val reporters = (OReporter, Seq("AnyOther", "CountOther", "Nsum", "OneOfWith", "With", "PatchVariableDouble"))
+    val reporters = (OReporter, Seq("AnyOther", "CountOther", "Nsum", "OneOfWith", "With", "PatchVariableDouble", "TurtleVariableDouble"))
     Seq(commands, reporters).flatMap {
       case (typ, optNames) =>
         optNames.map(
@@ -167,9 +167,8 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
       org.skyscreamer.jsonassert.JSONAssert.assertEquals(
         expectedModel, actualModel, true)  // strict = true
 
-      val truncateDecimals = (s: String) => s.replaceAllLiterally(".0 ", " ")
-      val headlessRNGState = truncateDecimals(workspace.world.mainRNG.save)
-      val nashornRNGState  = truncateDecimals(nashorn.eval("Random.save();").asInstanceOf[String])
+      val headlessRNGState = workspace.world.mainRNG.save
+      val nashornRNGState  = nashorn.eval("Random.save();").asInstanceOf[String]
 
       assert(headlessRNGState == nashornRNGState, "divergent RNG state")
 
@@ -286,7 +285,6 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
 
   // these two are super helpful when running failing tests
   // to show the javascript before it gets executed.
-  // TODO: what is the difference between eval and run?
   def evalJS(javascript: String) = {
     nashorn.eval(javascript)
   }
