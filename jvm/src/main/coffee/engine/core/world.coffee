@@ -75,7 +75,7 @@ module.exports =
       @ticker        = new Ticker(@_plotManager.setupPlots, onTick, @_updater.updated(this))
       @topology      = null
       @turtleManager = new TurtleManager(this, @breedManager, @_updater, @rng.nextInt)
-
+      @hubnetManager = new HubnetManager()
       @_patches = []
 
       @_patchesAllBlack   = true

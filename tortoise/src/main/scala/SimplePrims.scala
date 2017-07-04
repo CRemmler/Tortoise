@@ -359,7 +359,7 @@ object SimplePrims {
         case _: prim.etc._display     => "notImplemented('display', undefined)"
 
         // HubnetManager
-        case _: prim.etc._hubnetsend     =>   "world.hubnetManager.hubnetSend"
+        case _: prim.hubnet._hubnetsend     =>   "world.hubnetManager.hubnetSend"
         case _: prim.etc._gbccruncode    =>   "world.hubnetManager.gbccRunCode"
         case _: prim.etc._gbccwait       =>   "world.hubnetManager.gbccWait"
         case _: prim.etc._gbccset        =>   "world.hubnetManager.gbccSet"

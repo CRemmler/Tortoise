@@ -3,37 +3,9 @@
 module.exports =
   class HubnetManager
 
-      # Reporters
-      HubnetManager = ->
-        # commands
-        @_hubnetFetchMessage = bind(@_hubnetFetchMessage, this)
-        @_hubnetSend = bind(@_hubnetSend, this)
-        @_gbccRunCode = bind(@_gbccRunCode, this)
-        @_gbccWait = bind(@_gbccWait, this)
-        @_gbccSet = bind(@_gbccSet, this)
-        @_gbccSetGlobals = bind(@_gbccSetGlobals, this)
-        @_gbccBroadcast = bind(@_gbccBroadcast, this)
-        @_gbccGetGlobals = bind(@_gbccGetGlobals, this)
-
-        # reporters
-        @_evalCmd = bind(@_evalCmd, this)
-        @_gbccGetFromUser = bind(@_gbccGetFromUser, this)
-        @_gbccGet = bind(@_gbccGet, this)
-
-        # getters and setters
-        @_getHubnetMessageWaiting = bind(@_getHubnetMessageWaiting, this)
-        @_setHubnetMessageWaiting = bind(@_setHubnetMessageWaiting, this)
-        @_getHubnetEnterMessage = bind(@_getHubnetEnterMessage, this)
-        @_setHubnetEnterMessage = bind(@_setHubnetEnterMessage, this)
-        @_getHubnetExitMessage = bind(@_getHubnetExitMessage, this)
-        @_setHubnetExitMessage = bind(@_setHubnetExitMessage, this)
-        @_getHubnetMessage = bind(@_getHubnetMessage, this)
-        @_setHubnetMessage = bind(@_setHubnetMessage, this)
-        @_getHubnetMessageSource = bind(@_getHubnetMessageSource, this)
-        @_setHubnetMessageSource = bind(@_setHubnetMessageSource, this)
-        @_getHubnetMessageTag = bind(@_getHubnetMessageTag, this)
-        @_setHubnetMessageTag = bind(@_setHubnetMessageTag, this)
-        return
+      # () => HubnetManager
+      constructor: () ->
+        @_hubnetManager   = new HubnetManager
 
       # () => String
       getHubnetMessageWaiting: ->
@@ -98,10 +70,10 @@ module.exports =
 
       # (String, String, Any) => Unit
       hubnetSend: (messageSource, messageTag, message) ->
-        socket.emit 'send reporter',
+        socket.emit 'send reporter', {
           hubnetMessageSource: messageSource
           hubnetMessageTag: messageTag
-          hubnetMessage: message
+          hubnetMessage: message }
         return
 
       # (String) => Unit
@@ -130,20 +102,20 @@ module.exports =
         globalVars = world.observer.varNames()
         for globalVar of globalVars
           #console.log("set "+globalVars[globalVar]+" "+world.observer.getGlobal(globalVars[globalVar]));
-          socket.emit 'send reporter',
+          socket.emit 'send reporter', {
             hubnetMessageSource: 'server'
             hubnetMessageTag: globalVars[globalVar]
-            hubnetMessage: world.observer.getGlobal(globalVars[globalVar])
+            hubnetMessage: world.observer.getGlobal(globalVars[globalVar]) }
         return
 
       # (String) => Unit
       gbccGetGlobals: (messageSource) ->
         globalVars = world.observer.varNames()
         for globalVar of globalVars
-          socket.emit 'get reporter',
+          socket.emit 'get reporter', {
             hubnetMessageSource: messageSource
             hubnetMessageTag: globalVars[globalVar]
-            hubnetMessage: world.observer.getGlobal(globalVars[globalVar])
+            hubnetMessage: world.observer.getGlobal(globalVars[globalVar]) }
         return
 
       is_chrome = navigator.userAgent.indexOf('Chrome') > -1
@@ -195,10 +167,10 @@ module.exports =
             miniCtx = miniCanvas.getContext('2d')
             miniCtx.drawImage document.getElementsByClassName('netlogo-canvas')[0], 0, 0, canvasLength, canvasWidth
             message = document.getElementById(miniCanvasId).toDataURL('image/jpeg', imageQuality)
-            socket.emit 'send reporter',
+            socket.emit 'send reporter', {
               hubnetMessageSource: 'all-users'
               hubnetMessageTag: 'canvas'
-              hubnetMessage: message
+              hubnetMessage: message }
           if typeof args[i] == 'object' and args[i][0] == 'plot'
             if args[i][1] and typeof args[i][1] == 'string'
               plotName = args[i][1]
@@ -228,20 +200,20 @@ module.exports =
                   miniCtx.fillRect 0, 0, width, height + 2
                   miniCtx.drawImage img, 1, 1, width - 2, height
                   message = document.getElementById(miniCanvasId).toDataURL('image/jpeg', imageQuality)
-                  socket.emit 'send reporter',
+                  socket.emit 'send reporter', {
                     hubnetMessageSource: 'all-users'
                     hubnetMessageTag: 'canvas'
-                    hubnetMessage: message
+                    hubnetMessage: message }
                   return
           i++
         return
 
       # (String, Any) => Unit
       gbccSet: (messageTag, message) ->
-        socket.emit 'send reporter',
+        socket.emit 'send reporter', {
           hubnetMessageSource: 'server'
           hubnetMessageTag: messageTag
-          hubnetMessage: message
+          hubnetMessage: message }
         myData[messageTag] = message
         return
 
