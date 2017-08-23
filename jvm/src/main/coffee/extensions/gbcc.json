@@ -3,9 +3,8 @@
   "prims": [
     {
       "name": "set",
-      "actionName": "gbcc-send",
-      "argTypes": [ "string", "wildcard" ],
-      "returnType": ""
+      "actionName": "set",
+      "argTypes": [ "string", "wildcard" ]
     }, {
       "name": "get",
       "actionName": "get",
@@ -19,8 +18,7 @@
     }, {
       "name": "set-globals",
       "actionName": "set-globals",
-      "argTypes": [ "" ],
-      "returnType": ""
+      "argTypes": [ ]
     }, {
       "name": "get-globals-from-user",
       "actionName": "get-globals-from-user",
@@ -29,18 +27,15 @@
     }, {
       "name": "broadcast-to-gallery",
       "actionName": "broadcast-to-gallery",
-      "argTypes": [ "string", "string" ],
-      "returnType": ""
+      "argTypes": [ "string", "string" ]
     }, {
       "name": "compile-code-and-set",
       "actionName": "compile-code-and-set",
-      "argTypes": [ "string", "string" ],
-      "returnType": ""
+      "argTypes": [ "string", "string" ]
     }, {
       "name": "run-code",
       "actionName": "run-code",
-      "argTypes": [ "string" ],
-      "returnType": ""
+      "argTypes": [ "string" ]
     }
   ]
 }
