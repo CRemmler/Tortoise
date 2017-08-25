@@ -18,7 +18,7 @@ module.exports =
 
     # (String, String) => Any
     getFromUser = (messageSource, messageTag) ->
-        return myData[messageTag]
+        return userData[messageTag]
 
     # () => ()
     setGlobals = () ->
@@ -38,28 +38,48 @@ module.exports =
             hubnetMessageTag: globalVars[globalVar]
             hubnetMessage: world.observer.getGlobal(globalVars[globalVar]) })
 
-    # (String String) => ()
+    # (String, String) => ()
     broadcastToGallery = (key, value) ->
         Gallery.broadcastToGallery(key, value)
 
     # (String, String) => ()
-    compileCodeAndSet = (code, key) ->
-        session.compileCodeAndSet(code, key)
+    compileObserverCode = (code, key) ->
+        session.compileObserverCode(code, key)
+
+    # (String, Number, String) => ()
+    compileTurtleCode = (code, who, key) ->
+        session.compileTurtleCode(code, who, key)
+
+    # (String, Number, Number, String) => ()
+    compilePatchCode = (code, pxcor, pycor, key) ->
+        session.compilePatchCode(code, pxcor, pycor, key)
 
     # (String) => ()
-    runCode = (code) ->
-        session.runCode(code)
+    runObserverCode = (key) ->
+        session.runObserverCode(key)
+
+    # (Number, String) => ()
+    runTurtleCode = (who, key) ->
+        session.runTurtleCode(who, key)
+
+    # (Number, Number, String) => ()
+    runPatchCode = (pxcor, pycor, key) ->
+        session.runPatchCode(pxcor, pycor, key)
 
     {
       name: "gbcc"
     , prims: {
-                         "SET": set
-      ,                  "GET": get
-      ,        "GET-FROM-USER": getFromUser
-      ,          "SET-GLOBALS": setGlobals
-      ,"GET-GLOBALS-FROM-USER": getGlobalsFromUser
-      , "BROADCAST-TO-GALLERY": broadcastToGallery
-      , "COMPILE-CODE-AND-SET": compileCodeAndSet
-      ,             "RUN-CODE": runCode
+                          "SET": set
+      ,                   "GET": get
+      ,         "GET-FROM-USER": getFromUser
+      ,           "SET-GLOBALS": setGlobals
+      , "GET-GLOBALS-FROM-USER": getGlobalsFromUser
+      ,  "BROADCAST-TO-GALLERY": broadcastToGallery
+      , "COMPILE-OBSERVER-CODE": compileObserverCode
+      ,   "COMPILE-TURTLE-CODE": compileTurtleCode
+      ,    "COMPILE-PATCH-CODE": compilePatchCode
+      ,     "RUN-OBSERVER-CODE": runObserverCode
+      ,       "RUN-TURTLE-CODE": runTurtleCode
+      ,        "RUN-PATCH-CODE": runPatchCode
       }
     }
