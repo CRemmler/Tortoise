@@ -22,8 +22,7 @@
     }, {
       "name": "get-globals-from-user",
       "actionName": "get-globals-from-user",
-      "argTypes": [ "string" ],
-      "returnType": "wildcard"
+      "argTypes": [ "string" ]
     }, {
       "name": "broadcast-to-gallery",
       "actionName": "broadcast-to-gallery",
