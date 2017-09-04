@@ -51,6 +51,10 @@
       "name": "run-patch-code",
       "actionName": "run-patch-code",
       "argTypes": [ "number", "number", "string" ]
+    }, {
+      "name": "import-drawing",
+      "actionName": "import-drawing",
+      "argTypes": [ "list" ]
     }
   ]
 }

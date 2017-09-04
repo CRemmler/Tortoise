@@ -66,6 +66,10 @@ module.exports =
     runPatchCode = (pxcor, pycor, key) ->
         session.runPatchCode(pxcor, pycor, key)
 
+    # (List) => ()
+    importDrawing = (data) ->
+        Interface.importDrawing(data)
+
     {
       name: "gbcc"
     , prims: {
@@ -81,5 +85,6 @@ module.exports =
       ,     "RUN-OBSERVER-CODE": runObserverCode
       ,       "RUN-TURTLE-CODE": runTurtleCode
       ,        "RUN-PATCH-CODE": runPatchCode
+      ,        "IMPORT-DRAWING": importDrawing
       }
     }

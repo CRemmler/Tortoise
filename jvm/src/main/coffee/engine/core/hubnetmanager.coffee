@@ -1,6 +1,13 @@
 module.exports =
   class HubnetManager
 
+      hubnetMessageWaiting = false
+      hubnetEnterMessage = false
+      hubnetExitMessage = false
+      hubnetMessage = ""
+      hubnetMessageSource = ""
+      hubnetMessageTag = ""
+
       # () => HubnetManager
       constructor: () ->
         @_hubnetManager   = new HubnetManager
