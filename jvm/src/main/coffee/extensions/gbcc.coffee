@@ -18,7 +18,10 @@ module.exports =
 
     # (String, String) => Any
     getFromUser = (messageSource, messageTag) ->
-        return userData[messageTag]
+      if userData[messageSource] && userData[messageSource][messageTag]
+        return userData[messageSource][messageTag];
+      else 
+        return undefined; 
 
     # () => ()
     setGlobals = () ->
