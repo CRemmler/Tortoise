@@ -16,12 +16,16 @@
       "argTypes": [ "string", "string" ],
       "returnType": "wildcard"
     }, {
-      "name": "set-globals",
-      "actionName": "set-globals",
+      "name": "store-globals",
+      "actionName": "store-globals",
       "argTypes": [ ]
     }, {
-      "name": "get-globals-from-user",
-      "actionName": "get-globals-from-user",
+      "name": "restore-globals",
+      "actionName": "retore-globals",
+      "argTypes": [ ]
+    }, {
+      "name": "restore-globals-from-user",
+      "actionName": "restore-globals-from-user",
       "argTypes": [ "string" ]
     }, {
       "name": "broadcast-to-gallery",

@@ -7,6 +7,7 @@ PatchSet        = require('./patchset')
 topologyFactory = require('./topology/factory')
 LinkManager     = require('./world/linkmanager')
 Ticker          = require('./world/ticker')
+HubnetManager   = require('./world/hubnetmanager')
 TurtleManager   = require('./world/turtlemanager')
 StrictMath      = require('shim/strictmath')
 NLMath          = require('util/nlmath')
@@ -28,6 +29,7 @@ module.exports =
     ticker:        undefined # Ticker
     topology:      undefined # Topology
     turtleManager: undefined # TurtleManager
+    hubnetManager: undefined # HubnetManager
 
     _patches:     undefined # Array[Patch]
     _plotManager: undefined # PlotManager
@@ -78,6 +80,7 @@ module.exports =
       @ticker        = new Ticker(@_plotManager.setupPlots, onTick, @_updater.updated(this))
       @topology      = null
       @turtleManager = new TurtleManager(this, @breedManager, @_updater, @rng.nextInt)
+      @hubnetManager = new HubnetManager()
 
       @_patches = []
 

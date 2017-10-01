@@ -1,80 +1,79 @@
+hubnetMessageWaiting = false
+hubnetEnterMessage = false
+hubnetExitMessage = false
+hubnetMessage = ""
+hubnetMessageSource = ""
+hubnetMessageTag = ""
+
 module.exports =
   class HubnetManager
 
-      hubnetMessageWaiting = false
-      hubnetEnterMessage = false
-      hubnetExitMessage = false
-      hubnetMessage = ""
-      hubnetMessageSource = ""
-      hubnetMessageTag = ""
-
       # () => HubnetManager
       constructor: () ->
-        @_hubnetManager   = new HubnetManager
 
       # () => String
-      getHubnetMessageWaiting: ->
+      _getHubnetMessageWaiting: =>
         hubnetMessageWaiting
 
       # (String) => Unit
-      setHubnetMessageWaiting: (messageWaiting) ->
+      _setHubnetMessageWaiting: (messageWaiting) =>
         hubnetMessageWaiting = messageWaiting
         return
 
       # () => String
-      getHubnetEnterMessage: ->
+      _getHubnetEnterMessage: =>
         hubnetEnterMessage
 
       # (String) => Unit
-      setHubnetEnterMessage: (enterMessage) ->
+      _setHubnetEnterMessage: (enterMessage) =>
         hubnetEnterMessage = enterMessage
         return
 
       # () => String
-      getHubnetExitMessage: ->
+      _getHubnetExitMessage: =>
         hubnetExitMessage
 
       # (String) => Unit
-      setHubnetExitMessage: (exitMessage) ->
+      _setHubnetExitMessage: (exitMessage) =>
         hubnetExitMessage = exitMessage
         return
 
       # () => String
-      getHubnetMessage: ->
+      _getHubnetMessage: =>
         hubnetMessage
 
       # (String) => Unit
-      setHubnetMessage: (message) ->
+      _setHubnetMessage: (message) =>
         hubnetMessage = message
         return
 
       # () => String
-      getHubnetMessageSource: ->
+      _getHubnetMessageSource: =>
         hubnetMessageSource
 
       # (String) => Unit
-      setHubnetMessageSource: (messageSource) ->
+      _setHubnetMessageSource: (messageSource) =>
         hubnetMessageSource = messageSource
         return
 
       # () => String
-      getHubnetMessageTag: ->
+      _getHubnetMessageTag: =>
         hubnetMessageTag
 
       # (String) => Unit
-      setHubnetMessageTag: (messageTag) ->
+      _setHubnetMessageTag: (messageTag) =>
         hubnetMessageTag = messageTag
         return
 
       # Commands
 
       # () => Unit
-      hubnetFetchMessage: ->
-        processCommand = commandQueue.shift()
+      _hubnetFetchMessage: =>
+        processCommand(commandQueue.shift())
         return
 
       # (String, String, Any) => Unit
-      hubnetSend: (messageSource, messageTag, message) ->
+      _hubnetSend: (messageSource, messageTag, message) =>
         socket.emit('send reporter', {
           hubnetMessageSource: messageSource,
           hubnetMessageTag: messageTag,
@@ -84,12 +83,12 @@ module.exports =
       processCommand = (m) ->
         #console.log(m.messageSource+" "+m.messageTag+" "+m.message);
         if commandQueue.length == 0
-          setHubnetMessageWaiting = false
-        setHubnetEnterMessage = false
-        setHubnetExitMessage = false
-        setHubnetMessageSource = m.messageSource
-        setHubnetMessageTag = m.messageTag
-        setHubnetMessage = m.message
-        if m.messageTag == 'hubnet-enter-message' then setHubnetEnterMessage = true
-        if m.messageTag == 'hubnet-exit-message' then setHubnetExitMessage = true
+          setHubnetMessageWaiting(false)
+        setHubnetEnterMessage(false)
+        setHubnetExitMessage(false)
+        setHubnetMessageSource(m.messageSource)
+        setHubnetMessageTag(m.messageTag)
+        setHubnetMessage(m.message)
+        if m.messageTag == 'hubnet-enter-message' then setHubnetEnterMessage(true)
+        if m.messageTag == 'hubnet-exit-message' then setHubnetExitMessage(true)
         return
