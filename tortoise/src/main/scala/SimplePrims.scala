@@ -35,12 +35,12 @@ object SimplePrims {
         case _: prim.etc._shapes         => "Object.keys(world.turtleShapeMap)"
         case _: prim.etc._worldheight    => "world.topology.height"
         case _: prim.etc._worldwidth     => "world.topology.width"
-        case _: prim.hubnet._hubnetentermessage  => "world.hubnetManager.getHubnetEnterMessage"
-        case _: prim.hubnet._hubnetexitmessage   => "world.hubnetManager.getHubnetExitMessage"
-        case _: prim.hubnet._hubnetmessage       => "world.hubnetManager.getHubnetMessage"
-        case _: prim.hubnet._hubnetmessagesource => "world.hubnetManager.getHubnetMessageSource"
-        case _: prim.hubnet._hubnetmessagetag    => "world.hubnetManager.getHubnetMessageTag"
-
+        case _: prim.hubnet._hubnetmessage        => "world.hubnetManager.hubnetMessage"
+        case _: prim.hubnet._hubnetmessagesource  => "world.hubnetManager.hubnetMessageSource"
+        case _: prim.hubnet._hubnetmessagetag     => "world.hubnetManager.hubnetMessageTag"
+        case _: prim.hubnet._hubnetentermessage   => "world.hubnetManager.hubnetEnterMessage"
+        case _: prim.hubnet._hubnetexitmessage    => "world.hubnetManager.hubnetExitMessage"
+        case _: prim.hubnet._hubnetmessagewaiting => "world.hubnetManager.hubnetMessageWaiting"
       }
   }
 
@@ -239,7 +239,6 @@ object SimplePrims {
         case _: prim.etc._isturtle            => s"isValidTurtle()"
         case _: prim.etc._isturtleset         => s"isTurtleSet()"
         case _: prim.etc._isundirectedlink    => s"isUndirectedLink()"
-        case _: prim.hubnet._hubnetmessagewaiting => s"world.hubnetManager.getHubnetMessageWaiting"
       }
   }
 
@@ -253,7 +252,6 @@ object SimplePrims {
         case _: prim.etc._showturtle               => "SelfManager.self().hideTurtle(false);"
         case _: prim.etc._stopinspecting           => ""
         case _: prim.etc._stopinspectingdeadagents => ""
-        case _: prim.hubnet._hubnetfetchmessage       => "world.hubnetManager.hubnetFetchMessage"
       }
   }
 
@@ -357,8 +355,8 @@ object SimplePrims {
         case _: prim.etc._display     => "notImplemented('display', undefined)"
 
         // HubnetManager
-        case _: prim.hubnet._hubnetsend     =>   "world.hubnetManager.hubnetSend"
-
+        case _: prim.hubnet._hubnetsend         => "world.hubnetManager.hubnetSend"
+        case _: prim.hubnet._hubnetfetchmessage => "world.hubnetManager.hubnetFetchMessage"
       }
   }
   // scalastyle:on method.length
