@@ -14,7 +14,7 @@ module.exports =
 
       # () => Unit
       hubnetFetchMessage: =>
-        processCommand(commandQueue.shift())
+        this.processCommand(commandQueue.shift())
         return
 
       # (String, String, Any) => Unit
@@ -25,7 +25,7 @@ module.exports =
           hubnetMessage: message })
         return
 
-      processCommand = (m) ->
+      processCommand: (m) ->
         #console.log(m.messageSource+" "+m.messageTag+" "+m.message);
         if commandQueue.length == 0
           world.hubnetManager.hubnetMessageWaiting = false
