@@ -10,7 +10,7 @@ Smoke
 
 MapExtension
   extensions [nlmap]
-  globals [ basic ]
+  globals [ basic ls str ]
   O> set basic (nlmap:from-list [["apples" 4] ["oranges" 6]])
   nlmap:to-list (nlmap:from-list []) => []
   nlmap:to-list (nlmap:from-list [["apples" 4] ["oranges" 6]]) => [["apples" 4] ["oranges" 6]]
@@ -35,8 +35,33 @@ MapExtension
   nlmap:get (nlmap:remove (nlmap:add basic "grapes" 9001) "grapes") "oranges" => 6
   nlmap:get (nlmap:remove (nlmap:add basic "grapes" 9001) "apples") "grapes" => 9001
   nlmap:get (nlmap:remove (nlmap:add basic "grapes" 9001) "apples") "oranges" => 6
+  codap:init ([[] ->]) => COMPILER ERROR No such primitive: CODAP:INIT
+  O> set basic nlmap:from-json "{ \"url\": \"url\", \"obj\": { \"val1\": 100, \"val2\": \"apples\", \"val3\": [ 4, 5, 6 ] } }"
+  O> set ls nlmap:to-list basic
+  item 0 ls => ["url" "url"]
+  item 0 item 1 ls => "obj"
+  nlmap:to-list (item 1 item 1 ls) => [["val1" 100] ["val2" "apples"] ["val3" [4 5 6]]]
+  O> set str nlmap:to-urlenc (nlmap:from-list [["apples" 4] ["oranges" "6 w/ spaces & 'spec.' chars"]])
+  str => "apples=4&oranges=6%20w%2F%20spaces%20%26%20'spec.'%20chars"
+  O> set str nlmap:to-json basic
+  str => "{\"url\":\"url\",\"obj\":{\"val1\":100,\"val2\":\"apples\",\"val3\":[4,5,6]}}"
 
 CodapExtension
-  extensions [codap]
+  extensions [codap nlmap]
   O> codap:init ([[] ->])
   O> codap:call (nlmap:from-list [])
+
+LoggingExtension
+  extensions [logging]
+  globals [apples oranges grapes]
+  to do-logging-batch logging:log-message "hi" logging:log-message (word "ticks: " ticks) (logging:log-globals) (logging:log-globals "oranges" "apples" "grapes") (logging:log-globals "grapes" "oranges") tick end
+  O> reset-ticks set apples 91 set grapes "howdy" set oranges false
+  O> do-logging-batch
+  logging:all-logs => ["hi" "ticks: 0" "apples: 91\noranges: false\ngrapes: \"howdy\"" "oranges: false\napples: 91\ngrapes: \"howdy\"" "grapes: \"howdy\"\noranges: false"]
+  O> do-logging-batch
+  logging:all-logs => ["hi" "ticks: 0" "apples: 91\noranges: false\ngrapes: \"howdy\"" "oranges: false\napples: 91\ngrapes: \"howdy\"" "grapes: \"howdy\"\noranges: false" "hi" "ticks: 1" "apples: 91\noranges: false\ngrapes: \"howdy\"" "oranges: false\napples: 91\ngrapes: \"howdy\"" "grapes: \"howdy\"\noranges: false"]
+  O> logging:clear-logs
+  O> do-logging-batch
+  logging:all-logs => ["hi" "ticks: 2" "apples: 91\noranges: false\ngrapes: \"howdy\"" "oranges: false\napples: 91\ngrapes: \"howdy\"" "grapes: \"howdy\"\noranges: false"]
+  O> logging:log-message "All done."
+  logging:all-logs => ["hi" "ticks: 2" "apples: 91\noranges: false\ngrapes: \"howdy\"" "oranges: false\napples: 91\ngrapes: \"howdy\"" "grapes: \"howdy\"\noranges: false" "All done."]

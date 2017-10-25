@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise.json
+package org.nlogo.tortoise.macros.json
 
 import
   scala.reflect.macros.blackbox.{ Context => BlackBoxContext }
@@ -33,7 +33,7 @@ object Jsonify {
         constructorElems =>
           val name = TermName(c.freshName("reader"))
           q"""{
-            import org.nlogo.tortoise.json.JsonReader
+            import org.nlogo.tortoise.compiler.json.JsonReader
             import scalaz.Validation.FlatMap.ValidationFlatMapRequested
             implicit object $name extends JsonReader[${inputType.tpe}, ${resultType.tpe}]{
               def apply($json: ${inputType.tpe}) =
@@ -46,12 +46,12 @@ object Jsonify {
 
   }
 
-  def writableInternal[T: c.WeakTypeTag, S: c.WeakTypeTag](c: BlackBoxContext)(implicit toBeWritten: c.WeakTypeTag[T], res: c.WeakTypeTag[S]): c.Tree = {
+  def writableInternal[T: c.WeakTypeTag, S: c.WeakTypeTag](c: BlackBoxContext)(implicit toBeWritten: c.WeakTypeTag[T]): c.Tree = {
 
     import c.universe._
 
     val typeToJsonify = toBeWritten.tpe
-    val writerType    = c.mirror.staticClass("org.nlogo.tortoise.json.JsonWriter").toType
+    val writerType    = c.mirror.staticClass("org.nlogo.tortoise.compiler.json.JsonWriter").toType
 
     if (typeToJsonify.typeSymbol.asClass.isCaseClass) {
 
@@ -77,8 +77,8 @@ object Jsonify {
             implicit object $name extends JsonWriter[$typeToJsonify] {
             import collection.immutable.ListMap
             def apply($writtenObject: $typeToJsonify): TortoiseJson = {
-              val seq = Seq[(String, Option[org.nlogo.tortoise.json.TortoiseJson])](..$allElems)
-                  org.nlogo.tortoise.json.TortoiseJson.JsObject(ListMap(seq.collect {
+              val seq = Seq[(String, Option[org.nlogo.tortoise.compiler.json.TortoiseJson])](..$allElems)
+                  org.nlogo.tortoise.compiler.json.TortoiseJson.JsObject(ListMap(seq.collect {
                     case (a, Some(b)) => (a, b)
                   }: _*))
                 }
