@@ -1,7 +1,10 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-module.exports =
-  (workspace) ->
+module.exports = {
+
+  dumper: undefined
+
+  init: (workspace) ->
 
     # (String, Any) => ()
     set = (messageTag, message) ->
@@ -54,29 +57,9 @@ module.exports =
     broadcastToGallery = (key, value) ->
         Gallery.broadcastToGallery(key, value)
 
-    # (String, String) => ()
-    compileObserverCode = (code, key) ->
-        session.compileObserverCode(code, key)
-
-    # (String, Number, String) => ()
-    compileTurtleCode = (code, who, key) ->
-        session.compileTurtleCode(code, who, key)
-
-    # (String, Number, Number, String) => ()
-    compilePatchCode = (code, pxcor, pycor, key) ->
-        session.compilePatchCode(code, pxcor, pycor, key)
-
-    # (String) => ()
-    runObserverCode = (key) ->
-        session.runObserverCode(key)
-
-    # (Number, String) => ()
-    runTurtleCode = (who, key) ->
-        session.runTurtleCode(who, key)
-
-    # (Number, Number, String) => ()
-    runPatchCode = (pxcor, pycor, key) ->
-        session.runPatchCode(pxcor, pycor, key)
+    # () => ()
+    display = () ->
+        universe.repaint()
 
     # (List) => ()
     importDrawing = (data) ->
@@ -92,12 +75,8 @@ module.exports =
       ,           "RESTORE-GLOBALS": restoreGlobals
       , "RESTORE-GLOBALS-FROM-USER": restoreGlobalsFromUser
       ,      "BROADCAST-TO-GALLERY": broadcastToGallery
-      ,     "COMPILE-OBSERVER-CODE": compileObserverCode
-      ,       "COMPILE-TURTLE-CODE": compileTurtleCode
-      ,        "COMPILE-PATCH-CODE": compilePatchCode
-      ,         "RUN-OBSERVER-CODE": runObserverCode
-      ,           "RUN-TURTLE-CODE": runTurtleCode
-      ,            "RUN-PATCH-CODE": runPatchCode
+      ,                   "DISPLAY": display
       ,            "IMPORT-DRAWING": importDrawing
       }
     }
+}

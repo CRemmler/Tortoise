@@ -32,33 +32,13 @@
       "actionName": "broadcast-to-gallery",
       "argTypes": [ "string", "string" ]
     }, {
-      "name": "compile-observer-code",
-      "actionName": "compile-observer-code",
-      "argTypes": [ "string", "string" ]
-    }, {
-      "name": "compile-turtle-code",
-      "actionName": "compile-turtle-code",
-      "argTypes": [ "string", "number", "string" ]
-    }, {
-      "name": "compile-patch-code",
-      "actionName": "compile-patch-code",
-      "argTypes": [ "string", "number", "number", "string" ]
-    }, {
-      "name": "run-observer-code",
-      "actionName": "run-observer-code",
-      "argTypes": [ "string" ]
-    }, {
-      "name": "run-turtle-code",
-      "actionName": "run-turtle-code",
-      "argTypes": [ "number", "string" ]
-    }, {
-      "name": "run-patch-code",
-      "actionName": "run-patch-code",
-      "argTypes": [ "number", "number", "string" ]
-    }, {
       "name": "import-drawing",
       "actionName": "import-drawing",
       "argTypes": [ "list" ]
+    }, {
+      "name": "display",
+      "actionName": "display",
+      "argTypes": [ ]
     }
   ]
 }

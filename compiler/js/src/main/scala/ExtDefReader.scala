@@ -11,7 +11,7 @@ object ExtDefReader {
 
     """{ "name": "logging", "prims": [ { "name": "all-logs", "actionName": "all-logs", "argTypes": [], "returnType": "list" }, { "name": "clear-logs", "actionName": "clear-logs", "argTypes": [], "returnType": "unit" }, { "name": "log-globals", "actionName": "log-globals", "argTypes": [{ "type": "string", "isRepeatable": true }], "returnType": "unit" }, { "name": "log-message", "actionName": "log-message", "argTypes": ["string"], "returnType": "unit" } ] }""",
 
-    """{ "name": "http-req", "prims": [ { "name": "get", "actionName": "get", "argTypes": ["string"], "returnType": "list" }, { "name": "post", "actionName": "post", "argTypes": ["string", "string", "string"], "returnType": "list" } ] }"""
+    """{"name":"gbcc","prims":[{"name":"set","actionName":"set","argTypes":["string","wildcard"]},{"name":"get","actionName":"get","argTypes":["string"],"returnType":"wildcard"},{"name":"get-from-user","actionName":"get-from-user","argTypes":["string","string"],"returnType":"wildcard"},{"name":"store-globals","actionName":"store-globals","argTypes":[]},{"name":"restore-globals","actionName":"retore-globals","argTypes":[]},{"name":"restore-globals-from-user","actionName":"restore-globals-from-user","argTypes":["string"]},{"name":"broadcast-to-gallery","actionName":"broadcast-to-gallery","argTypes":["string","string"]},{"name":"import-drawing","actionName":"import-drawing","argTypes":["list"]},{"name":"display","actionName":"display","argTypes":[]}]}"""
   )
   // scalastyle:on line.size.limit
 }
