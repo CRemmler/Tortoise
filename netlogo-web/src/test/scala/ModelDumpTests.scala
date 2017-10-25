@@ -1,11 +1,14 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise
+package org.nlogo.tortoise.nlw
 
 import
   java.{ io => jio, util => jutil},
     jio.FileWriter,
     jutil.{ List => JList, Map => JMap }
+
+import
+  org.nlogo.tortoise.compiler.Model
 
 import
   jsengine.Rhino
@@ -16,6 +19,8 @@ import
 import
   org.scalatest.{ exceptions, FunSuite },
     exceptions.TestFailedException
+
+import org.nlogo.tortoise.tags.SlowTest
 
 import
   scala.{ io, util },
@@ -39,7 +44,8 @@ class ModelDumpTests extends FunSuite {
   }
 
   for (path <- Model.models.map(_.path).distinct) {
-    test(s"outputs correct model javascript for ${path}") {
+    test(s"outputs correct model javascript for ${path}", SlowTest) {
+      println(path)
       try {
         import scala.collection.JavaConverters.{ collectionAsScalaIterable, mapAsScalaMap }
         val modelContents                  = Source.fromFile(path).mkString
@@ -93,11 +99,13 @@ class ModelDumpTests extends FunSuite {
   // scala.js `toString` for numeric values gives different results than jvm scala.
   // We need do a little cleanup to match the outputs - 2/17/15 RG
   private def cleanJsNumbers(rawJs: String): String = {
+    // the raw JS contains the NetLogo code, which contains escaped characters, which we have to remove to process
+    val unRawJs = rawJs.replace("\\n", " ").replace("\\\"", "\"")
     val trailingZeroNumbers  =
       new Regex("""(\d)\.0(\D)""", "digitBefore", "nonDigitAfter")
     val scientificNotation   =
       new Regex("""(\d)+E(-?)(\d+)""", "coefficient", "sign", "exponent")
-    val trailingZerosRemoved = trailingZeroNumbers.replaceAllIn(rawJs, {
+    val trailingZerosRemoved = trailingZeroNumbers.replaceAllIn(unRawJs, {
       m =>
         s"${m.group("digitBefore")}${m.group("nonDigitAfter")}"
     })
