@@ -21,7 +21,7 @@ module.exports = {
 
     # (String, String) => Any
     getFromUser = (messageSource, messageTag) ->
-      if userData[messageSource] && userData[messageSource][messageTag]
+      if userData[messageSource] && userData[messageSource][messageTag] != undefined
         return userData[messageSource][messageTag]
       else
         return undefined
@@ -65,6 +65,30 @@ module.exports = {
     importDrawing = (data) ->
         Interface.importDrawing(data)
 
+    # (String, String) => ()
+    compileObserverCode = (code, key) ->
+        session.compileObserverCode(code, key)
+
+    # (String, Number, String) => ()
+    compileTurtleCode = (code, who, key) ->
+        session.compileTurtleCode(code, who, key)
+
+    # (String, Number, Number, String) => ()
+    compilePatchCode = (code, pxcor, pycor, key) ->
+        session.compilePatchCode(code, pxcor, pycor, key)
+
+    # (String) => ()
+    runObserverCode = (key) ->
+        session.runObserverCode(key)
+
+    # (Number, String) => ()
+    runTurtleCode = (who, key) ->
+        session.runTurtleCode(who, key)
+
+    # (Number, Number, String) => ()
+    runPatchCode = (pxcor, pycor, key) ->
+        session.runPatchCode(pxcor, pycor, key)
+
     {
       name: "gbcc"
     , prims: {
@@ -77,6 +101,12 @@ module.exports = {
       ,      "BROADCAST-TO-GALLERY": broadcastToGallery
       ,                   "DISPLAY": display
       ,            "IMPORT-DRAWING": importDrawing
+      ,     "COMPILE-OBSERVER-CODE": compileObserverCode
+      ,       "COMPILE-TURTLE-CODE": compileTurtleCode
+      ,        "COMPILE-PATCH-CODE": compilePatchCode
+      ,         "RUN-OBSERVER-CODE": runObserverCode
+      ,           "RUN-TURTLE-CODE": runTurtleCode
+      ,            "RUN-PATCH-CODE": runPatchCode
       }
     }
 }
