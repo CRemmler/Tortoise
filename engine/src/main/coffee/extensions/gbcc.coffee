@@ -57,25 +57,17 @@ module.exports = {
     broadcastToGallery = (key, value) ->
         Gallery.broadcastToGallery(key, value)
 
-    # () => ()
-    display = () ->
-        universe.repaint()
-
-    # (List) => ()
-    importDrawing = (data) ->
-        Interface.importDrawing(data)
-
     # (String, String) => ()
-    compileObserverCode = (code, key) ->
-        session.compileObserverCode(code, key)
+    compileObserverCode = (key, value) ->
+        session.compileObserverCode(key, value)
 
-    # (String, Number, String) => ()
-    compileTurtleCode = (code, who, key) ->
-        session.compileTurtleCode(code, who, key)
+    # (Number, String, String) => ()
+    compileTurtleCode = (who, key, value) ->
+        session.compileTurtleCode(who, key, value)
 
-    # (String, Number, Number, String) => ()
-    compilePatchCode = (code, pxcor, pycor, key) ->
-        session.compilePatchCode(code, pxcor, pycor, key)
+    # (Number, Number, String, String) => ()
+    compilePatchCode = (pxcor, pycor, key, value) ->
+        session.compilePatchCode(pxcor, pycor, key, value)
 
     # (String) => ()
     runObserverCode = (key) ->
@@ -99,8 +91,6 @@ module.exports = {
       ,           "RESTORE-GLOBALS": restoreGlobals
       , "RESTORE-GLOBALS-FROM-USER": restoreGlobalsFromUser
       ,      "BROADCAST-TO-GALLERY": broadcastToGallery
-      ,                   "DISPLAY": display
-      ,            "IMPORT-DRAWING": importDrawing
       ,     "COMPILE-OBSERVER-CODE": compileObserverCode
       ,       "COMPILE-TURTLE-CODE": compileTurtleCode
       ,        "COMPILE-PATCH-CODE": compilePatchCode
