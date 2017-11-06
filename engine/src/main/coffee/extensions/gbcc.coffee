@@ -21,10 +21,10 @@ module.exports = {
 
     # (String, String) => Any
     getFromUser = (messageSource, messageTag) ->
-      if userData[messageSource] && userData[messageSource][messageTag] != undefined
+      if userData[messageSource] && userData[messageSource][messageTag]?
         return userData[messageSource][messageTag]
       else
-        return undefined
+        return 0
 
     # () => ()
     storeGlobals = () ->
