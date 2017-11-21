@@ -1,0 +1,11 @@
+{
+  "name": "graph",
+  "prims": [
+    {
+      "name": "equation",
+      "actionName": "equation",
+      "argTypes": [ "string", "number", "number", "number", "number", "number", "number", "number", "number", "number" ],
+      "returnType": "list"
+    }
+  ]
+}
