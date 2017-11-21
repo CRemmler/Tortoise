@@ -3,9 +3,9 @@ import org.scalajs.sbtplugin.cross.{ CrossProject, CrossType }
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{ fullOptJS, packageJSDependencies }
 import org.scalastyle.sbt.ScalastylePlugin.projectSettings
 
-val nlDependencyVersion       = "6.0.2-7803691"
+val nlDependencyVersion       = "6.0.2-9b78be0"
 
-val parserJsDependencyVersion = "0.2.0-7803691"
+val parserJsDependencyVersion = "0.2.0-9b78be0"
 
 val scalazVersion             = "7.2.10"
 
@@ -89,9 +89,9 @@ lazy val compiler = CrossProject("compiler", file("compiler"), CrossType.Full).
     libraryDependencies                  ++= {
       import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.toScalaJSGroupID
       Seq(
-        "com.lihaoyi"       %%%! "utest"       % "0.4.5",
+        "com.lihaoyi"       %%%! "utest"       % "0.4.7",
         "org.nlogo"         %%%! "parser-js"   % parserJsDependencyVersion,
-        "com.typesafe.play" %%%  "play-json"   % "2.6.1",
+        "com.typesafe.play" %%%  "play-json"   % "2.6.6",
         "org.scalaz"        %%%  "scalaz-core" % scalazVersion)
     })
 
