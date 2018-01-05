@@ -1,0 +1,41 @@
+{
+  "name": "maps",
+  "prims": [
+    {
+      "name": "create-marker",
+      "actionName": "create-marker",
+      "argTypes": [ "string", "list" ]
+    }, {
+      "name": "set-marker-xy",
+      "actionName": "set-marker-xy",
+      "argTypes": [ "string", "list" ]
+    }, {
+      "name": "set-marker-lng-lat",
+      "actionName": "set-marker-lng-lat",
+      "argTypes": [ "string", "list" ]
+    }, {
+      "name": "delete-marker",
+      "actionName": "delete-marker",
+      "argTypes": [ "string" ]
+    }, {
+      "name": "get-marker-xy",
+      "actionName": "get-marker-xy",
+      "argTypes": [ "string" ],
+      "returnType": "list"
+    }, {
+      "name": "get-marker-lng-lat",
+      "actionName": "get-marker-lng-lat",
+      "argTypes": [ "string" ],
+      "returnType": "list"
+    }, {
+      "name": "import",
+      "actionName": "import",
+      "argTypes": [ "list" ]
+    }, {
+      "name": "export",
+      "actionName": "import",
+      "argTypes": [ ],
+      "returnType": "list"
+    }
+  ]
+}

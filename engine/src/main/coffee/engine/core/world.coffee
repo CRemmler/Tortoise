@@ -184,6 +184,21 @@ module.exports =
       @_updater.clearDrawing()
       return
 
+    # (Number) =>
+    zoom: (scale) =>
+      @_updater.zoom(scale)
+      return
+
+    # () => Unit
+    resetZoom: ->
+      @_updater.resetZoom()
+      return
+
+    # () => Unit
+    triggerUpdate: ->
+      @_updater.triggerUpdate()
+      return
+
     # () => Unit
     clearLinks: ->
       @linkManager.clear()

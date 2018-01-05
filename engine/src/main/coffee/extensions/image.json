@@ -1,0 +1,26 @@
+{
+  "name": "image",
+  "prims": [
+    {
+      "name": "import",
+      "actionName": "import",
+      "argTypes": [ "string" ]
+    }, {
+      "name": "zoom",
+      "actionName": "zoom",
+      "argTypes": [ "number" ]
+    }, {
+      "name": "reset-zoom",
+      "actionName": "reset-zoom",
+      "argTypes": [ ]
+    }, {
+      "name": "import-pcolors",
+      "actionName": "import-pcolors",
+      "argTypes": [ "string" ]
+    }, {
+      "name": "clear",
+      "actionName": "clear",
+      "argTypes": [ ]
+    }
+  ]
+}

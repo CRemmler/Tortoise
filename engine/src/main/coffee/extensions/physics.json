@@ -1,0 +1,31 @@
+{
+  "name": "physics",
+  "prims": [
+    {
+      "name": "create-object",
+      "actionName": "create-object",
+      "argTypes": [ "string", "list" ]
+    }, {
+      "name": "delete-object",
+      "actionName": "delete-object",
+      "argTypes": [ "string" ]
+    }, {
+      "name": "get-object",
+      "actionName": "get-object",
+      "argTypes": [ "string" ],
+      "returnType": "list"
+    }, {
+      "name": "connect-to-turtle",
+      "actionName": "connect-to-turtle",
+      "argTypes": [ "string", "number" ]
+    }, {
+      "name": "disconnect-from-turtle",
+      "actionName": "disconnect-from-turtle",
+      "argTypes": [ "string", "number" ]
+    }, {
+      "name": "import",
+      "actionName": "import",
+      "argTypes": [ "list" ]
+    }
+  ]
+}

@@ -39,6 +39,16 @@ module.exports =
       @_reportDrawingEvent({ type: "clear-drawing" })
       return
 
+    # () => Unit
+    zoom: (scale) =>
+      @_reportDrawingEvent({ type: "zoom", scale: scale })
+      return
+
+    # () => Unit
+    resetZoom: ->
+      @_reportDrawingEvent({ type: "reset-zoom" })
+      return
+
     # () => Array[Update]
     collectUpdates: ->
       temp = @_updates
@@ -201,6 +211,11 @@ module.exports =
     _update: (agentType, id, newAgent) ->
       @_hasUpdates = true
       @_updates[0][agentType][id] = newAgent
+      return
+
+    # () => Unit
+    triggerUpdate: () ->
+      @_hasUpdates = true
       return
 
     # (Object[String, Any]) => Unit

@@ -25,6 +25,14 @@ module.exports =
           hubnetMessage: message })
         return
 
+      # (String, Agent, Radius) => ()
+      hubnetSendFollow: (clientName, agent, radius) =>
+        return
+
+      # (string, agent, string) => ()
+      hubnetSendOverride: (clientName, agentOrSet, variableName) =>
+        return
+
       processCommand: (m) ->
         #console.log(m.messageSource+" "+m.messageTag+" "+m.message);
         if commandQueue.length == 0

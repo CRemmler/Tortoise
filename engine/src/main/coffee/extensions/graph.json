@@ -6,6 +6,59 @@
       "actionName": "equation",
       "argTypes": [ "string", "number", "number", "number", "number", "number", "number", "number", "number", "number" ],
       "returnType": "list"
+    }, {
+      "name": "create-point",
+      "actionName": "create-point",
+      "argTypes": [ "string", "list" ]
+    }, {
+      "name": "update-point",
+      "actionName": "update-point",
+      "argTypes": [ "string", "list" ]
+    }, {
+      "name": "delete-point",
+      "actionName": "delete-point",
+      "argTypes": [ "string" ]
+    }, {
+      "name": "get-point",
+      "actionName": "get-point",
+      "argTypes": [ "string" ],
+      "returnType": "list"
+    }, {
+      "name": "import",
+      "actionName": "import",
+      "argTypes": [ "list" ]
+    }, {
+      "name": "eval-command",
+      "actionName": "eval-command",
+      "argTypes": [ "string" ]
+    }, {
+      "name": "eval-command-get-labels",
+      "actionName": "eval-command-get-labels",
+      "argTypes": [ "string" ],
+      "returnType": "string"
+    }, {
+      "name": "eval-command-cas",
+      "actionName": "eval-command-cas",
+      "argTypes": [ "string" ],
+      "returnType": "string"
+    }, {
+      "name": "set-point-xy",
+      "actionName": "set-point-xy",
+      "argTypes": [ "string", "list" ]
+    }, {
+      "name": "get-point-xy",
+      "actionName": "get-point-xy",
+      "argTypes": [ "string" ],
+      "returnType": "list"
+    }, {
+      "name": "set-point-gxy",
+      "actionName": "set-point-gxy",
+      "argTypes": [ "string", "list" ]
+    }, {
+      "name": "get-point-gxy",
+      "actionName": "get-point-gxy",
+      "argTypes": [ "string" ],
+      "returnType": "list"
     }
   ]
 }
