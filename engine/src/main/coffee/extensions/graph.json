@@ -59,6 +59,10 @@
       "actionName": "get-point-gxy",
       "argTypes": [ "string" ],
       "returnType": "list"
+    }, {
+      "name": "remove",
+      "actionName": "remove",
+      "argTypes": [ ]
     }
   ]
 }

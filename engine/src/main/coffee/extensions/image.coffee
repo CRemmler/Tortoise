@@ -27,7 +27,7 @@ module.exports = {
       return
 
     # () => ()
-    clear = () ->
+    clearImage = () ->
       Images.clearImage()
       return
 
@@ -38,7 +38,7 @@ module.exports = {
         "ZOOM": zoom,
         "RESET-ZOOM": resetZoom,
         "IMPORT-PCOLORS": importPcolors,
-        "CLEAR": clear
+        "CLEAR": clearImage
       }
     }
 }

@@ -30,6 +30,11 @@ module.exports = {
     getObject = (name) ->
         return Maps.getObject(name)
 
+    # () => ()
+    clearObject = () ->
+      Physics.removePhysics()
+      return
+
     {
       name: "physics"
     , prims: {
@@ -38,7 +43,8 @@ module.exports = {
         "REMOVE-OBJECT": removeObject,
         "CONNECT-TO-TURTLE": connectToTurtle,
         "DISCONNECT-FROM-TURTLE": disconnectFromTurtle,
-        "GET-OBJECT": getObject
+        "GET-OBJECT": getObject,
+        "REMOVE": removePhysics
       }
     }
 }

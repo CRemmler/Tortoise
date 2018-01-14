@@ -73,6 +73,11 @@ module.exports = {
     getPointGXY = (name) ->
         return Graph.getPointGXY(name)
 
+    # () => ()
+    removeGraph = () ->
+      Graph.removeGraph()
+      return
+
     {
       name: "graph"
     , prims: {
@@ -87,7 +92,8 @@ module.exports = {
         "SET-POINT-XY": setPointXY,
         "GET-POINT-XY": getPointXY,
         "SET-POINT-GXY": setPointGXY,
-        "GET-POINT-GXY": getPointGXY
+        "GET-POINT-GXY": getPointGXY,
+        "REMOVE": removeGraph
       }
     }
 }

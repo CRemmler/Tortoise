@@ -26,6 +26,10 @@
       "name": "import",
       "actionName": "import",
       "argTypes": [ "list" ]
+    }, {
+      "name": "remove",
+      "actionName": "remove",
+      "argTypes": [ ]
     }
   ]
 }

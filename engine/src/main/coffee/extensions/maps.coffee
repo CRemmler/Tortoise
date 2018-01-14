@@ -38,6 +38,11 @@ module.exports = {
     getMarkerLngLat = (name) ->
         return Maps.getMarkerLngLat(name)
 
+    # () => ()
+    removeMap = () ->
+      Maps.removeMap()
+      return
+
     {
       name: "maps"
     , prims: {
@@ -48,7 +53,8 @@ module.exports = {
         "SET-MARKER-XY": setMarkerXY,
         "GET-MARKER-XY": getMarkerXY,
         "SET-MARKER-LNG-LAT": setMarkerLngLat,
-        "GET-MARKER-LNG-LAT": getMarkerLngLat
+        "GET-MARKER-LNG-LAT": getMarkerLngLat,
+        "REMOVE": removeMap
       }
     }
 }
