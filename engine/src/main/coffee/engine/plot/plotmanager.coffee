@@ -1,20 +1,23 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ DisplayMode: { displayModeFromNum } } = require('./pen')
+
 { filter, forEach, map, toObject, zip } = require('brazierjs/array')
 { flip, pipeline }                      = require('brazierjs/function')
+{ fold, map: mapMaybe, maybe }          = require('brazierjs/maybe')
 { values }                              = require('brazierjs/object')
 { isNumber }                            = require('brazierjs/type')
 
 module.exports = class PlotManager
 
-  _currentPlot: undefined # Plot
-  _plotMap:     undefined # Object[String, Plot]
+  _currentPlotMaybe: undefined # Maybe[Plot]
+  _plotMap:          undefined # Object[String, Plot]
 
   # (Array[Plot]) => PlotManager
   constructor: (plots) ->
-    toName        = (p) -> p.name.toUpperCase()
-    @_currentPlot = plots[plots.length - 1]
-    @_plotMap     = pipeline(map(toName), flip(zip)(plots), toObject)(plots)
+    toName             = (p) -> p.name.toUpperCase()
+    @_currentPlotMaybe = maybe(plots[plots.length - 1])
+    @_plotMap          = pipeline(map(toName), flip(zip)(plots), toObject)(plots)
 
   # () => Unit
   clearAllPlots: ->
@@ -50,9 +53,17 @@ module.exports = class PlotManager
     @_withPlot((plot) -> plot.enableAutoplotting())
     return
 
+  # () => Maybe[Plot]
+  getCurrentPlotMaybe: ->
+    @_currentPlotMaybe
+
   # () => String
   getPlotName: ->
     @_withPlot((plot) -> plot.name)
+
+  # () => Array[Plot]
+  getPlots: ->
+    values(@_plotMap)
 
   # () => Number
   getPlotXMax: ->
@@ -73,6 +84,12 @@ module.exports = class PlotManager
   # (String) => Boolean
   hasPenWithName: (name) ->
     @_withPlot((plot) -> plot.hasPenWithName(name))
+
+  # (ExportedPlotManager) => Unit
+  importState: ({ currentPlotNameOrNull, plots }) ->
+    plots.forEach((plot) => @_plotMap[plot.name.toUpperCase()].importState(plot))
+    @_currentPlotMaybe = mapMaybe((name) => @_plotMap[name.toUpperCase()])(maybe(currentPlotNameOrNull))
+    return
 
   # () => Boolean
   isAutoplotting: ->
@@ -111,7 +128,7 @@ module.exports = class PlotManager
   setCurrentPlot: (name) ->
     plot = @_plotMap[name.toUpperCase()]
     if plot?
-      @_currentPlot = plot
+      @_currentPlotMaybe = maybe(plot)
     else
       throw new Error("no such plot: \"#{name}\"")
     return
@@ -136,7 +153,7 @@ module.exports = class PlotManager
 
   # (Number) => Unit
   setPenMode: (num) ->
-    @_withPlot((plot) -> plot.updateDisplayMode(plot.displayModeFromNumber(num)))
+    @_withPlot((plot) -> plot.updateDisplayMode(displayModeFromNum(num)))
     return
 
   # () => Unit
@@ -159,17 +176,18 @@ module.exports = class PlotManager
     @_forAllPlots((plot) -> plot.update())
     return
 
-  # (String, String) => (() => Unit) => Unit
+  # [T] @ (String, String) => (() => T) => T
   withTemporaryContext: (plotName, penName) -> (f) =>
-    oldPlot       = @_currentPlot
-    tempPlot      = @_plotMap[plotName.toUpperCase()]
-    @_currentPlot = tempPlot
-    if penName?
-      tempPlot.withTemporaryContext(penName)(f)
-    else
-      f()
-    @_currentPlot = oldPlot
-    return
+    oldPlotMaybe       = @_currentPlotMaybe
+    tempPlotMaybe      = maybe(@_plotMap[plotName.toUpperCase()])
+    @_currentPlotMaybe = tempPlotMaybe
+    result =
+      if penName?
+        mapMaybe((tempPlot) -> tempPlot.withTemporaryContext(penName)(f))(tempPlotMaybe)
+      else
+        f()
+    @_currentPlotMaybe = oldPlotMaybe
+    result
 
   # ((Plot) => Unit) => Unit
   _forAllPlots: (f) ->
@@ -178,7 +196,5 @@ module.exports = class PlotManager
 
   # [T] @ ((Plot) => T) => T
   _withPlot: (f) ->
-    if @_currentPlot?
-      f(@_currentPlot)
-    else
-      throw new Error("There is no current plot. Please select a current plot using the set-current-plot command.")
+    error = new Error("There is no current plot. Please select a current plot using the set-current-plot command.")
+    fold(-> throw error)(f)(@_currentPlotMaybe)

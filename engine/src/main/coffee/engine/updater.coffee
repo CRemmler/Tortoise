@@ -1,11 +1,11 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 Link      = require('./core/link')
-Observer  = require('./core/observer')
 Patch     = require('./core/patch')
 Turtle    = require('./core/turtle')
 World     = require('./core/world')
-Exception = require('util/exception')
+
+{ Perspective: { perspectiveToNum }, Observer } = require('./core/observer')
 
 ignored = ["", -> ""]
 
@@ -39,6 +39,7 @@ module.exports =
       @_reportDrawingEvent({ type: "clear-drawing" })
       return
 
+
     # () => Unit
     zoom: (scale) =>
       @_reportDrawingEvent({ type: "zoom", scale: scale })
@@ -47,6 +48,12 @@ module.exports =
     # () => Unit
     resetZoom: ->
       @_reportDrawingEvent({ type: "reset-zoom" })
+      return
+
+
+    # (String) => Unit
+    importDrawing: (sourcePath) ->
+      @_reportDrawingEvent({ type: "import-drawing", sourcePath })
       return
 
     # () => Array[Update]
@@ -134,7 +141,7 @@ module.exports =
       breed:         ["BREED",       (turtle) -> turtle.getBreedName()]
       color:         ["COLOR",       (turtle) -> turtle._color]
       heading:       ["HEADING",     (turtle) -> turtle._heading]
-      id:            ["WHO",         (turtle) -> turtle.id]
+      who:           ["WHO",         (turtle) -> turtle.id]
       'label-color': ["LABEL-COLOR", (turtle) -> turtle._labelcolor]
       'hidden?':     ["HIDDEN?",     (turtle) -> turtle._hidden]
       label:         ["LABEL",       (turtle) => @_dump(turtle._label)]
@@ -203,7 +210,7 @@ module.exports =
     # (Observer) => Object[EngineKey, (Key, Getter)]
     _observerMap: -> {
       id:          ["WHO",         (observer) -> observer.id]
-      perspective: ["perspective", (observer) -> observer._perspective.toInt]
+      perspective: ["perspective", (observer) -> perspectiveToNum(observer.getPerspective())]
       targetAgent: ["targetAgent", (observer) -> observer._getTargetAgentUpdate()]
     }
 

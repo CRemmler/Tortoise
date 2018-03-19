@@ -125,7 +125,6 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
     if (!opened) declare(Model())
     val logo = command.command
     netLogoCode ++= s"$logo\n"
-    workspace.clearOutput()
 
     drawingActionBuffer.clear()
     val (headlessException, exceptionOccurredInHeadless) =
@@ -170,7 +169,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
       if(headlessException != actualOutput)
         throw new TestFailedException(s"""Exception in JS was "$actualOutput" but exception in headless was "$headlessException" """, 7)
     } else {
-      assertResult(expectedOutput)(actualOutput.replaceAllLiterally("\\n", "\n"))
+      assertResult(expectedOutput)(evalJS("world._getOutput()").asInstanceOf[String].replaceAllLiterally("\\n", "\n"))
       val (expectedModel, actualModel) = updatedJsonModels(expectedJson, actualJson)
 
       val headlessRNGState = workspace.world.mainRNG.save
@@ -259,6 +258,8 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
     opened = true
     runCommand(Command("clear-all random-seed 0"))
   }
+
+  def getNashorn: Nashorn = nashorn
 
   // these two are super helpful when running failing tests
   // to show the javascript before it gets executed.

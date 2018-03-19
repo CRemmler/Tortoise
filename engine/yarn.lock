@@ -196,9 +196,9 @@ braces@^1.8.2:
     preserve "^0.2.0"
     repeat-element "^1.1.2"
 
-brazierjs@2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/brazierjs/-/brazierjs-2.1.1.tgz#87f133bac38bc285c2c895e5b337a52e97133b5b"
+brazierjs@2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/brazierjs/-/brazierjs-2.2.0.tgz#1f43f8b532f178cf8e69ae3160d0385971c75557"
 
 brorand@^1.0.1:
   version "1.0.6"
@@ -539,6 +539,10 @@ crypto-browserify@^3.0.0:
     pbkdf2 "^3.0.3"
     public-encrypt "^4.0.0"
     randombytes "^2.0.0"
+
+csv-parse@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/csv-parse/-/csv-parse-1.2.0.tgz#047b73868ab9a85746e885f637f9ed0fb645a425"
 
 currently-unhandled@^0.4.1:
   version "0.4.1"

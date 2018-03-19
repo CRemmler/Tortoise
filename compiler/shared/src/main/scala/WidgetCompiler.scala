@@ -11,7 +11,7 @@ import
     TortoiseJson.JsObject
 
 import
-  JsOps.{ jsArrayString, sanitizeNil, thunkifyProcedure }
+  JsOps.{ jsArrayString, sanitizeNil, thunkifyFunction, thunkifyProcedure }
 
 import
   org.nlogo.core.{ Button, CompilerException, Monitor, Pen, Plot, Slider, Token, Widget }
@@ -125,13 +125,13 @@ class WidgetCompiler(compileCommand:  String => CompiledStringV,
                                penNameOpt:  Option[String] = None): CompiledStringV = {
     val penName       = penNameOpt map (name => s"'$name'") getOrElse "undefined"
     val inTempContext = (f: String) => s"plotManager.withTemporaryContext('$plotNameRaw', $penName)($f)"
-    val withAuxRNG    = (f: String) => s"workspace.rng.withAux($f)"
+    val withCloneRNG  = (f: String) => s"workspace.rng.withClone($f)"
     if (code.trim.isEmpty)
       thunkifyProcedure("").successNel
     else
-      compileCommand(code) map thunkifyProcedure  map
-        (inTempContext andThen thunkifyProcedure) map
-        (withAuxRNG    andThen thunkifyProcedure)
+      compileCommand(code) map thunkifyProcedure map
+        (inTempContext andThen thunkifyFunction) map
+        (withCloneRNG  andThen thunkifyFunction)
   }
 }
 
