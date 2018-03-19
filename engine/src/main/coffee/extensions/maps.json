@@ -6,26 +6,32 @@
       "actionName": "create-marker",
       "argTypes": [ "string", "list" ]
     }, {
-      "name": "set-marker-xy",
-      "actionName": "set-marker-xy",
-      "argTypes": [ "string", "list" ]
-    }, {
-      "name": "set-marker-lng-lat",
-      "actionName": "set-marker-lng-lat",
+      "name": "update-marker",
+      "actionName": "update-marker",
       "argTypes": [ "string", "list" ]
     }, {
       "name": "delete-marker",
       "actionName": "delete-marker",
       "argTypes": [ "string" ]
     }, {
-      "name": "get-marker-xy",
-      "actionName": "get-marker-xy",
+      "name": "get-marker",
+      "actionName": "get-marker",
       "argTypes": [ "string" ],
       "returnType": "list"
     }, {
-      "name": "get-marker-lng-lat",
-      "actionName": "get-marker-lng-lat",
-      "argTypes": [ "string" ],
+      "name": "get-markers",
+      "actionName": "get-markers",
+      "argTypes": [ ],
+      "returnType": "list"
+    }, {
+      "name": "lnglat-to-patch",
+      "actionName": "lnglat-to-patch",
+      "argTypes": [ "list" ],
+      "returnType": "list"
+    }, {
+      "name": "patch-to-lnglat",
+      "actionName": "patch-to-lnglat",
+      "argTypes": [ "list" ],
       "returnType": "list"
     }, {
       "name": "import",

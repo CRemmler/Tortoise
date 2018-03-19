@@ -24,9 +24,25 @@
       "argTypes": [ "string" ],
       "returnType": "list"
     }, {
-      "name": "import",
-      "actionName": "import",
-      "argTypes": [ "list" ]
+      "name": "get-points",
+      "actionName": "get-points",
+      "argTypes": [  ],
+      "returnType": "list"
+    }, {
+      "name": "get-elements",
+      "actionName": "get-elements",
+      "argTypes": [  ],
+      "returnType": "list"
+    }, {
+      "name": "graph-to-patch",
+      "actionName": "graph-to-patch",
+      "argTypes": [ "list" ],
+      "returnType": "list"
+    }, {
+      "name": "patch-to-graph",
+      "actionName": "patch-to-graph",
+      "argTypes": [ "list" ],
+      "returnType": "list"
     }, {
       "name": "eval-command",
       "actionName": "eval-command",
@@ -42,23 +58,14 @@
       "argTypes": [ "string" ],
       "returnType": "string"
     }, {
-      "name": "set-point-xy",
-      "actionName": "set-point-xy",
-      "argTypes": [ "string", "list" ]
+      "name": "import",
+      "actionName": "import",
+      "argTypes": [ "list" ]
     }, {
-      "name": "get-point-xy",
-      "actionName": "get-point-xy",
-      "argTypes": [ "string" ],
-      "returnType": "list"
-    }, {
-      "name": "set-point-gxy",
-      "actionName": "set-point-gxy",
-      "argTypes": [ "string", "list" ]
-    }, {
-      "name": "get-point-gxy",
-      "actionName": "get-point-gxy",
-      "argTypes": [ "string" ],
-      "returnType": "list"
+      "name": "export",
+      "actionName": "export",
+      "argTypes": [ ],
+      "returnType": [ "list" ]
     }, {
       "name": "remove",
       "actionName": "remove",

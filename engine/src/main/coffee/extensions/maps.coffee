@@ -18,25 +18,33 @@ module.exports = {
     createMarker = (name, settings) ->
         Maps.createMarker(name, settings)
 
+    # (String, List) => ()
+    updateMarker = (name, settings) ->
+        Maps.updateMarker(name, settings)
+
     # (String) => ()
-    removeMarker = (name) ->
-        Maps.removeMarker(name)
+    deleteMarker = (name) ->
+        Maps.deleteMarker(name)
 
-    # (String, List) => ()
-    setMarkerXY = (name, settings) ->
-        Maps.setMarkerXY(name, settings)
+    # (String) => (List)
+    getMarker = (name) ->
+        return Maps.getMarker(name)
 
-    # (String) => List
-    getMarkerXY = (name) ->
-        return Maps.getMarkerXY(name)
+    # () => (List)
+    getMarkers = () ->
+        return Maps.getMarkers()
 
-    # (String, List) => ()
-    setMarkerLngLat = (name, settings) ->
-        Maps.setMarkerLngLat(name, settings)
+    # (List) => List
+    patchToLnglat = (coords) ->
+        return Maps.patchToLnglat(coords)
 
-    # (String) => List
-    getMarkerLngLat = (name) ->
-        return Maps.getMarkerLngLat(name)
+    # (List) => List
+    lnglatToPatch = (coords) ->
+        return Maps.lnglatToPatch(coords)
+
+    # (List) => List
+    pointsToMarkers = (points) ->
+        return Maps.pointsToMarkers(points)
 
     # () => ()
     removeMap = () ->
@@ -49,12 +57,14 @@ module.exports = {
         "IMPORT": importMap,
         "EXPORT": exportMap,
         "CREATE-MARKER": createMarker,
-        "REMOVE-MARKER": removeMarker,
-        "SET-MARKER-XY": setMarkerXY,
-        "GET-MARKER-XY": getMarkerXY,
-        "SET-MARKER-LNG-LAT": setMarkerLngLat,
-        "GET-MARKER-LNG-LAT": getMarkerLngLat,
-        "REMOVE": removeMap
+        "UPDATE-MARKER": updateMarker,
+        "DELETE-MARKER": deleteMarker,
+        "GET-MARKER": getMarker,
+        "PATCH-TO-LNGLAT": patchToLnglat,
+        "LNGLAT-TO-PATCH": lnglatToPatch,
+        "REMOVE": removeMap,
+        "GET-MARKERS": getMarkers,
+        "POINTS-TO-MARKERS": pointsToMarkers
       }
     }
 }

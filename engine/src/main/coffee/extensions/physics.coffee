@@ -14,37 +14,61 @@ module.exports = {
     createObject = (name, settings) ->
         Physics.createObject(name, settings)
 
-    # (Number, String) => ()
-    connectToTurtle = (name, who) ->
-        Physics.connectToTurtle(name, who)
+    # (String, List) => ()
+    updateObject = (name, settings) ->
+        Physics.updateObject(name, settings)
+
+    # (String, List) => ()
+    applyForce = (name, settings) ->
+        Physics.applyForce(name, settings)
 
     # (Number, String) => ()
-    disconnectFromTurtle = (name, who) ->
-        Physics.disconnectFromTurtle(name, who)
+    connectToObject = (who, name) ->
+        Physics.connectToObject(who, name)
+
+    # (Number, String) => ()
+    disconnectFromObject = (who, name) ->
+        Physics.disconnectFromObject(who, name)
 
     # (String) => ()
-    removeObject = (name) ->
-        Physics.removeObject(name)
+    deleteObject = (name) ->
+        Physics.deleteObject(name)
 
     # (String) => List
     getObject = (name) ->
-        return Maps.getObject(name)
+        return Physics.getObject(name)
+
+    # () => List
+    getObjects = () ->
+        return Physics.getObjects()
 
     # () => ()
-    clearObject = () ->
+    removePhysics = () ->
       Physics.removePhysics()
       return
+
+    # (List) => List
+    patchToWorld = (coords) ->
+        return Physics.patchToWorld(coords)
+
+    # (List) => List
+    worldToPatch = (coords) ->
+        return Physics.worldToPatch(coords)
 
     {
       name: "physics"
     , prims: {
         "IMPORT": importPhysics,
         "CREATE-OBJECT": createObject,
-        "REMOVE-OBJECT": removeObject,
-        "CONNECT-TO-TURTLE": connectToTurtle,
-        "DISCONNECT-FROM-TURTLE": disconnectFromTurtle,
+        "UPDATE-OBJECT": updateObject,
+        "DELETE-OBJECT": deleteObject,
+        "CONNECT-TO-OBJECT": connectToObject
+        "DISCONNECT-FROM-OBJECT": disconnectFromObject,
         "GET-OBJECT": getObject,
-        "REMOVE": removePhysics
+        "REMOVE": removePhysics,
+        "PATCH-TO-WORLD": patchToWorld,
+        "WORLD-TO-PATCH": worldToPatch,
+        "GET-OBJECTS": getObjects
       }
     }
 }

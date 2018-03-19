@@ -34,16 +34,36 @@ module.exports = {
         Graph.updatePoint(name, settings)
 
     # (String) => ()
-    removePoint = (name) ->
-        Graph.removePoint(name)
+    deletePoint = (name) ->
+        Graph.deletePoint(name)
 
-    # (String) => List
+    # (String) => (List)
     getPoint = (name) ->
         return Graph.getPoint(name)
+
+    # () => (List)
+    getPoints = () ->
+        return Graph.getPoints()
+
+    # () => (List)
+    getElements = () ->
+        return Graph.getElements()
+
+    # (List) => (List)
+    graphToPatch = (coords) ->
+        return Graph.graphToPatch(coords)
+
+    # (List) => (List)
+    patchToGraph = (coords) ->
+        return Graph.patchToGraph(coords)
 
     # (List) => ()
     importGraph = (settings) ->
         Graph.importGraph(settings)
+
+    # () => (List)
+    exportGraph = (settings) ->
+        return Graph.exportGraph()
 
     # (string) => ()
     evalCommand = (cmdString) ->
@@ -57,43 +77,31 @@ module.exports = {
     evalCommandCAS = (cmdString) ->
         return Graph.evalCommandCAS(cmdString)
 
-    # (String, List) => ()
-    setPointXY = (name, settings) ->
-        Graph.setPointXY(name, settings)
-
-    # (String) => List
-    getPointXY = (name) ->
-        return Graph.getPointXY(name)
-
-    # (String, List) => ()
-    setPointGXY = (name, settings) ->
-        Graph.setPointGXY(name, settings)
-
-    # (String) => List
-    getPointGXY = (name) ->
-        return Graph.getPointGXY(name)
-
     # () => ()
     removeGraph = () ->
       Graph.removeGraph()
       return
 
+
+
     {
       name: "graph"
     , prims: {
         "IMPORT": importGraph,
+        "EXPORT": exportGraph,
         "EQUATION": equation,
         "CREATE-POINT": createPoint,
         "UPDATE-POINT": updatePoint,
-        "GET-POINT": getPoint,
+        "DELETE-POINT": deletePoint,
+        "GRAPH-TO-PATCH": graphToPatch,
+        "PATCH-TO-GRAPH": patchToGraph,
         "EVAL-COMMAND": evalCommand,
         "EVAL-COMMAND-GET-LABELS": evalCommandGetLabels,
         "EVAL-COMMAND-CAS": evalCommandCAS,
-        "SET-POINT-XY": setPointXY,
-        "GET-POINT-XY": getPointXY,
-        "SET-POINT-GXY": setPointGXY,
-        "GET-POINT-GXY": getPointGXY,
-        "REMOVE": removeGraph
+        "REMOVE": removeGraph,
+        "GET-POINT": getPoint,
+        "GET-POINTS": getPoints,
+        "GET-ELEMENTS": getElements,
       }
     }
 }

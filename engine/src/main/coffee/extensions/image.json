@@ -21,6 +21,10 @@
       "name": "clear",
       "actionName": "clear",
       "argTypes": [ ]
+    }, {
+      "name": "import-from-user",
+      "actionName": "import-from-user",
+      "argTypes": [ "string"]
     }
   ]
 }

@@ -6,6 +6,14 @@
       "actionName": "create-object",
       "argTypes": [ "string", "list" ]
     }, {
+      "name": "update-object",
+      "actionName": "update-object",
+      "argTypes": [ "string", "list" ]
+    }, {
+      "name": "apply-force",
+      "actionName": "apply-force",
+      "argTypes": [ "string", "list" ]
+    }, {
       "name": "delete-object",
       "actionName": "delete-object",
       "argTypes": [ "string" ]
@@ -15,17 +23,37 @@
       "argTypes": [ "string" ],
       "returnType": "list"
     }, {
-      "name": "connect-to-turtle",
-      "actionName": "connect-to-turtle",
-      "argTypes": [ "string", "number" ]
+      "name": "get-objects",
+      "actionName": "get-objects",
+      "argTypes": [ ],
+      "returnType": "list"
     }, {
-      "name": "disconnect-from-turtle",
-      "actionName": "disconnect-from-turtle",
-      "argTypes": [ "string", "number" ]
+      "name": "world-to-patch",
+      "actionName": "world-to-patch",
+      "argTypes": [ "list" ],
+      "returnType": "list"
+    }, {
+      "name": "patch-to-world",
+      "actionName": "patch-to-world",
+      "argTypes": [ "list" ],
+      "returnType": "list"
+    }, {
+      "name": "connect-to-object",
+      "actionName": "connect-to-object",
+      "argTypes": [ "number", "string" ]
+    }, {
+      "name": "disconnect-from-object",
+      "actionName": "disconnect-from-object",
+      "argTypes": [ "number", "string" ]
     }, {
       "name": "import",
       "actionName": "import",
       "argTypes": [ "list" ]
+    }, {
+      "name": "export",
+      "actionName": "import",
+      "argTypes": [ ],
+      "returnType": "list"
     }, {
       "name": "remove",
       "actionName": "remove",

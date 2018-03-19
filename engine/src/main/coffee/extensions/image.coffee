@@ -31,6 +31,11 @@ module.exports = {
       Images.clearImage()
       return
 
+    # (string) => ()
+    importFromUser = (userId) ->
+      Images.importFromUser(userId)
+      return
+
     {
       name: "image"
     , prims: {
@@ -38,7 +43,8 @@ module.exports = {
         "ZOOM": zoom,
         "RESET-ZOOM": resetZoom,
         "IMPORT-PCOLORS": importPcolors,
-        "CLEAR": clearImage
+        "CLEAR": clearImage,
+        "IMPORT-FROM-USER": importFromUser
       }
     }
 }
