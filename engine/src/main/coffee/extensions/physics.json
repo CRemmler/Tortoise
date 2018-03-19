@@ -38,13 +38,13 @@
       "argTypes": [ "list" ],
       "returnType": "list"
     }, {
-      "name": "connect-to-object",
-      "actionName": "connect-to-object",
+      "name": "connect-who-to-object",
+      "actionName": "connect-who-to-object",
       "argTypes": [ "number", "string" ]
     }, {
-      "name": "disconnect-from-object",
-      "actionName": "disconnect-from-object",
-      "argTypes": [ "number", "string" ]
+      "name": "disconnect-who",
+      "actionName": "disconnect-who",
+      "argTypes": [ "number"]
     }, {
       "name": "import",
       "actionName": "import",

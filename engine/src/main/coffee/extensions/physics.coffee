@@ -23,12 +23,12 @@ module.exports = {
         Physics.applyForce(name, settings)
 
     # (Number, String) => ()
-    connectToObject = (who, name) ->
-        Physics.connectToObject(who, name)
+    connectWhoToObject = (who, name) ->
+        Physics.connectWhoToObject(who, name)
 
     # (Number, String) => ()
-    disconnectFromObject = (who, name) ->
-        Physics.disconnectFromObject(who, name)
+    disconnectWho = (who, name) ->
+        Physics.disconnectWho(who)
 
     # (String) => ()
     deleteObject = (name) ->
@@ -62,8 +62,8 @@ module.exports = {
         "CREATE-OBJECT": createObject,
         "UPDATE-OBJECT": updateObject,
         "DELETE-OBJECT": deleteObject,
-        "CONNECT-TO-OBJECT": connectToObject
-        "DISCONNECT-FROM-OBJECT": disconnectFromObject,
+        "CONNECT-WHO-TO-OBJECT": connectWhoToObject
+        "DISCONNECT-WHO": disconnectWho,
         "GET-OBJECT": getObject,
         "REMOVE": removePhysics,
         "PATCH-TO-WORLD": patchToWorld,
