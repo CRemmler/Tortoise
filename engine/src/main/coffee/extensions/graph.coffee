@@ -37,9 +37,9 @@ module.exports = {
     deletePoint = (name) ->
         Graph.deletePoint(name)
 
-    # (String) => (List)
-    getPoint = (name) ->
-        return Graph.getPoint(name)
+    # (String, String) => (List)
+    getPoint = (name, key) ->
+        return Graph.getPoint(name, key)
 
     # () => (List)
     getPoints = () ->

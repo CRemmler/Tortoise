@@ -20,7 +20,7 @@
     }, {
       "name": "get-object",
       "actionName": "get-object",
-      "argTypes": [ "string" ],
+      "argTypes": [ "string", "string" ],
       "returnType": "list"
     }, {
       "name": "get-objects",

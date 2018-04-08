@@ -27,8 +27,8 @@ module.exports = {
         Maps.deleteMarker(name)
 
     # (String) => (List)
-    getMarker = (name) ->
-        return Maps.getMarker(name)
+    getMarker = (name, key) ->
+        return Maps.getMarker(name, key)
 
     # () => (List)
     getMarkers = () ->

@@ -35,8 +35,8 @@ module.exports = {
         Physics.deleteObject(name)
 
     # (String) => List
-    getObject = (name) ->
-        return Physics.getObject(name)
+    getObject = (name, key) ->
+        return Physics.getObject(name, key)
 
     # () => List
     getObjects = () ->
