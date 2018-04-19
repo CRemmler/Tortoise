@@ -3,105 +3,145 @@
 module.exports = {
 
   dumper: undefined
-
   init: (workspace) ->
+    # () => ()
+    createGraph = () ->
+        Graph.createGraph()
 
-    # (String, Number, Number, Number, Number, Number, Number, Number, Number, Number, Number) => ()
-    equation = (phrase, xmin, xmax, ymin, ymax, patchesPerGridX, patchesPerGridY, xAxis, yAxis, gridsPerPatchX) ->
-        if xmin > xmax || gridsPerPatchX <= 0
-          return
-        pointsList = []
-        deltaX = gridsPerPatchX
-        x = xmin
-        while (x <= xmax)
-          try
-            y = eval(phrase.replace("x",x))
-          point = []
-          point[0] = x
-          point[1] = y
-          point[2] = Math.round(x * patchesPerGridX + yAxis)
-          point[3] = Math.round(y * patchesPerGridY + xAxis)
-          pointsList.push(point)
-          x = x + deltaX
-        return pointsList
+    # () => ()
+    deleteGraph = () ->
+        Graph.deleteGraph()
 
-    # (String, List) => ()
-    createPoint = (name, settings) ->
-        Graph.createPoint(name, settings)
+    # () => ()
+    hideGraph = () ->
+        Graph.hideGraph()
 
-    # (String, List) => ()
-    updatePoint = (name, settings) ->
-        Graph.updatePoint(name, settings)
+    # (string) => ()
+    importGraph = (data) ->
+        Graph.importGraph(data)
 
-    # (String) => ()
-    deletePoint = (name) ->
-        Graph.deletePoint(name)
+    # () => (string)
+    exportGraph = () ->
+        return Graph.exportGraph()
 
-    # (String, String) => (List)
-    getPoint = (name, key) ->
-        return Graph.getPoint(name, key)
+    # (string, list) => ()
+    createPoint = (name, center) ->
+        Graph.createPoint(name, center)
 
-    # () => (List)
+    # (list) => ()
+    createPoints = (data) ->
+        Graph.createPoints(data)
+
+    # () => (list)
     getPoints = () ->
         return Graph.getPoints()
 
-    # () => (List)
-    getElements = () ->
-        return Graph.getElements()
+    # () => ()
+    deletePoints = () ->
+        Graph.deletePoints()
 
-    # (List) => (List)
-    graphToPatch = (coords) ->
-        return Graph.graphToPatch(coords)
-
-    # (List) => (List)
-    patchToGraph = (coords) ->
-        return Graph.patchToGraph(coords)
-
-    # (List) => ()
-    importGraph = (settings) ->
-        Graph.importGraph(settings)
-
-    # () => (List)
-    exportGraph = (settings) ->
-        return Graph.exportGraph()
+    # () => (string)
+    getConstructions = () ->
+        return Graph.getConstructions()
 
     # (string) => ()
-    evalCommand = (cmdString) ->
-        Graph.evalCommand(cmdString)
+    setConstructions = (data) ->
+        Graph.setConstructions(data)
+
+    # (string) => ()
+    appendConstructions = (data) ->
+        Graph.appendConstructions(data)
+
+    # (string, number) => ()
+    setX = (name, xcor) ->
+        Graph.setX(name, xcor)
+
+    # (string, number) => ()
+    setY = (name, ycor) ->
+        Graph.setY(name, ycor)
+
+    # (string, list) => ()
+    setXy = (name, center) ->
+        Graph.setXy(name, center)
+
+    # (string, string) => ()
+    setLabel = (name, label) ->
+        Graph.setLabel(name, label)
+
+    # (string) => ()
+    setElements = (xml) ->
+        Graph.setElements(xml)
+
+    # (string) => (number)
+    getX = (name) ->
+        return Graph.getX(name)
+
+    # (string) => (number)
+    getY = (name) ->
+        return Graph.getY(name)
+
+    # (string) => (list)
+    getXy = (name) ->
+        return Graph.getXy(name)
 
     # (string) => (string)
-    evalCommandGetLabels = (cmdString) ->
-        return Graph.evalCommandGetLabels(cmdString)
+    getLabel = (name) ->
+        return Graph.getLabel(name)
+
+    # (string) => ()
+    deletePoint = (name) ->
+        Graph.deletePoint(name)
+
+    # (list) => ()
+    graphToPatch = (coords) ->
+        Graph.graphToPatch(coords)
+
+    # (list) => ()
+    patchToGraph = (coords) ->
+        Graph.patchToGraph(coords)
+
+    # (string) => ()
+    evalCommand = (command) ->
+        Graph.evalCommand(command)
 
     # (string) => (string)
-    evalCommandCAS = (cmdString) ->
-        return Graph.evalCommandCAS(cmdString)
+    evalCommandCas = (command) ->
+        return Graph.evalCommandCas(command)
 
-    # () => ()
-    removeGraph = () ->
-      Graph.removeGraph()
-      return
-
-
+    # (string) => (string)
+    evalCommandGetLabels = (command) ->
+        return Graph.evalCommandGetLabels(command)
 
     {
       name: "graph"
     , prims: {
-        "IMPORT": importGraph,
-        "EXPORT": exportGraph,
-        "EQUATION": equation,
-        "CREATE-POINT": createPoint,
-        "UPDATE-POINT": updatePoint,
-        "DELETE-POINT": deletePoint,
-        "GRAPH-TO-PATCH": graphToPatch,
-        "PATCH-TO-GRAPH": patchToGraph,
-        "EVAL-COMMAND": evalCommand,
-        "EVAL-COMMAND-GET-LABELS": evalCommandGetLabels,
-        "EVAL-COMMAND-CAS": evalCommandCAS,
-        "REMOVE": removeGraph,
-        "GET-POINT": getPoint,
-        "GET-POINTS": getPoints,
-        "GET-ELEMENTS": getElements,
-      }
+      "CREATE-GRAPH": createGraph,
+      "DELETE-GRAPH": deleteGraph,
+      "HIDE-GRAPH": hideGraph,
+      "IMPORT-GRAPH": importGraph,
+      "EXPORT-GRAPH": exportGraph,
+      "CREATE-POINT": createPoint,
+      "CREATE-POINTS": createPoints,
+      "GET-POINTS": getPoints,
+      "DELETE-POINTS": deletePoints,
+      "GET-CONSTRUCTIONS": getConstructions,
+      "SET-CONSTRUCTIONS": setConstructions,
+      "APPEND-CONSTRUCTIONS": appendConstructions,
+      "SET-X": setX,
+      "SET-Y": setY,
+      "SET-XY": setXy,
+      "SET-LABEL": setLabel,
+      "SET-ELEMENTS": setElements,
+      "GET-X": getX,
+      "GET-Y": getY,
+      "GET-XY": getXy,
+      "GET-LABEL": getLabel,
+      "DELETE-POINT": deletePoint,
+      "GRAPH-TO-PATCH": graphToPatch,
+      "PATCH-TO-GRAPH": patchToGraph,
+      "EVAL-COMMAND": evalCommand,
+      "EVAL-COMMAND-CAS": evalCommandCas,
+      "EVAL-COMMAND-GET-LABELS": evalCommandGetLabels,
+    }
     }
 }

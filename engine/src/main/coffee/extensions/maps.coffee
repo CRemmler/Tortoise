@@ -3,68 +3,125 @@
 module.exports = {
 
   dumper: undefined
-
   init: (workspace) ->
+    # () => ()
+    createMap = () ->
+        Maps.createMap()
 
-    # (List) => ()
-    importMap = (settings) ->
-        Maps.importMap(settings)
+    # () => ()
+    deleteMap = () ->
+        Maps.deleteMap()
 
-    # () => (List)
-    exportMap = (settings) ->
+    # () => ()
+    hideMap = () ->
+        Maps.hideMap()
+
+    # (string) => ()
+    importMap = (data) ->
+        Maps.importMap(data)
+
+    # () => (string)
+    exportMap = () ->
         return Maps.exportMap()
 
-    # (String, List) => ()
-    createMarker = (name, settings) ->
-        Maps.createMarker(name, settings)
+    # (number) => ()
+    setZoom = (zoom) ->
+        Maps.setZoom(zoom)
 
-    # (String, List) => ()
-    updateMarker = (name, settings) ->
-        Maps.updateMarker(name, settings)
+    # () => (number)
+    getZoom = () ->
+        return Maps.getZoom()
 
-    # (String) => ()
+    # (list) => ()
+    setCenterLatlng = (coords) ->
+        Maps.setCenterLatlng(coords)
+
+    # () => (list)
+    getCenterLatlng = () ->
+        return Maps.getCenterLatlng()
+
+    # (string, list) => ()
+    createMarker = (name, coords) ->
+        Maps.createMarker(name, coords)
+
+    # (list) => ()
+    createMarkers = (data) ->
+        Maps.createMarkers(data)
+
+    # (string, number) => ()
+    setLat = (name, lat) ->
+        Maps.setLat(name, lat)
+
+    # (string, number) => ()
+    setLng = (name, lng) ->
+        Maps.setLng(name, lng)
+
+    # (string, list) => ()
+    setLatlng = (name, latlng) ->
+        Maps.setLatlng(name, latlng)
+
+    # (string, string) => ()
+    setLabel = (name, label) ->
+        Maps.setLabel(name, label)
+
+    # (string) => (number)
+    getLat = (name) ->
+        return Maps.getLat(name)
+
+    # (string) => (number)
+    getLng = (name) ->
+        return Maps.getLng(name)
+
+    # (string) => (list)
+    getLatlng = (name) ->
+        return Maps.getLatlng(name)
+
+    # (string) => (string)
+    getLabel = (name) ->
+        return Maps.getLabel(name)
+
+    # (string) => ()
     deleteMarker = (name) ->
         Maps.deleteMarker(name)
 
-    # (String) => (List)
-    getMarker = (name, key) ->
-        return Maps.getMarker(name, key)
-
-    # () => (List)
-    getMarkers = () ->
-        return Maps.getMarkers()
-
-    # (List) => List
-    patchToLnglat = (coords) ->
-        return Maps.patchToLnglat(coords)
-
-    # (List) => List
-    lnglatToPatch = (coords) ->
-        return Maps.lnglatToPatch(coords)
-
-    # (List) => List
-    pointsToMarkers = (points) ->
-        return Maps.pointsToMarkers(points)
-
     # () => ()
-    removeMap = () ->
-      Maps.removeMap()
-      return
+    deleteMarkers = () ->
+        Maps.deleteMarkers()
+
+    # (list) => ()
+    latlngToPatch = (coords) ->
+        Maps.latlngToPatch(coords)
+
+    # (list) => ()
+    patchToLatlng = (coords) ->
+        Maps.patchToLatlng(coords)
 
     {
       name: "maps"
     , prims: {
-        "IMPORT": importMap,
-        "EXPORT": exportMap,
-        "CREATE-MARKER": createMarker,
-        "UPDATE-MARKER": updateMarker,
-        "DELETE-MARKER": deleteMarker,
-        "GET-MARKER": getMarker,
-        "PATCH-TO-LNGLAT": patchToLnglat,
-        "LNGLAT-TO-PATCH": lnglatToPatch,
-        "REMOVE": removeMap,
-        "GET-MARKERS": getMarkers,
-        "POINTS-TO-MARKERS": pointsToMarkers
-      }
+      "CREATE-MAP": createMap,
+      "DELETE-MAP": deleteMap,
+      "HIDE-MAP": hideMap,
+      "IMPORT-MAP": importMap,
+      "EXPORT-MAP": exportMap,
+      "SET-ZOOM": setZoom,
+      "GET-ZOOM": getZoom,
+      "SET-CENTER-LATLNG": setCenterLatlng,
+      "GET-CENTER-LATLNG": getCenterLatlng,
+      "CREATE-MARKER": createMarker,
+      "CREATE-MARKERS": createMarkers,
+      "SET-LAT": setLat,
+      "SET-LNG": setLng,
+      "SET-LATLNG": setLatlng,
+      "SET-LABEL": setLabel,
+      "GET-LAT": getLat,
+      "GET-LNG": getLng,
+      "GET-LATLNG": getLatlng,
+      "GET-LABEL": getLabel,
+      "DELETE-MARKER": deleteMarker,
+      "DELETE-MARKERS": deleteMarkers,
+      "LATLNG-TO-PATCH": latlngToPatch,
+      "PATCH-TO-LATLNG": patchToLatlng,
+    }
     }
 }
