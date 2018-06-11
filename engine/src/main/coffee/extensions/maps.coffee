@@ -5,24 +5,28 @@ module.exports = {
   dumper: undefined
   init: (workspace) ->
     # () => ()
-    createMap = () ->
-        Maps.createMap()
-
-    # () => ()
-    deleteMap = () ->
-        Maps.deleteMap()
-
-    # () => ()
     hideMap = () ->
         Maps.hideMap()
 
+    # (list) => ()
+    showMap = (settings) ->
+        Maps.showMap(settings)
+
     # (string) => ()
-    importMap = (data) ->
-        Maps.importMap(data)
+    setData = (data) ->
+        Maps.setData(data)
+
+    # (string) => ()
+    importFile = (filename) ->
+        Maps.importFile(filename)
 
     # () => (string)
-    exportMap = () ->
-        return Maps.exportMap()
+    getData = () ->
+        return Maps.getData()
+
+    # () => ()
+    exportFile = () ->
+        Maps.exportFile()
 
     # (number) => ()
     setZoom = (zoom) ->
@@ -48,6 +52,18 @@ module.exports = {
     createMarkers = (data) ->
         Maps.createMarkers(data)
 
+    # () => (list)
+    getMarkers = () ->
+        return Maps.getMarkers()
+
+    # (string) => ()
+    hideMarker = (name) ->
+        Maps.hideMarker(name)
+
+    # (string) => ()
+    showMarker = (name) ->
+        Maps.showMarker(name)
+
     # (string, number) => ()
     setLat = (name, lat) ->
         Maps.setLat(name, lat)
@@ -59,10 +75,6 @@ module.exports = {
     # (string, list) => ()
     setLatlng = (name, latlng) ->
         Maps.setLatlng(name, latlng)
-
-    # (string, string) => ()
-    setLabel = (name, label) ->
-        Maps.setLabel(name, label)
 
     # (string) => (number)
     getLat = (name) ->
@@ -76,9 +88,9 @@ module.exports = {
     getLatlng = (name) ->
         return Maps.getLatlng(name)
 
-    # (string) => (string)
-    getLabel = (name) ->
-        return Maps.getLabel(name)
+    # (boolean) => ()
+    setDraggable = (draggable) ->
+        Maps.setDraggable(draggable)
 
     # (string) => ()
     deleteMarker = (name) ->
@@ -88,40 +100,83 @@ module.exports = {
     deleteMarkers = () ->
         Maps.deleteMarkers()
 
-    # (list) => ()
+    # (list) => (list)
     latlngToPatch = (coords) ->
-        Maps.latlngToPatch(coords)
+        return Maps.latlngToPatch(coords)
 
-    # (list) => ()
+    # (list) => (list)
     patchToLatlng = (coords) ->
-        Maps.patchToLatlng(coords)
+        return Maps.patchToLatlng(coords)
+
+    # (string) => (boolean)
+    exists = (name) ->
+        return Maps.exists(name)
+
+    # (string,list) => ()
+    createPath = (name,vertices) ->
+        Maps.createPath(name,vertices)
+
+    # (string) => (list)
+    getPath = (name) ->
+        return Maps.getPath(name)
+
+    # (string) => ()
+    hidePath = (name) ->
+        Maps.hidePath(name)
+
+    # (string) => ()
+    showPath = (name) ->
+        Maps.showPath(name)
+
+    # (string) => ()
+    deletePath = (name) ->
+        Maps.deletePath(name)
+
+    # (string) => ()
+    importWorld = (filename) ->
+        Maps.importWorld(filename)
+
+    # () => ()
+    exportWorld = () ->
+        Maps.exportWorld()
 
     {
       name: "maps"
     , prims: {
-      "CREATE-MAP": createMap,
-      "DELETE-MAP": deleteMap,
       "HIDE-MAP": hideMap,
-      "IMPORT-MAP": importMap,
-      "EXPORT-MAP": exportMap,
+      "SHOW-MAP": showMap,
+      "SET-DATA": setData,
+      "IMPORT-FILE": importFile,
+      "GET-DATA": getData,
+      "EXPORT-FILE": exportFile,
       "SET-ZOOM": setZoom,
       "GET-ZOOM": getZoom,
       "SET-CENTER-LATLNG": setCenterLatlng,
       "GET-CENTER-LATLNG": getCenterLatlng,
       "CREATE-MARKER": createMarker,
       "CREATE-MARKERS": createMarkers,
+      "GET-MARKERS": getMarkers,
+      "HIDE-MARKER": hideMarker,
+      "SHOW-MARKER": showMarker,
       "SET-LAT": setLat,
       "SET-LNG": setLng,
       "SET-LATLNG": setLatlng,
-      "SET-LABEL": setLabel,
       "GET-LAT": getLat,
       "GET-LNG": getLng,
       "GET-LATLNG": getLatlng,
-      "GET-LABEL": getLabel,
+      "SET-DRAGGABLE": setDraggable,
       "DELETE-MARKER": deleteMarker,
       "DELETE-MARKERS": deleteMarkers,
       "LATLNG-TO-PATCH": latlngToPatch,
       "PATCH-TO-LATLNG": patchToLatlng,
+      "EXISTS": exists,
+      "CREATE-PATH": createPath,
+      "GET-PATH": getPath,
+      "HIDE-PATH": hidePath,
+      "SHOW-PATH": showPath,
+      "DELETE-PATH": deletePath,
+      "IMPORT-WORLD": importWorld,
+      "EXPORT-WORLD": exportWorld
     }
     }
 }

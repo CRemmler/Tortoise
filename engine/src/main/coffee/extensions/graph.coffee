@@ -5,28 +5,40 @@ module.exports = {
   dumper: undefined
   init: (workspace) ->
     # () => ()
-    createGraph = () ->
-        Graph.createGraph()
-
-    # () => ()
-    deleteGraph = () ->
-        Graph.deleteGraph()
-
-    # () => ()
     hideGraph = () ->
         Graph.hideGraph()
 
+    # (list) => ()
+    showGraph = (settings) ->
+        Graph.showGraph(settings)
+
     # (string) => ()
-    importGraph = (data) ->
-        Graph.importGraph(data)
+    setData = (data) ->
+        Graph.setData(data)
+
+    # (string) => ()
+    importGgb = (filename) ->
+        Graph.importGgb(filename)
 
     # () => (string)
-    exportGraph = () ->
-        return Graph.exportGraph()
+    getData = () ->
+        return Graph.getData()
+
+    # () => ()
+    exportFile = () ->
+        Graph.exportFile()
 
     # (string, list) => ()
     createPoint = (name, center) ->
         Graph.createPoint(name, center)
+
+    # (number) => ()
+    setOpacity = (opacity) ->
+        Graph.setOpacity(opacity)
+
+    # () => (number)
+    getOpacity = () ->
+        return Graph.getOpacity()
 
     # (list) => ()
     createPoints = (data) ->
@@ -40,18 +52,6 @@ module.exports = {
     deletePoints = () ->
         Graph.deletePoints()
 
-    # () => (string)
-    getConstructions = () ->
-        return Graph.getConstructions()
-
-    # (string) => ()
-    setConstructions = (data) ->
-        Graph.setConstructions(data)
-
-    # (string) => ()
-    appendConstructions = (data) ->
-        Graph.appendConstructions(data)
-
     # (string, number) => ()
     setX = (name, xcor) ->
         Graph.setX(name, xcor)
@@ -64,13 +64,9 @@ module.exports = {
     setXy = (name, center) ->
         Graph.setXy(name, center)
 
-    # (string, string) => ()
-    setLabel = (name, label) ->
-        Graph.setLabel(name, label)
-
-    # (string) => ()
-    setElements = (xml) ->
-        Graph.setElements(xml)
+    # (boolean) => ()
+    setDraggable = (draggable) ->
+        Graph.setDraggable(draggable)
 
     # (string) => (number)
     getX = (name) ->
@@ -84,64 +80,133 @@ module.exports = {
     getXy = (name) ->
         return Graph.getXy(name)
 
+    # () => (list)
+    getObjects = () ->
+        return Graph.getObjects()
+
+    # () => ()
+    deleteObjects = () ->
+        Graph.deleteObjects()
+
+    # (list) => ()
+    createObjects = (objects) ->
+        Graph.createObjects(objects)
+
+    # (string) => (list)
+    getObject = (name) ->
+        return Graph.getObject(name)
+
+    # (list) => ()
+    createObject = (object) ->
+        Graph.createObject(object)
+
+    # (string) => (number)
+    getValue = (name) ->
+        return Graph.getValue(name)
+
     # (string) => (string)
-    getLabel = (name) ->
-        return Graph.getLabel(name)
+    getObjectType = (name) ->
+        return Graph.getObjectType(name)
+
+    # (string) => (boolean)
+    exists = (name) ->
+        return Graph.exists(name)
+
+    # (string, string) => ()
+    renameObject = (old, next) ->
+        Graph.renameObject(old, next)
 
     # (string) => ()
-    deletePoint = (name) ->
-        Graph.deletePoint(name)
+    deleteObject = (name) ->
+        Graph.deleteObject(name)
 
-    # (list) => ()
+    # (string) => ()
+    hideObject = (name) ->
+        Graph.hideObject(name)
+
+    # (string) => ()
+    showObject = (name) ->
+        Graph.showObject(name)
+
+    # (list) => (list)
     graphToPatch = (coords) ->
-        Graph.graphToPatch(coords)
+        return Graph.graphToPatch(coords)
 
-    # (list) => ()
+    # (list) => (list)
     patchToGraph = (coords) ->
-        Graph.patchToGraph(coords)
+        return Graph.patchToGraph(coords)
 
     # (string) => ()
     evalCommand = (command) ->
         Graph.evalCommand(command)
 
-    # (string) => (string)
-    evalCommandCas = (command) ->
-        return Graph.evalCommandCas(command)
+    # (string) => (wildcard)
+    evalReporter = (command) ->
+        return Graph.evalReporter(command)
 
-    # (string) => (string)
-    evalCommandGetLabels = (command) ->
-        return Graph.evalCommandGetLabels(command)
+    # () => (string)
+    getPointsString = () ->
+        return Graph.getPointsString()
+
+    # (number,number,number,number,) => ()
+    setCoordSystem = (xmin,xmax,ymin,ymax) ->
+        Graph.setCoordSystem(xmin,xmax,ymin,ymax)
+
+    # (string,boolean) => ()
+    setFixed = (name,fixed) ->
+        Graph.setFixed(name,fixed)
+
+    # (string) => ()
+    importWorld = (filename) ->
+        Graph.importWorld(filename)
+
+    # () => ()
+    exportWorld = () ->
+        Graph.exportWorld()
 
     {
       name: "graph"
     , prims: {
-      "CREATE-GRAPH": createGraph,
-      "DELETE-GRAPH": deleteGraph,
       "HIDE-GRAPH": hideGraph,
-      "IMPORT-GRAPH": importGraph,
-      "EXPORT-GRAPH": exportGraph,
+      "SHOW-GRAPH": showGraph,
+      "SET-DATA": setData,
+      "IMPORT-GGB": importGgb,
+      "GET-DATA": getData,
+      "EXPORT-FILE": exportFile,
       "CREATE-POINT": createPoint,
+      "SET-OPACITY": setOpacity,
+      "GET-OPACITY": getOpacity,
       "CREATE-POINTS": createPoints,
       "GET-POINTS": getPoints,
       "DELETE-POINTS": deletePoints,
-      "GET-CONSTRUCTIONS": getConstructions,
-      "SET-CONSTRUCTIONS": setConstructions,
-      "APPEND-CONSTRUCTIONS": appendConstructions,
       "SET-X": setX,
       "SET-Y": setY,
       "SET-XY": setXy,
-      "SET-LABEL": setLabel,
-      "SET-ELEMENTS": setElements,
+      "SET-DRAGGABLE": setDraggable,
       "GET-X": getX,
       "GET-Y": getY,
       "GET-XY": getXy,
-      "GET-LABEL": getLabel,
-      "DELETE-POINT": deletePoint,
+      "GET-OBJECTS": getObjects,
+      "DELETE-OBJECTS": deleteObjects,
+      "CREATE-OBJECTS": createObjects,
+      "GET-OBJECT": getObject,
+      "CREATE-OBJECT": createObject,
+      "GET-VALUE": getValue,
+      "GET-OBJECT-TYPE": getObjectType,
+      "EXISTS": exists,
+      "RENAME-OBJECT": renameObject,
+      "DELETE-OBJECT": deleteObject,
+      "HIDE-OBJECT": hideObject,
+      "SHOW-OBJECT": showObject,
       "GRAPH-TO-PATCH": graphToPatch,
       "PATCH-TO-GRAPH": patchToGraph,
       "EVAL-COMMAND": evalCommand,
-      "EVAL-COMMAND-CAS": evalCommandCas,
-      "EVAL-COMMAND-GET-LABELS": evalCommandGetLabels,
+      "EVAL-REPORTER": evalReporter,
+      "GET-POINTS-STRING": getPointsString,
+      "SET-COORD-SYSTEM": setCoordSystem,
+      "SET-FIXED": setFixed,
+      "IMPORT-WORLD": importWorld,
+      "EXPORT-WORLD": exportWorld
     }
     }
 }

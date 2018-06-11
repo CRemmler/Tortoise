@@ -5,24 +5,12 @@ module.exports = {
   dumper: undefined
   init: (workspace) ->
     # () => ()
-    createWorld = () ->
-        Physics.createWorld()
-
-    # () => ()
     hideWorld = () ->
         Physics.hideWorld()
 
-    # () => ()
-    deleteWorld = () ->
-        Physics.deleteWorld()
-
-    # (string) => ()
-    importWorld = (data) ->
-        Physics.importWorld(data)
-
-    # () => (string)
-    exportWorld = () ->
-        return Physics.exportWorld()
+    # (list) => ()
+    showWorld = (settings) ->
+        Physics.showWorld(settings)
 
     # (list) => ()
     setGravityXy = (data) ->
@@ -61,76 +49,100 @@ module.exports = {
         Physics.setPositionIterations(iterations)
 
     # () => (number)
-    getVelocityIterations = () ->
-        return Physics.getVelocityIterations()
+    getPositionIterations = () ->
+        return Physics.getPositionIterations()
 
     # (string) => ()
     createBody = (name) ->
         Physics.createBody(name)
 
     # (string, string) => ()
+    setBehavior = (name, behavior) ->
+        Physics.setBehavior(name, behavior)
+
+    # (string, list) => ()
+    setBodyXy = (name, coords) ->
+        Physics.setBodyXy(name, coords)
+
+    # (string, number) => ()
+    setAngle = (name, angle) ->
+        Physics.setAngle(name, angle)
+
+    # (string, list) => ()
+    setLinearVelocity = (name, coords) ->
+        Physics.setLinearVelocity(name, coords)
+
+    # (string, number) => ()
+    setAngularVelocity = (name, velocity) ->
+        Physics.setAngularVelocity(name, velocity)
+
+    # (string) => (string)
+    getBehavior = (name) ->
+        return Physics.getBehavior(name)
+
+    # (string) => (list)
+    getBodyXy = (name) ->
+        return Physics.getBodyXy(name)
+
+    # (string) => (number)
+    getAngle = (name) ->
+        return Physics.getAngle(name)
+
+    # (string) => (list)
+    getLinearVelocity = (name) ->
+        return Physics.getLinearVelocity(name)
+
+    # (string) => (number)
+    getAngularVelocity = (name) ->
+        return Physics.getAngularVelocity(name)
+
+    # (string, number) => ()
+    setFriction = (name, friction) ->
+        Physics.setFriction(name, friction)
+
+    # (string, number) => ()
+    setDensity = (name, density) ->
+        Physics.setDensity(name, density)
+
+    # (string, number) => ()
+    setRestitution = (name, restitution) ->
+        Physics.setRestitution(name, restitution)
+
+    # (string) => (number)
+    getFriction = (name) ->
+        return Physics.getFriction(name)
+
+    # (string) => (number)
+    getDensity = (name) ->
+        return Physics.getDensity(name)
+
+    # (string) => (number)
+    getRestitution = (name) ->
+        return Physics.getRestitution(name)
+
+    # (string, string) => ()
     createLine = (name, body) ->
         Physics.createLine(name, body)
+
+    # (string, list) => ()
+    setLineRelativeEndpoints = (name, endpoints) ->
+        Physics.setLineRelativeEndpoints(name, endpoints)
+
+    # (string, list) => ()
+    setLineEndpoints = (name, endpoints) ->
+        Physics.setLineEndpoints(name, endpoints)
+
+    # (string) => (list)
+    getLineRelativeEndpoints = (name) ->
+        return Physics.getLineRelativeEndpoints(name)
+
+    # (string) => (list)
+    getLineEndpoints = (name) ->
+        return Physics.getLineEndpoints(name)
 
     # (string, string) => ()
     createCircle = (name, body) ->
         Physics.createCircle(name, body)
-
-    # (string, string) => ()
-    createPolygon = (name, body) ->
-        Physics.createPolygon(name, body)
-
-    # (string, string) => ()
-    createTarget = (name, body) ->
-        Physics.createTarget(name, body)
-
-    # (string, string) => ()
-    setBodyBehavior = (name, behavior) ->
-        Physics.setBodyBehavior(name, behavior)
-
-    # (string, list) => ()
-    setBodyCoords = (name, coords) ->
-        Physics.setBodyCoords(name, coords)
-
-    # (string, number) => ()
-    setBodyAngle = (name, angle) ->
-        Physics.setBodyAngle(name, angle)
-
-    # (string, list) => ()
-    setBodyLinearVelocity = (name, coords) ->
-        Physics.setBodyLinearVelocity(name, coords)
-
-    # (string, number) => ()
-    setBodyAngularVelocity = (name, velocity) ->
-        Physics.setBodyAngularVelocity(name, velocity)
-
-    # (string, string) => ()
-    setLineBodyId = (name, body) ->
-        Physics.setLineBodyId(name, body)
-
-    # (string, list, list) => ()
-    setLineRelativeEndpoints = (name, point1, point2) ->
-        Physics.setLineRelativeEndpoints(name, point1, point2)
-
-    # (string, list, list) => ()
-    setLineEndpoints = (name, point1, point2) ->
-        Physics.setLineEndpoints(name, point1, point2)
-
-    # (string, number) => ()
-    setLineFriction = (name, friction) ->
-        Physics.setLineFriction(name, friction)
-
-    # (string, number) => ()
-    setLineDensity = (name, density) ->
-        Physics.setLineDensity(name, density)
-
-    # (string, number) => ()
-    setLineRestitution = (name, restitution) ->
-        Physics.setLineRestitution(name, restitution)
-
-    # (string, string) => ()
-    setCircleBodyId = (name, body) ->
-        Physics.setCircleBodyId(name, body)
 
     # (string, number) => ()
     setCircleRadius = (name, radius) ->
@@ -144,102 +156,6 @@ module.exports = {
     setCircleCenter = (name, center) ->
         Physics.setCircleCenter(name, center)
 
-    # (string, number) => ()
-    setCircleFriction = (name, friction) ->
-        Physics.setCircleFriction(name, friction)
-
-    # (string, number) => ()
-    setCircleDensity = (name, density) ->
-        Physics.setCircleDensity(name, density)
-
-    # (string, number) => ()
-    setCircleRestitution = (name, restitution) ->
-        Physics.setCircleRestitution(name, restitution)
-
-    # (string, string) => ()
-    setPolygonBodyId = (name, body) ->
-        Physics.setPolygonBodyId(name, body)
-
-    # (string, list) => ()
-    setPolygonRelativeVertices = (name, vertices) ->
-        Physics.setPolygonRelativeVertices(name, vertices)
-
-    # (string, list) => ()
-    setPolygonVertices = (name, vertices) ->
-        Physics.setPolygonVertices(name, vertices)
-
-    # (string, number) => ()
-    setPolygonFriction = (name, friction) ->
-        Physics.setPolygonFriction(name, friction)
-
-    # (string, number) => ()
-    setPolygonDensity = (name, density) ->
-        Physics.setPolygonDensity(name, density)
-
-    # (string, number) => ()
-    setPolygonRestitution = (name, restitution) ->
-        Physics.setPolygonRestitution(name, restitution)
-
-    # (string, string) => ()
-    setTargetBodyId = (name, body) ->
-        Physics.setTargetBodyId(name, body)
-
-    # (string, list) => ()
-    setTargetRelativeCenter = (name, center) ->
-        Physics.setTargetRelativeCenter(name, center)
-
-    # (string, list) => ()
-    setTargetCenter = (name, center) ->
-        Physics.setTargetCenter(name, center)
-
-    # (string) => (string)
-    getBodyBehavior = (name) ->
-        return Physics.getBodyBehavior(name)
-
-    # (string) => (list)
-    getBodyCoords = (name) ->
-        return Physics.getBodyCoords(name)
-
-    # (string) => (number)
-    getBodyAngle = (name) ->
-        return Physics.getBodyAngle(name)
-
-    # (string) => (list)
-    getBodyLinearVelocity = (name) ->
-        return Physics.getBodyLinearVelocity(name)
-
-    # (string) => (number)
-    getBodyAngularVelocity = (name) ->
-        return Physics.getBodyAngularVelocity(name)
-
-    # (string) => (string)
-    getLineBodyId = (name) ->
-        return Physics.getLineBodyId(name)
-
-    # (string) => (list)
-    getLineRelativeEndpoints = (name) ->
-        return Physics.getLineRelativeEndpoints(name)
-
-    # (string) => (list)
-    getLineEndpoints = (name) ->
-        return Physics.getLineEndpoints(name)
-
-    # (string) => (number)
-    getLineFriction = (name) ->
-        return Physics.getLineFriction(name)
-
-    # (string) => (number)
-    getLineDensity = (name) ->
-        return Physics.getLineDensity(name)
-
-    # (string) => (number)
-    getLineRestitution = (name) ->
-        return Physics.getLineRestitution(name)
-
-    # (string) => (string)
-    getCircleBodyId = (name) ->
-        return Physics.getCircleBodyId(name)
-
     # (string) => (number)
     getCircleRadius = (name) ->
         return Physics.getCircleRadius(name)
@@ -252,21 +168,17 @@ module.exports = {
     getCircleCenter = (name) ->
         return Physics.getCircleCenter(name)
 
-    # (string) => (number)
-    getCircleFriction = (name) ->
-        return Physics.getCircleFriction(name)
+    # (string, string) => ()
+    createPolygon = (name, body) ->
+        Physics.createPolygon(name, body)
 
-    # (string) => (number)
-    getCircleDensity = (name) ->
-        return Physics.getCircleDensity(name)
+    # (string, list) => ()
+    setPolygonRelativeVertices = (name, vertices) ->
+        Physics.setPolygonRelativeVertices(name, vertices)
 
-    # (string) => (number)
-    getCircleRestitution = (name) ->
-        return Physics.getCircleRestitution(name)
-
-    # (string) => (string)
-    getPolygonId = (name) ->
-        return Physics.getPolygonId(name)
+    # (string, list) => ()
+    setPolygonVertices = (name, vertices) ->
+        Physics.setPolygonVertices(name, vertices)
 
     # (string) => (list)
     getPolygonRelativeVertices = (name) ->
@@ -276,49 +188,65 @@ module.exports = {
     getPolygonVertices = (name) ->
         return Physics.getPolygonVertices(name)
 
-    # (string) => (number)
-    getPolygonFriction = (name) ->
-        return Physics.getPolygonFriction(name)
+    # (string, string) => ()
+    createTarget = (name, body) ->
+        Physics.createTarget(name, body)
 
-    # (string) => (number)
-    getPolygonDensity = (name) ->
-        return Physics.getPolygonDensity(name)
+    # (string, list) => ()
+    setTargetRelativeXy = (name, center) ->
+        Physics.setTargetRelativeXy(name, center)
 
-    # (string) => (number)
-    getPolygonRestitution = (name) ->
-        return Physics.getPolygonRestitution(name)
+    # (string, list) => ()
+    setTargetXy = (name, center) ->
+        Physics.setTargetXy(name, center)
+
+    # (string) => (list)
+    getTargetRelativeXy = (name) ->
+        return Physics.getTargetRelativeXy(name)
+
+    # (string) => (list)
+    getTargetXy = (name) ->
+        return Physics.getTargetXy(name)
+
+    # (string, string) => ()
+    setBodyId = (name, body) ->
+        Physics.setBodyId(name, body)
 
     # (string) => (string)
-    getTargetBodyId = (name) ->
-        return Physics.getTargetBodyId(name)
+    getBodyId = (name) ->
+        return Physics.getBodyId(name)
+
+    # (list) => ()
+    createObjects = (data) ->
+        Physics.createObjects(data)
+
+    # (string) => ()
+    createObject = (data) ->
+        Physics.createObject(data)
+
+    # () => (list)
+    getObjects = () ->
+        return Physics.getObjects()
 
     # (string) => (list)
-    getTargetRelativeCenter = (name) ->
-        return Physics.getTargetRelativeCenter(name)
+    getObject = (name) ->
+        return Physics.getObject(name)
 
-    # (string) => (list)
-    getTargetCenter = (name) ->
-        return Physics.getTargetCenter(name)
-
-    # (string) => ()
-    deleteBody = (name) ->
-        Physics.deleteBody(name)
+    # (string) => (string)
+    getObjectType = (name) ->
+        return Physics.getObjectType(name)
 
     # (string) => ()
-    deleteLine = (name) ->
-        Physics.deleteLine(name)
+    deleteObject = (name) ->
+        Physics.deleteObject(name)
 
-    # (string) => ()
-    deleteCircle = (name) ->
-        Physics.deleteCircle(name)
+    # () => ()
+    deleteTargets = () ->
+        Physics.deleteTargets()
 
-    # (string) => ()
-    deletePolygon = (name) ->
-        Physics.deletePolygon(name)
-
-    # (string) => ()
-    deleteTarget = (name) ->
-        Physics.deleteTarget(name)
+    # () => ()
+    deleteObjects = () ->
+        Physics.deleteObjects()
 
     # (string, number, number) => ()
     applyForce = (name, force, angle) ->
@@ -332,7 +260,7 @@ module.exports = {
     applyLinearImpulse = (name, force, angle) ->
         Physics.applyLinearImpulse(name, force, angle)
 
-    # (string, number, nummber) => ()
+    # (string, number, number) => ()
     applyLinearImpulseRelativeAngle = (name, force, angle) ->
         Physics.applyLinearImpulseRelativeAngle(name, force, angle)
 
@@ -352,14 +280,87 @@ module.exports = {
     disconnectWho = (who) ->
         Physics.disconnectWho(who)
 
+    # () => ()
+    worldOn = () ->
+        Physics.worldOn()
+
+    # () => ()
+    worldOff = () ->
+        Physics.worldOff()
+
+    # (string) => (boolean)
+    exists = (name) ->
+        return Physics.exists(name)
+
+    # () => (list)
+    getConnected = () ->
+        return Physics.getConnected()
+
+    # () => ()
+    resetTicks = () ->
+        Physics.resetTicks()
+
+    # () => (list)
+    tick = () ->
+        return Physics.tick()
+
+    # () => ()
+    repaint = () ->
+        Physics.repaint()
+
+    # (string, string) => ()
+    createRectangle = (name, body) ->
+        Physics.createRectangle(name, body)
+
+    # (string, list) => ()
+    setRectangleRelativeCorners = (name, vertices) ->
+        Physics.setRectangleRelativeCorners(name, vertices)
+
+    # (string, list) => ()
+    setRectangleCorners = (name, vertices) ->
+        Physics.setRectangleCorners(name, vertices)
+
+    # (string) => (list)
+    getRectangleRelativeCorners = (name) ->
+        return Physics.getRectangleRelativeCorners(name)
+
+    # (string) => (list)
+    getRectangleCorners = (name) ->
+        return Physics.getRectangleCorners(name)
+
+    # (string) => ()
+    showObject = (name) ->
+        Physics.showObject(name)
+
+    # (string) => ()
+    hideObject = (name) ->
+        Physics.hideObject(name)
+
+    # () => ()
+    showObjects = () ->
+        Physics.showObjects()
+
+    # () => ()
+    hideObjects = () ->
+        Physics.hideObjects()
+
+    # (string) => ()
+    importWorld = (filename) ->
+        Physics.importWorld(filename)
+
+    # () => ()
+    exportWorld = () ->
+        Physics.exportWorld()
+
+    # (list) => ()
+    setRectanglePatch = (coords) ->
+        Physics.setRectanglePatch(coords)
+
     {
       name: "physics"
     , prims: {
-      "CREATE-WORLD": createWorld,
       "HIDE-WORLD": hideWorld,
-      "DELETE-WORLD": deleteWorld,
-      "IMPORT-WORLD": importWorld,
-      "EXPORT-WORLD": exportWorld,
+      "SHOW-WORLD": showWorld,
       "SET-GRAVITY-XY": setGravityXy,
       "GET-GRAVITY-XY": getGravityXy,
       "SET-WRAP-XY": setWrapXy,
@@ -369,71 +370,56 @@ module.exports = {
       "SET-VELOCITY-ITERATIONS": setVelocityIterations,
       "GET-VELOCITY-ITERATIONS": getVelocityIterations,
       "SET-POSITION-ITERATIONS": setPositionIterations,
-      "GET-VELOCITY-ITERATIONS": getVelocityIterations,
+      "GET-POSITION-ITERATIONS": getPositionIterations,
       "CREATE-BODY": createBody,
+      "SET-BEHAVIOR": setBehavior,
+      "SET-BODY-XY": setBodyXy,
+      "SET-ANGLE": setAngle,
+      "SET-LINEAR-VELOCITY": setLinearVelocity,
+      "SET-ANGULAR-VELOCITY": setAngularVelocity,
+      "GET-BEHAVIOR": getBehavior,
+      "GET-BODY-XY": getBodyXy,
+      "GET-ANGLE": getAngle,
+      "GET-LINEAR-VELOCITY": getLinearVelocity,
+      "GET-ANGULAR-VELOCITY": getAngularVelocity,
+      "SET-FRICTION": setFriction,
+      "SET-DENSITY": setDensity,
+      "SET-RESTITUTION": setRestitution,
+      "GET-FRICTION": getFriction,
+      "GET-DENSITY": getDensity,
+      "GET-RESTITUTION": getRestitution,
       "CREATE-LINE": createLine,
-      "CREATE-CIRCLE": createCircle,
-      "CREATE-POLYGON": createPolygon,
-      "CREATE-TARGET": createTarget,
-      "SET-BODY-BEHAVIOR": setBodyBehavior,
-      "SET-BODY-COORDS": setBodyCoords,
-      "SET-BODY-ANGLE": setBodyAngle,
-      "SET-BODY-LINEAR-VELOCITY": setBodyLinearVelocity,
-      "SET-BODY-ANGULAR-VELOCITY": setBodyAngularVelocity,
-      "SET-LINE-BODY-ID": setLineBodyId,
       "SET-LINE-RELATIVE-ENDPOINTS": setLineRelativeEndpoints,
       "SET-LINE-ENDPOINTS": setLineEndpoints,
-      "SET-LINE-FRICTION": setLineFriction,
-      "SET-LINE-DENSITY": setLineDensity,
-      "SET-LINE-RESTITUTION": setLineRestitution,
-      "SET-CIRCLE-BODY-ID": setCircleBodyId,
+      "GET-LINE-RELATIVE-ENDPOINTS": getLineRelativeEndpoints,
+      "GET-LINE-ENDPOINTS": getLineEndpoints,
+      "CREATE-CIRCLE": createCircle,
       "SET-CIRCLE-RADIUS": setCircleRadius,
       "SET-CIRCLE-RELATIVE-CENTER": setCircleRelativeCenter,
       "SET-CIRCLE-CENTER": setCircleCenter,
-      "SET-CIRCLE-FRICTION": setCircleFriction,
-      "SET-CIRCLE-DENSITY": setCircleDensity,
-      "SET-CIRCLE-RESTITUTION": setCircleRestitution,
-      "SET-POLYGON-BODY-ID": setPolygonBodyId,
-      "SET-POLYGON-RELATIVE-VERTICES": setPolygonRelativeVertices,
-      "SET-POLYGON-VERTICES": setPolygonVertices,
-      "SET-POLYGON-FRICTION": setPolygonFriction,
-      "SET-POLYGON-DENSITY": setPolygonDensity,
-      "SET-POLYGON-RESTITUTION": setPolygonRestitution,
-      "SET-TARGET-BODY-ID": setTargetBodyId,
-      "SET-TARGET-RELATIVE-CENTER": setTargetRelativeCenter,
-      "SET-TARGET-CENTER": setTargetCenter,
-      "GET-BODY-BEHAVIOR": getBodyBehavior,
-      "GET-BODY-COORDS": getBodyCoords,
-      "GET-BODY-ANGLE": getBodyAngle,
-      "GET-BODY-LINEAR-VELOCITY": getBodyLinearVelocity,
-      "GET-BODY-ANGULAR-VELOCITY": getBodyAngularVelocity,
-      "GET-LINE-BODY-ID": getLineBodyId,
-      "GET-LINE-RELATIVE-ENDPOINTS": getLineRelativeEndpoints,
-      "GET-LINE-ENDPOINTS": getLineEndpoints,
-      "GET-LINE-FRICTION": getLineFriction,
-      "GET-LINE-DENSITY": getLineDensity,
-      "GET-LINE-RESTITUTION": getLineRestitution,
-      "GET-CIRCLE-BODY-ID": getCircleBodyId,
       "GET-CIRCLE-RADIUS": getCircleRadius,
       "GET-CIRCLE-RELATIVE-CENTER": getCircleRelativeCenter,
       "GET-CIRCLE-CENTER": getCircleCenter,
-      "GET-CIRCLE-FRICTION": getCircleFriction,
-      "GET-CIRCLE-DENSITY": getCircleDensity,
-      "GET-CIRCLE-RESTITUTION": getCircleRestitution,
-      "GET-POLYGON-ID": getPolygonId,
+      "CREATE-POLYGON": createPolygon,
+      "SET-POLYGON-RELATIVE-VERTICES": setPolygonRelativeVertices,
+      "SET-POLYGON-VERTICES": setPolygonVertices,
       "GET-POLYGON-RELATIVE-VERTICES": getPolygonRelativeVertices,
       "GET-POLYGON-VERTICES": getPolygonVertices,
-      "GET-POLYGON-FRICTION": getPolygonFriction,
-      "GET-POLYGON-DENSITY": getPolygonDensity,
-      "GET-POLYGON-RESTITUTION": getPolygonRestitution,
-      "GET-TARGET-BODY-ID": getTargetBodyId,
-      "GET-TARGET-RELATIVE-CENTER": getTargetRelativeCenter,
-      "GET-TARGET-CENTER": getTargetCenter,
-      "DELETE-BODY": deleteBody,
-      "DELETE-LINE": deleteLine,
-      "DELETE-CIRCLE": deleteCircle,
-      "DELETE-POLYGON": deletePolygon,
-      "DELETE-TARGET": deleteTarget,
+      "CREATE-TARGET": createTarget,
+      "SET-TARGET-RELATIVE-XY": setTargetRelativeXy,
+      "SET-TARGET-XY": setTargetXy,
+      "GET-TARGET-RELATIVE-XY": getTargetRelativeXy,
+      "GET-TARGET-XY": getTargetXy,
+      "SET-BODY-ID": setBodyId,
+      "GET-BODY-ID": getBodyId,
+      "CREATE-OBJECTS": createObjects,
+      "CREATE-OBJECT": createObject,
+      "GET-OBJECTS": getObjects,
+      "GET-OBJECT": getObject,
+      "GET-OBJECT-TYPE": getObjectType,
+      "DELETE-OBJECT": deleteObject,
+      "DELETE-TARGETS": deleteTargets,
+      "DELETE-OBJECTS": deleteObjects,
       "APPLY-FORCE": applyForce,
       "APPLY-FORCE-RELATIVE-ANGLE": applyForceRelativeAngle,
       "APPLY-LINEAR-IMPULSE": applyLinearImpulse,
@@ -442,6 +428,25 @@ module.exports = {
       "APPLY-ANGULAR-IMPULSE": applyAngularImpulse,
       "CONNECT-WHO-TO-OBJECT": connectWhoToObject,
       "DISCONNECT-WHO": disconnectWho,
+      "WORLD-ON": worldOn,
+      "WORLD-OFF": worldOff,
+      "EXISTS": exists,
+      "GET-CONNECTED": getConnected,
+      "RESET-TICKS": resetTicks,
+      "TICK": tick,
+      "REPAINT": repaint,
+      "CREATE-RECTANGLE": createRectangle,
+      "SET-RECTANGLE-RELATIVE-CORNERS": setRectangleRelativeCorners,
+      "SET-RECTANGLE-CORNERS": setRectangleCorners,
+      "GET-RECTANGLE-RELATIVE-CORNERS": getRectangleRelativeCorners,
+      "GET-RECTANGLE-CORNERS": getRectangleCorners,
+      "SHOW-OBJECT": showObject,
+      "HIDE-OBJECT": hideObject,
+      "SHOW-OBJECTS": showObjects,
+      "HIDE-OBJECTS": hideObjects,
+      "IMPORT-WORLD": importWorld,
+      "EXPORT-WORLD": exportWorld,
+      "SET-RECTANGLE-PATCH": setRectanglePatch
     }
     }
 }

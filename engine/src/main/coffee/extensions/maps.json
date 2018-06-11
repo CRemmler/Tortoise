@@ -2,26 +2,30 @@
   "name": "maps",
   "prims": [
     {
-      "name": "create-map",
-      "actionName": "create-map",
-      "argTypes": []
-    }, {
-      "name": "delete-map",
-      "actionName": "delete-map",
-      "argTypes": []
-    }, {
       "name": "hide-map",
       "actionName": "hide-map",
       "argTypes": []
     }, {
-      "name": "import-map",
-      "actionName": "import-map",
+      "name": "show-map",
+      "actionName": "show-map",
+      "argTypes": ["list"]
+    }, {
+      "name": "set-data",
+      "actionName": "set-data",
       "argTypes": ["string"]
     }, {
-      "name": "export-map",
-      "actionName": "export-map",
+      "name": "import-file",
+      "actionName": "import-file",
+      "argTypes": ["string"]
+    }, {
+      "name": "get-data",
+      "actionName": "get-data",
       "argTypes": [],
       "returnType": "string"
+    }, {
+      "name": "export-file",
+      "actionName": "export-file",
+      "argTypes": []
     }, {
       "name": "set-zoom",
       "actionName": "set-zoom",
@@ -49,6 +53,19 @@
       "actionName": "create-markers",
       "argTypes": ["list"]
     }, {
+      "name": "get-markers",
+      "actionName": "get-markers",
+      "argTypes": [],
+      "returnType": "list"
+    }, {
+      "name": "hide-marker",
+      "actionName": "hide-marker",
+      "argTypes": ["string"]
+    }, {
+      "name": "show-marker",
+      "actionName": "show-marker",
+      "argTypes": ["string"]
+    }, {
       "name": "set-lat",
       "actionName": "set-lat",
       "argTypes": ["string", "number"]
@@ -60,10 +77,6 @@
       "name": "set-latlng",
       "actionName": "set-latlng",
       "argTypes": ["string", "list"]
-    }, {
-      "name": "set-label",
-      "actionName": "set-label",
-      "argTypes": ["string", "string"]
     }, {
       "name": "get-lat",
       "actionName": "get-lat",
@@ -80,10 +93,9 @@
       "argTypes": ["string"],
       "returnType": "list"
     }, {
-      "name": "get-label",
-      "actionName": "get-label",
-      "argTypes": ["string"],
-      "returnType": "string"
+      "name": "set-draggable",
+      "actionName": "set-draggable",
+      "argTypes": ["boolean"]
     }, {
       "name": "delete-marker",
       "actionName": "delete-marker",
@@ -95,12 +107,47 @@
     }, {
       "name": "latlng-to-patch",
       "actionName": "latlng-to-patch",
-      "argTypes": ["list"]
-    },
-    {
+      "argTypes": ["list"],
+      "returnType": "list"
+    }, {
       "name": "patch-to-latlng",
       "actionName": "patch-to-latlng",
-      "argTypes": [ "list" ]
+      "argTypes": ["list"],
+      "returnType": "list"
+    }, {
+      "name": "exists",
+      "actionName": "exists",
+      "argTypes": ["string"],
+      "returnType": "boolean"
+    }, {
+      "name": "create-path",
+      "actionName": "create-path",
+      "argTypes": ["string;list"]
+    }, {
+      "name": "get-path",
+      "actionName": "get-path",
+      "argTypes": ["string"],
+      "returnType": "list"
+    }, {
+      "name": "hide-path",
+      "actionName": "hide-path",
+      "argTypes": ["string"]
+    }, {
+      "name": "show-path",
+      "actionName": "show-path",
+      "argTypes": ["string"]
+    }, {
+      "name": "delete-path",
+      "actionName": "delete-path",
+      "argTypes": ["string"]
+    }, {
+      "name": "import-world",
+      "actionName": "import-world",
+      "argTypes": ["string"]
+    }, {
+      "name": "export-world",
+      "actionName": "export-world",
+      "argTypes": []
     }
   ]
 }

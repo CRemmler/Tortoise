@@ -28,9 +28,25 @@
       "actionName": "restore-globals-from-user",
       "argTypes": [ "string" ]
     }, {
-      "name": "broadcast-to-gallery",
-      "actionName": "broadcast-to-gallery",
+      "name": "broadcast-view",
+      "actionName": "broadcast-view",
       "argTypes": [ "string", "string" ]
+    }, {
+      "name": "broadcast-plot",
+      "actionName": "broadcast-plot",
+      "argTypes": [ "string" ]
+    }, {
+      "name": "broadcast-text",
+      "actionName": "broadcast-text",
+      "argTypes": [ "string" ]
+    }, {
+      "name": "broadcast-avatar",
+      "actionName": "broadcast-avatar",
+      "argTypes": [ "string", "number", "string" ]
+    }, {
+      "name": "clear-broadcast",
+      "actionName": "clear-broadcast",
+      "argTypes": [  ]
     }, {
       "name": "compile-observer-code",
       "actionName": "compile-observer-code",
@@ -55,6 +71,25 @@
       "name": "run-patch-code",
       "actionName": "run-patch-code",
       "argTypes": [ "number", "number", "string" ]
+    }, {
+      "name": "who-am-i",
+      "actionName": "who-am-i",
+      "argTypes": [],
+      "returnType": "string"
+    }, {
+      "name": "add-to-stream",
+      "actionName": "add-to-stream",
+      "argTypes": [ "string", "wildcard" ]
+    }, {
+      "name": "get-stream",
+      "actionName": "get-stream",
+      "argTypes": [ "string" ],
+      "returnType": "wildcard"
+    }, {
+      "name": "get-stream-from-user",
+      "actionName": "get-stream-from-user",
+      "argTypes": [ "string", "string" ],
+      "returnType": "wildcard"
     }
   ]
 }

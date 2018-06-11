@@ -17,14 +17,17 @@ module.exports = {
 
     # (String) => Any
     get = (messageTag) ->
+      if myData[messageTag]?
         return myData[messageTag]
+      else
+        return "undefined"
 
     # (String, String) => Any
     getFromUser = (messageSource, messageTag) ->
       if userData[messageSource] && userData[messageSource][messageTag]?
         return userData[messageSource][messageTag]
       else
-        return 0
+        return "undefined"
 
     # () => ()
     storeGlobals = () ->
@@ -53,9 +56,25 @@ module.exports = {
             hubnetMessageTag: globalVars[globalVar]
             hubnetMessage: world.observer.getGlobal(globalVars[globalVar]) })
 
-    # (String, String) => ()
-    broadcastToGallery = (key, value) ->
-        Gallery.broadcastToGallery(key, value)
+    # (String) => ()
+    broadcastView = (name) ->
+        Gallery.broadcastView(name)
+
+    # (String) => ()
+    broadcastPlot = (name) ->
+        Gallery.broadcastPlot(name)
+
+    # (String) => ()
+    broadcastText = (text) ->
+        Gallery.broadcastText(text)
+
+    # (List) => ()
+    broadcastAvatar = (shape, color, text) ->
+        Gallery.broadcastAvatar(shape, color, text)
+
+    # () => ()
+    clearBroadcast = () ->
+        Gallery.clearBroadcast()
 
     # (String, String) => ()
     compileObserverCode = (key, value) ->
@@ -81,6 +100,33 @@ module.exports = {
     runPatchCode = (pxcor, pycor, key) ->
         session.runPatchCode(pxcor, pycor, key)
 
+    # () => (String)
+    whoAmI = () ->
+        return Gallery.whoAmI()
+
+    # (String, Any) => ()
+    addToStream = (messageTag, message) ->
+      socket.emit('send stream reporter', {
+        hubnetMessageSource: "server",
+        hubnetMessageTag: messageTag,
+        hubnetMessage: message })
+      myStreamData[messageTag] = message
+      return
+
+    # (String) => Any
+    getStream = (messageTag) ->
+      if myStreamData[messageTag]?
+        return myStreamData[messageTag]
+      else
+        return "undefined"
+
+    # (String, String) => Any
+    getStreamFromUser = (messageSource, messageTag) ->
+      if userStreamData[messageSource] && userStreamData[messageSource][messageTag]?
+        return userStreamData[messageSource][messageTag]
+      else
+        return "undefined"
+
     {
       name: "gbcc"
     , prims: {
@@ -90,13 +136,21 @@ module.exports = {
       ,             "STORE-GLOBALS": storeGlobals
       ,           "RESTORE-GLOBALS": restoreGlobals
       , "RESTORE-GLOBALS-FROM-USER": restoreGlobalsFromUser
-      ,      "BROADCAST-TO-GALLERY": broadcastToGallery
+      ,      "BROADCAST-VIEW": broadcastView
+      , "BROADCAST-PLOT": broadcastPlot
+      , "BROADCAST-AVATAR": broadcastAvatar
+      , "BROADCAST-TEXT": broadcastText
+      , "CLEAR-BROADCAST": clearBroadcast
       ,     "COMPILE-OBSERVER-CODE": compileObserverCode
       ,       "COMPILE-TURTLE-CODE": compileTurtleCode
       ,        "COMPILE-PATCH-CODE": compilePatchCode
       ,         "RUN-OBSERVER-CODE": runObserverCode
       ,           "RUN-TURTLE-CODE": runTurtleCode
       ,            "RUN-PATCH-CODE": runPatchCode
+      ,                  "WHO-AM-I": whoAmI
+      , "ADD-TO-STREAM": addToStream
+      , "GET-STREAM": getStream
+      , "GET-STREAM-FROM-USER": getStreamFromUser
       }
     }
 }
