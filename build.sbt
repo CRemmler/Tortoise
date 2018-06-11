@@ -1,11 +1,10 @@
-import AddSettings.sbtFiles
 import org.scalajs.sbtplugin.cross.{ CrossProject, CrossType }
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{ fullOptJS, packageJSDependencies }
 import org.scalastyle.sbt.ScalastylePlugin.projectSettings
 
-val nlDependencyVersion       = "6.0.2-d43d725"
+val nlDependencyVersion       = "6.0.3"
 
-val parserJsDependencyVersion = "0.2.0-d43d725"
+val parserJsDependencyVersion = "0.2.2"
 
 val scalazVersion             = "7.2.18"
 
@@ -16,7 +15,7 @@ val commonSettings =
     version       := "1.0",
     // Compilation settings
     crossPaths    := false, // we're not cross-building for different Scala versions
-    scalaVersion  := "2.12.2",
+    scalaVersion  := "2.12.4",
     scalacOptions ++=
       "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -Xlint -Xfatal-warnings -Ywarn-value-discard -language:_ -Xmax-classfile-name 240".split(" ").toSeq,
     // Dependencies
@@ -33,7 +32,6 @@ val commonSettings =
       "com.typesafe.play" %% "play-json"       % "2.6.8",
       // Bring in headless test code/framework for our tests
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"),
-    ivyScala                     := ivyScala.value map { _.copy(overrideScalaVersion = true) }, // needed to keep scala.js happy
     // Path Management
     resourceDirectory in Compile := (baseDirectory in root).value / "resources" / "main",
     resourceDirectory in Test    := (baseDirectory in root).value / "resources" / "test",
@@ -104,8 +102,7 @@ lazy val macros = CrossProject("macros", file("macros"), CrossType.Pure).
   settings(
     libraryDependencies ++= Seq(
       "org.scala-lang" %  "scala-reflect" % scalaVersion.value,
-      "org.scalaz"     %% "scalaz-core"   % scalazVersion),
-    ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
+      "org.scalaz"     %% "scalaz-core"   % scalazVersion)
   )
 
 lazy val macrosJS  = macros.js

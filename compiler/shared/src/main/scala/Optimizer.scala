@@ -8,9 +8,11 @@ import
 
 import
   org.nlogo.core.{ prim, AstTransformer, ProcedureDefinition, ReporterApp, Statement, NetLogoCore, CommandBlock, ReporterBlock },
-    prim.{ _any, _const, _count, _createorderedturtles, _createturtles, _equal, _fd, _hatch, _neighbors, _neighbors4
-         , _observervariable, _of, _oneof, _other, _patches, _patchvariable, _procedurevariable, _sprout, _sum, _with }
+    prim.{ _any, _const, _count, _createorderedturtles, _createturtles, _equal, _fd, _greaterthan, _hatch, _lessthan,
+      _neighbors, _neighbors4, _not, _notequal, _observervariable, _of, _oneof, _other, _patches, _patchvariable,
+      _procedurevariable, _sprout, _sum, _with }
 
+// scalastyle:off number.of.methods
 object Optimizer {
 
   // scalastyle:off class.name
@@ -134,6 +136,21 @@ object Optimizer {
     }
   }
 
+  class _countotherwith extends Reporter {
+    override def syntax: Syntax =
+      Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.NumberType)
+  }
+
+  object CountOtherWithTransformer extends AstTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(_: _count, Seq(ReporterApp(_: _otherwith, otherWithArgs, _)), _) =>
+          ra.copy(reporter = new _countotherwith, args = otherWithArgs)
+        case _ => super.visitReporterApp(ra)
+      }
+    }
+  }
+
   class _oneofwith extends Reporter {
     override def syntax: Syntax =
       Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.AgentType)
@@ -152,7 +169,7 @@ object Optimizer {
   class _otherwith extends Reporter {
     override def syntax: Syntax =
       Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.AgentsetType)
-    }
+  }
 
   object OtherWithTransformer extends AstTransformer {
     override def visitReporterApp(ra: ReporterApp): ReporterApp = {
@@ -169,6 +186,78 @@ object Optimizer {
       ra match {
         case ReporterApp(_: _with, Seq(ReporterApp(_: _other, otherArgs, _), x), _) =>
           ra.copy(reporter = new _otherwith, args = otherArgs :+ x)
+        case _ => super.visitReporterApp(ra)
+      }
+    }
+  }
+
+  class _anywith extends Reporter {
+    override def syntax: Syntax =
+      Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.BooleanType)
+  }
+
+  // _any(_with) => _anywith
+  object AnyWith1Transformer extends AstTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(_: _any, Seq(ReporterApp(_: _with, withArgs, _)), _) =>
+          ra.copy(reporter = new _anywith, args = withArgs)
+        case _ => super.visitReporterApp(ra)
+      }
+    }
+  }
+
+  // _notequal(_countwith(*, *), _constdouble: 0.0) => _anywith(*, *)
+  object AnyWith2Transformer extends AstTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(_: _notequal, Seq(
+              ReporterApp(_: _count, Seq(ReporterApp(_: _with, withArgs, _)), _),
+              ReporterApp(reporter: _const, _, _)
+            ), _) if reporter.value == 0 =>
+          ra.copy(reporter = new _anywith, args = withArgs)
+        case _ => super.visitReporterApp(ra)
+      }
+    }
+  }
+
+  // _greaterthan(_countwith(*, *), _constdouble: 0.0) => _anywith(*, *)
+  object AnyWith3Transformer extends AstTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(_: _greaterthan, Seq(
+              ReporterApp(_: _count, Seq(ReporterApp(_: _with, withArgs, _)), _),
+              ReporterApp(reporter: _const, _, _)
+            ), _) if reporter.value == 0 =>
+          ra.copy(reporter = new _anywith, args = withArgs)
+        case _ => super.visitReporterApp(ra)
+      }
+    }
+  }
+
+  // _lessthan(_constdouble: 0.0, _countwith(*, *)) => _anywith(*, *)
+  object AnyWith4Transformer extends AstTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(_: _lessthan, Seq(
+              ReporterApp(reporter: _const, _, _),
+              ReporterApp(_: _count, Seq(ReporterApp(_: _with, withArgs, _)), _)
+            ), _) if reporter.value == 0 =>
+          ra.copy(reporter = new _anywith, args = withArgs)
+        case _ => super.visitReporterApp(ra)
+      }
+    }
+  }
+
+  // _equal(_countwith(*, *), _constdouble: 0.0) => _not(_anywith(*, *))
+  object AnyWith5Transformer extends AstTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(_: _equal, Seq(
+              ReporterApp(_: _count, Seq(ReporterApp(_: _with, withArgs, _)), _),
+              ReporterApp(reporter: _const, _, _)
+            ), _) if reporter.value == 0 =>
+          ra.copy(reporter = new _not, args = Seq(ra.copy(reporter = new _anywith, args = withArgs)))
         case _ => super.visitReporterApp(ra)
       }
     }
@@ -264,18 +353,26 @@ object Optimizer {
   def apply(pd: ProcedureDefinition): ProcedureDefinition =
     (Fd1Transformer        .visitProcedureDefinition _ andThen
      FdLessThan1Transformer.visitProcedureDefinition   andThen
-     CountOtherTransformer .visitProcedureDefinition   andThen
-     WithTransformer       .visitProcedureDefinition   andThen
-     CrtFastTransformer    .visitProcedureDefinition   andThen
-     CroFastTransformer    .visitProcedureDefinition   andThen
-     HatchFastTransformer  .visitProcedureDefinition   andThen
-     SproutFastTransformer .visitProcedureDefinition   andThen
-     NSumTransformer       .visitProcedureDefinition   andThen
-     NSum4Transformer      .visitProcedureDefinition   andThen
-     OneOfWithTransformer  .visitProcedureDefinition   andThen
-     AnyOtherTransformer   .visitProcedureDefinition   andThen
-     WithOtherTransformer  .visitProcedureDefinition   andThen
-     OtherWithTransformer  .visitProcedureDefinition
+
+     WithTransformer          .visitProcedureDefinition   andThen
+     CrtFastTransformer       .visitProcedureDefinition   andThen
+     CroFastTransformer       .visitProcedureDefinition   andThen
+     HatchFastTransformer     .visitProcedureDefinition   andThen
+     SproutFastTransformer    .visitProcedureDefinition   andThen
+     NSumTransformer          .visitProcedureDefinition   andThen
+     NSum4Transformer         .visitProcedureDefinition   andThen
+     OneOfWithTransformer     .visitProcedureDefinition   andThen
+     AnyOtherTransformer      .visitProcedureDefinition   andThen
+     WithOtherTransformer     .visitProcedureDefinition   andThen
+     OtherWithTransformer     .visitProcedureDefinition   andThen
+     CountOtherWithTransformer.visitProcedureDefinition   andThen
+     CountOtherTransformer    .visitProcedureDefinition   andThen
+     AnyWith1Transformer      .visitProcedureDefinition   andThen
+     AnyWith2Transformer      .visitProcedureDefinition   andThen
+     AnyWith3Transformer      .visitProcedureDefinition   andThen
+     AnyWith4Transformer      .visitProcedureDefinition   andThen
+     AnyWith5Transformer      .visitProcedureDefinition
     )(pd)
 
 }
+// scalastyle:on number.of.methods
