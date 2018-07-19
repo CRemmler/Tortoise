@@ -8,9 +8,9 @@ module.exports = {
     hideGraph = () ->
         Graph.hideGraph()
 
-    # (list) => ()
-    showGraph = (settings) ->
-        Graph.showGraph(settings)
+    # () => ()
+    showGraph = () ->
+        Graph.showGraph()
 
     # (string) => ()
     setData = (data) ->
@@ -24,9 +24,13 @@ module.exports = {
     getData = () ->
         return Graph.getData()
 
-    # () => ()
-    exportFile = () ->
-        Graph.exportFile()
+    # (string) => ()
+    exportFile = (filename) ->
+        Graph.exportFile(filename)
+
+    # (string) => ()
+    importFile = (filename) ->
+        Graph.importFile(filename)
 
     # (string, list) => ()
     createPoint = (name, center) ->
@@ -48,6 +52,10 @@ module.exports = {
     getPoints = () ->
         return Graph.getPoints()
 
+    # (string) => ()
+    deletePoint = (name) ->
+        Graph.deletePoint(name)
+
     # () => ()
     deletePoints = () ->
         Graph.deletePoints()
@@ -64,9 +72,9 @@ module.exports = {
     setXy = (name, center) ->
         Graph.setXy(name, center)
 
-    # (boolean) => ()
-    setDraggable = (draggable) ->
-        Graph.setDraggable(draggable)
+    # (string, boolean) => ()
+    setDraggable = (name, draggable) ->
+        Graph.setDraggable(name, draggable)
 
     # (string) => (number)
     getX = (name) ->
@@ -109,8 +117,8 @@ module.exports = {
         return Graph.getObjectType(name)
 
     # (string) => (boolean)
-    exists = (name) ->
-        return Graph.exists(name)
+    objectExists = (name) ->
+        return Graph.objectExists(name)
 
     # (string, string) => ()
     renameObject = (old, next) ->
@@ -148,21 +156,97 @@ module.exports = {
     getPointsString = () ->
         return Graph.getPointsString()
 
-    # (number,number,number,number,) => ()
-    setCoordSystem = (xmin,xmax,ymin,ymax) ->
-        Graph.setCoordSystem(xmin,xmax,ymin,ymax)
-
-    # (string,boolean) => ()
-    setFixed = (name,fixed) ->
-        Graph.setFixed(name,fixed)
-
     # (string) => ()
     importWorld = (filename) ->
         Graph.importWorld(filename)
 
+    # (string) => ()
+    exportWorld = (filename) ->
+        Graph.exportWorld(filename)
+
     # () => ()
-    exportWorld = () ->
-        Graph.exportWorld()
+    updateGraph = () ->
+        Graph.updateGraph()
+
+    # (string) => ()
+    showObjectLabel = (name) ->
+        Graph.showObjectLabel(name)
+
+    # (string) => ()
+    hideObjectLabel = (name) ->
+        Graph.hideObjectLabel(name)
+
+    # () => ()
+    showToolbar = () ->
+        Graph.showToolbar()
+
+    # () => ()
+    hideToolbar = () ->
+        Graph.hideToolbar()
+
+    # () => ()
+    bringToFront = () ->
+        Graph.bringToFront()
+
+    # () => ()
+    sendToBack = () ->
+        Graph.sendToBack()
+
+    # (string) => ()
+    setAll = (data) ->
+        Graph.setAll(data)
+
+    # () => (string)
+    getAll = () ->
+        return Graph.getAll()
+
+    # () => (list)
+    getGraphOffset = () ->
+        return Graph.getGraphOffset()
+
+    # (list) => ()
+    setGraphOffset = (offset) ->
+        Graph.setGraphOffset(offset)
+
+    # (string) => (list)
+    getPoint = (name) ->
+        return Graph.getPoint(name)
+
+    # (list) => ()
+    centerView = (center) ->
+        Graph.centerView(center)
+
+    # (string) => ()
+    exportGgb = (filename) ->
+        Graph.exportGgb(filename)
+
+    # (string) => (boolean)
+    getDraggable = (name) ->
+        return Graph.getDraggable(name)
+
+    # () => ()
+    mouseOn = () ->
+        Graph.mouseOn()
+
+    # () => ()
+    mouseOff = () ->
+        Graph.mouseOff()
+
+    # (string) => (string)
+    getCommandString = (name) ->
+        return Graph.getCommandString(name)
+
+    # () => ()
+    uploadGgb = () ->
+        Graph.uploadGgb()
+
+    # () => (list)
+    getGgbList = () ->
+        return Graph.getGgbList()
+
+    # (string) => (string)
+    getValueString = (name) ->
+        return Graph.getValueString(name)
 
     {
       name: "graph"
@@ -173,11 +257,13 @@ module.exports = {
       "IMPORT-GGB": importGgb,
       "GET-DATA": getData,
       "EXPORT-FILE": exportFile,
+      "IMPORT-FILE": importFile,
       "CREATE-POINT": createPoint,
       "SET-OPACITY": setOpacity,
       "GET-OPACITY": getOpacity,
       "CREATE-POINTS": createPoints,
       "GET-POINTS": getPoints,
+      "DELETE-POINT": deletePoint,
       "DELETE-POINTS": deletePoints,
       "SET-X": setX,
       "SET-Y": setY,
@@ -193,7 +279,7 @@ module.exports = {
       "CREATE-OBJECT": createObject,
       "GET-VALUE": getValue,
       "GET-OBJECT-TYPE": getObjectType,
-      "EXISTS": exists,
+      "OBJECT-EXISTS": objectExists,
       "RENAME-OBJECT": renameObject,
       "DELETE-OBJECT": deleteObject,
       "HIDE-OBJECT": hideObject,
@@ -203,10 +289,29 @@ module.exports = {
       "EVAL-COMMAND": evalCommand,
       "EVAL-REPORTER": evalReporter,
       "GET-POINTS-STRING": getPointsString,
-      "SET-COORD-SYSTEM": setCoordSystem,
-      "SET-FIXED": setFixed,
       "IMPORT-WORLD": importWorld,
-      "EXPORT-WORLD": exportWorld
+      "EXPORT-WORLD": exportWorld,
+      "UPDATE-GRAPH": updateGraph,
+      "SHOW-OBJECT-LABEL": showObjectLabel,
+      "HIDE-OBJECT-LABEL": hideObjectLabel,
+      "SHOW-TOOLBAR": showToolbar,
+      "HIDE-TOOLBAR": hideToolbar,
+      "BRING-TO-FRONT": bringToFront,
+      "SEND-TO-BACK": sendToBack,
+      "SET-ALL": setAll,
+      "GET-ALL": getAll,
+      "GET-GRAPH-OFFSET": getGraphOffset,
+      "SET-GRAPH-OFFSET": setGraphOffset,
+      "GET-POINT": getPoint,
+      "CENTER-VIEW": centerView,
+      "EXPORT-GGB": exportGgb,
+      "GET-DRAGGABLE": getDraggable,
+      "MOUSE-ON": mouseOn,
+      "MOUSE-OFF": mouseOff,
+      "GET-COMMAND-STRING": getCommandString,
+      "UPLOAD-GGB": uploadGgb,
+      "GET-GGB-LIST": getGgbList,
+      "GET-VALUE-STRING": getValueString,
     }
     }
 }

@@ -8,24 +8,15 @@
     }, {
       "name": "show-map",
       "actionName": "show-map",
-      "argTypes": ["list"]
-    }, {
-      "name": "set-data",
-      "actionName": "set-data",
-      "argTypes": ["string"]
+      "argTypes": []
     }, {
       "name": "import-file",
       "actionName": "import-file",
       "argTypes": ["string"]
     }, {
-      "name": "get-data",
-      "actionName": "get-data",
-      "argTypes": [],
-      "returnType": "string"
-    }, {
       "name": "export-file",
       "actionName": "export-file",
-      "argTypes": []
+      "argTypes": ["string"]
     }, {
       "name": "set-zoom",
       "actionName": "set-zoom",
@@ -58,12 +49,17 @@
       "argTypes": [],
       "returnType": "list"
     }, {
-      "name": "hide-marker",
-      "actionName": "hide-marker",
+      "name": "get-marker",
+      "actionName": "get-marker",
+      "argTypes": ["string"],
+      "returnType": "list"
+    }, {
+      "name": "hide-object",
+      "actionName": "hide-object",
       "argTypes": ["string"]
     }, {
-      "name": "show-marker",
-      "actionName": "show-marker",
+      "name": "show-object",
+      "actionName": "show-object",
       "argTypes": ["string"]
     }, {
       "name": "set-lat",
@@ -93,10 +89,6 @@
       "argTypes": ["string"],
       "returnType": "list"
     }, {
-      "name": "set-draggable",
-      "actionName": "set-draggable",
-      "argTypes": ["boolean"]
-    }, {
       "name": "delete-marker",
       "actionName": "delete-marker",
       "argTypes": ["string"]
@@ -115,38 +107,143 @@
       "argTypes": ["list"],
       "returnType": "list"
     }, {
-      "name": "exists",
-      "actionName": "exists",
+      "name": "object-exists",
+      "actionName": "object-exists",
       "argTypes": ["string"],
       "returnType": "boolean"
     }, {
+      "name": "set-opacity",
+      "actionName": "set-opacity",
+      "argTypes": ["number"]
+    }, {
+      "name": "get-opacity",
+      "actionName": "get-opacity",
+      "argTypes": [],
+      "returnType": "number"
+    }, {
+      "name": "bring-to-front",
+      "actionName": "bring-to-front",
+      "argTypes": []
+    }, {
+      "name": "send-to-back",
+      "actionName": "send-to-back",
+      "argTypes": []
+    }, {
+      "name": "get-map-offset",
+      "actionName": "get-map-offset",
+      "argTypes": [],
+      "returnType": "list"
+    }, {
+      "name": "set-map-offset",
+      "actionName": "set-map-offset",
+      "argTypes": ["list"]
+    }, {
+      "name": "set-all",
+      "actionName": "set-all",
+      "argTypes": ["string"]
+    }, {
+      "name": "get-all",
+      "actionName": "get-all",
+      "argTypes": [],
+      "returnType": "string"
+    }, {
+      "name": "update-map",
+      "actionName": "update-map",
+      "argTypes": []
+    }, {
       "name": "create-path",
       "actionName": "create-path",
-      "argTypes": ["string;list"]
+      "argTypes": ["string", "list"]
     }, {
-      "name": "get-path",
-      "actionName": "get-path",
+      "name": "set-path-color",
+      "actionName": "set-path-color",
+      "argTypes": ["string", "string"]
+    }, {
+      "name": "get-path-color",
+      "actionName": "get-path-color",
+      "argTypes": ["string"],
+      "returnType": "string"
+    }, {
+      "name": "set-path-vertices",
+      "actionName": "set-path-vertices",
+      "argTypes": ["string", "list"]
+    }, {
+      "name": "get-path-vertices",
+      "actionName": "get-path-vertices",
       "argTypes": ["string"],
       "returnType": "list"
     }, {
-      "name": "hide-path",
-      "actionName": "hide-path",
+      "name": "hide-object",
+      "actionName": "hide-object",
       "argTypes": ["string"]
     }, {
-      "name": "show-path",
-      "actionName": "show-path",
+      "name": "show-object",
+      "actionName": "show-object",
       "argTypes": ["string"]
+    }, {
+      "name": "get-object-type",
+      "actionName": "get-object-type",
+      "argTypes": ["string"],
+      "returnType": "string"
+    }, {
+      "name": "create-object",
+      "actionName": "create-object",
+      "argTypes": ["list"]
+    }, {
+      "name": "create-objects",
+      "actionName": "create-objects",
+      "argTypes": ["list"]
+    }, {
+      "name": "get-object",
+      "actionName": "get-object",
+      "argTypes": ["string"],
+      "returnType": "list"
+    }, {
+      "name": "get-objects",
+      "actionName": "get-objects",
+      "argTypes": [],
+      "returnType": "list"
+    }, {
+      "name": "delete-object",
+      "actionName": "delete-object",
+      "argTypes": ["string"]
+    }, {
+      "name": "delete-objects",
+      "actionName": "delete-objects",
+      "argTypes": []
     }, {
       "name": "delete-path",
       "actionName": "delete-path",
       "argTypes": ["string"]
     }, {
-      "name": "import-world",
-      "actionName": "import-world",
-      "argTypes": ["string"]
+      "name": "delete-paths",
+      "actionName": "delete-paths",
+      "argTypes": []
     }, {
-      "name": "export-world",
-      "actionName": "export-world",
+      "name": "set-draggable",
+      "actionName": "set-draggable",
+      "argTypes": ["string", "boolean"]
+    }, {
+      "name": "get-draggable",
+      "actionName": "get-draggable",
+      "argTypes": ["string"],
+      "returnType": "boolean"
+    }, {
+      "name": "get-my-latlng",
+      "actionName": "get-my-latlng",
+      "argTypes": [],
+      "returnType": "list"
+    }, {
+      "name": "update-my-latlng",
+      "actionName": "update-my-latlng",
+      "argTypes": []
+    }, {
+      "name": "mouse-on",
+      "actionName": "mouse-on",
+      "argTypes": []
+    }, {
+      "name": "mouse-off",
+      "actionName": "mouse-off",
       "argTypes": []
     }
   ]

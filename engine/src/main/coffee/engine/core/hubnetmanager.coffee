@@ -25,12 +25,12 @@ module.exports =
           hubnetMessage: message })
         return
 
-      # (String, Agent, Radius) => ()
-      hubnetSendFollow: (clientName, agent, radius) =>
-        return
-
-      # (string, agent, string) => ()
-      hubnetSendOverride: (clientName, agentOrSet, variableName) =>
+      # (String, Any) => Unit
+      hubnetBroadcast: (messageTag, message) =>
+        socket.emit('send reporter', {
+          hubnetMessageSource: "all-users",
+          hubnetMessageTag: messageTag,
+          hubnetMessage: message })
         return
 
       processCommand: (m) ->

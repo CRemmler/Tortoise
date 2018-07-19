@@ -8,25 +8,17 @@ module.exports = {
     hideMap = () ->
         Maps.hideMap()
 
-    # (list) => ()
-    showMap = (settings) ->
-        Maps.showMap(settings)
-
-    # (string) => ()
-    setData = (data) ->
-        Maps.setData(data)
+    # () => ()
+    showMap = () ->
+        Maps.showMap()
 
     # (string) => ()
     importFile = (filename) ->
         Maps.importFile(filename)
 
-    # () => (string)
-    getData = () ->
-        return Maps.getData()
-
-    # () => ()
-    exportFile = () ->
-        Maps.exportFile()
+    # (string) => ()
+    exportFile = (filename) ->
+        Maps.exportFile(filename)
 
     # (number) => ()
     setZoom = (zoom) ->
@@ -56,13 +48,17 @@ module.exports = {
     getMarkers = () ->
         return Maps.getMarkers()
 
-    # (string) => ()
-    hideMarker = (name) ->
-        Maps.hideMarker(name)
+    # (string) => (list)
+    getMarker = (name) ->
+        return Maps.getMarker(name)
 
     # (string) => ()
-    showMarker = (name) ->
-        Maps.showMarker(name)
+    hideObject = (name) ->
+        Maps.hideObject(name)
+
+    # (string) => ()
+    showObject = (name) ->
+        Maps.showObject(name)
 
     # (string, number) => ()
     setLat = (name, lat) ->
@@ -88,10 +84,6 @@ module.exports = {
     getLatlng = (name) ->
         return Maps.getLatlng(name)
 
-    # (boolean) => ()
-    setDraggable = (draggable) ->
-        Maps.setDraggable(draggable)
-
     # (string) => ()
     deleteMarker = (name) ->
         Maps.deleteMarker(name)
@@ -109,45 +101,139 @@ module.exports = {
         return Maps.patchToLatlng(coords)
 
     # (string) => (boolean)
-    exists = (name) ->
-        return Maps.exists(name)
+    objectExists = (name) ->
+        return Maps.objectExists(name)
 
-    # (string,list) => ()
-    createPath = (name,vertices) ->
-        Maps.createPath(name,vertices)
+    # (number) => ()
+    setOpacity = (opacity) ->
+        Maps.setOpacity(opacity)
+
+    # () => (number)
+    getOpacity = () ->
+        return Maps.getOpacity()
+
+    # () => ()
+    bringToFront = () ->
+        Maps.bringToFront()
+
+    # () => ()
+    sendToBack = () ->
+        Maps.sendToBack()
+
+    # () => (list)
+    getMapOffset = () ->
+        return Maps.getMapOffset()
+
+    # (list) => ()
+    setMapOffset = (offset) ->
+        Maps.setMapOffset(offset)
+
+    # (string) => ()
+    setAll = (data) ->
+        Maps.setAll(data)
+
+    # () => (string)
+    getAll = () ->
+        return Maps.getAll()
+
+    # () => ()
+    updateMap = () ->
+        Maps.updateMap()
+
+    # (string, list) => ()
+    createPath = (name, vertices) ->
+        Maps.createPath(name, vertices)
+
+    # (string, string) => ()
+    setPathColor = (name, color) ->
+        Maps.setPathColor(name, color)
+
+    # (string) => (string)
+    getPathColor = (name) ->
+        return Maps.getPathColor(name)
+
+    # (string, list) => ()
+    setPathVertices = (name, vertices) ->
+        Maps.setPathVertices(name, vertices)
 
     # (string) => (list)
-    getPath = (name) ->
-        return Maps.getPath(name)
+    getPathVertices = (name) ->
+        return Maps.getPathVertices(name)
 
     # (string) => ()
-    hidePath = (name) ->
-        Maps.hidePath(name)
+    hideObject = (name) ->
+        Maps.hideObject(name)
 
     # (string) => ()
-    showPath = (name) ->
-        Maps.showPath(name)
+    showObject = (name) ->
+        Maps.showObject(name)
+
+    # (string) => (string)
+    getObjectType = (name) ->
+        return Maps.getObjectType(name)
+
+    # (list) => ()
+    createObject = (object) ->
+        Maps.createObject(object)
+
+    # (list) => ()
+    createObjects = (objects) ->
+        Maps.createObjects(objects)
+
+    # (string) => (list)
+    getObject = (name) ->
+        return Maps.getObject(name)
+
+    # () => (list)
+    getObjects = () ->
+        return Maps.getObjects()
+
+    # (string) => ()
+    deleteObject = (name) ->
+        Maps.deleteObject(name)
+
+    # () => ()
+    deleteObjects = () ->
+        Maps.deleteObjects()
 
     # (string) => ()
     deletePath = (name) ->
         Maps.deletePath(name)
 
-    # (string) => ()
-    importWorld = (filename) ->
-        Maps.importWorld(filename)
+    # () => ()
+    deletePaths = () ->
+        Maps.deletePaths()
+
+    # (string, boolean) => ()
+    setDraggable = (name, draggable) ->
+        Maps.setDraggable(name, draggable)
+
+    # (string) => (boolean)
+    getDraggable = (name) ->
+        return Maps.getDraggable(name)
+
+    # () => (list)
+    getMyLatlng = () ->
+        return Maps.getMyLatlng()
 
     # () => ()
-    exportWorld = () ->
-        Maps.exportWorld()
+    updateMyLatlng = () ->
+        Maps.updateMyLatlng()
+
+    # () => ()
+    mouseOn = () ->
+        Maps.mouseOn()
+
+    # () => ()
+    mouseOff = () ->
+        Maps.mouseOff()
 
     {
       name: "maps"
     , prims: {
       "HIDE-MAP": hideMap,
       "SHOW-MAP": showMap,
-      "SET-DATA": setData,
       "IMPORT-FILE": importFile,
-      "GET-DATA": getData,
       "EXPORT-FILE": exportFile,
       "SET-ZOOM": setZoom,
       "GET-ZOOM": getZoom,
@@ -156,27 +242,51 @@ module.exports = {
       "CREATE-MARKER": createMarker,
       "CREATE-MARKERS": createMarkers,
       "GET-MARKERS": getMarkers,
-      "HIDE-MARKER": hideMarker,
-      "SHOW-MARKER": showMarker,
+      "GET-MARKER": getMarker,
+      "HIDE-OBJECT": hideObject,
+      "SHOW-OBJECT": showObject,
       "SET-LAT": setLat,
       "SET-LNG": setLng,
       "SET-LATLNG": setLatlng,
       "GET-LAT": getLat,
       "GET-LNG": getLng,
       "GET-LATLNG": getLatlng,
-      "SET-DRAGGABLE": setDraggable,
       "DELETE-MARKER": deleteMarker,
       "DELETE-MARKERS": deleteMarkers,
       "LATLNG-TO-PATCH": latlngToPatch,
       "PATCH-TO-LATLNG": patchToLatlng,
-      "EXISTS": exists,
+      "OBJECT-EXISTS": objectExists,
+      "SET-OPACITY": setOpacity,
+      "GET-OPACITY": getOpacity,
+      "BRING-TO-FRONT": bringToFront,
+      "SEND-TO-BACK": sendToBack,
+      "GET-MAP-OFFSET": getMapOffset,
+      "SET-MAP-OFFSET": setMapOffset,
+      "SET-ALL": setAll,
+      "GET-ALL": getAll,
+      "UPDATE-MAP": updateMap,
       "CREATE-PATH": createPath,
-      "GET-PATH": getPath,
-      "HIDE-PATH": hidePath,
-      "SHOW-PATH": showPath,
+      "SET-PATH-COLOR": setPathColor,
+      "GET-PATH-COLOR": getPathColor,
+      "SET-PATH-VERTICES": setPathVertices,
+      "GET-PATH-VERTICES": getPathVertices,
+      "HIDE-OBJECT": hideObject,
+      "SHOW-OBJECT": showObject,
+      "GET-OBJECT-TYPE": getObjectType,
+      "CREATE-OBJECT": createObject,
+      "CREATE-OBJECTS": createObjects,
+      "GET-OBJECT": getObject,
+      "GET-OBJECTS": getObjects,
+      "DELETE-OBJECT": deleteObject,
+      "DELETE-OBJECTS": deleteObjects,
       "DELETE-PATH": deletePath,
-      "IMPORT-WORLD": importWorld,
-      "EXPORT-WORLD": exportWorld
+      "DELETE-PATHS": deletePaths,
+      "SET-DRAGGABLE": setDraggable,
+      "GET-DRAGGABLE": getDraggable,
+      "GET-MY-LATLNG": getMyLatlng,
+      "UPDATE-MY-LATLNG": updateMyLatlng,
+      "MOUSE-ON": mouseOn,
+      "MOUSE-OFF": mouseOff
     }
     }
 }

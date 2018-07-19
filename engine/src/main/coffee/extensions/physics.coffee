@@ -8,9 +8,9 @@ module.exports = {
     hideWorld = () ->
         Physics.hideWorld()
 
-    # (list) => ()
-    showWorld = (settings) ->
-        Physics.showWorld(settings)
+    # () => ()
+    showWorld = () ->
+        Physics.showWorld()
 
     # (list) => ()
     setGravityXy = (data) ->
@@ -289,8 +289,8 @@ module.exports = {
         Physics.worldOff()
 
     # (string) => (boolean)
-    exists = (name) ->
-        return Physics.exists(name)
+    objectExists = (name) ->
+        return Physics.objectExists(name)
 
     # () => (list)
     getConnected = () ->
@@ -300,9 +300,13 @@ module.exports = {
     resetTicks = () ->
         Physics.resetTicks()
 
-    # () => (list)
+    # () => ()
     tick = () ->
-        return Physics.tick()
+        Physics.tick()
+
+    # () => (list)
+    getTick = () ->
+        return Physics.getTick()
 
     # () => ()
     repaint = () ->
@@ -345,16 +349,44 @@ module.exports = {
         Physics.hideObjects()
 
     # (string) => ()
+    exportWorld = (filename) ->
+        Physics.exportWorld(filename)
+
+    # (string) => ()
     importWorld = (filename) ->
         Physics.importWorld(filename)
 
-    # () => ()
-    exportWorld = () ->
-        Physics.exportWorld()
+    # (string, list) => ()
+    setRectanglePatch = (name, coords) ->
+        Physics.setRectanglePatch(name, coords)
+
+    # (string) => (patch)
+    getRectanglePatch = (name) ->
+        return Physics.getRectanglePatch(name)
+
+    # () => (list)
+    getWorldOffset = () ->
+        return Physics.getWorldOffset()
 
     # (list) => ()
-    setRectanglePatch = (coords) ->
-        Physics.setRectanglePatch(coords)
+    setWorldOffset = (offset) ->
+        Physics.setWorldOffset(offset)
+
+    # (string) => ()
+    setAll = (data) ->
+        Physics.setAll(data)
+
+    # () => (string)
+    getAll = () ->
+        return Physics.getAll()
+
+    # () => ()
+    showToolbar = () ->
+        Physics.showToolbar()
+
+    # () => ()
+    hideToolbar = () ->
+        Physics.hideToolbar()
 
     {
       name: "physics"
@@ -430,10 +462,11 @@ module.exports = {
       "DISCONNECT-WHO": disconnectWho,
       "WORLD-ON": worldOn,
       "WORLD-OFF": worldOff,
-      "EXISTS": exists,
+      "OBJECT-EXISTS": objectExists,
       "GET-CONNECTED": getConnected,
       "RESET-TICKS": resetTicks,
       "TICK": tick,
+      "GET-TICK": getTick,
       "REPAINT": repaint,
       "CREATE-RECTANGLE": createRectangle,
       "SET-RECTANGLE-RELATIVE-CORNERS": setRectangleRelativeCorners,
@@ -444,9 +477,16 @@ module.exports = {
       "HIDE-OBJECT": hideObject,
       "SHOW-OBJECTS": showObjects,
       "HIDE-OBJECTS": hideObjects,
-      "IMPORT-WORLD": importWorld,
       "EXPORT-WORLD": exportWorld,
-      "SET-RECTANGLE-PATCH": setRectanglePatch
+      "IMPORT-WORLD": importWorld,
+      "SET-RECTANGLE-PATCH": setRectanglePatch,
+      "GET-RECTANGLE-PATCH": getRectanglePatch,
+      "GET-WORLD-OFFSET": getWorldOffset,
+      "SET-WORLD-OFFSET": setWorldOffset,
+      "SET-ALL": setAll,
+      "GET-ALL": getAll,
+      "SHOW-TOOLBAR": showToolbar,
+      "HIDE-TOOLBAR": hideToolbar,
     }
     }
 }

@@ -110,7 +110,6 @@ module.exports = {
         hubnetMessageSource: "server",
         hubnetMessageTag: messageTag,
         hubnetMessage: message })
-      myStreamData[messageTag] = message
       return
 
     # (String) => Any
@@ -118,14 +117,32 @@ module.exports = {
       if myStreamData[messageTag]?
         return myStreamData[messageTag]
       else
-        return "undefined"
+        return undefined
 
     # (String, String) => Any
     getStreamFromUser = (messageSource, messageTag) ->
       if userStreamData[messageSource] && userStreamData[messageSource][messageTag]?
-        return userStreamData[messageSource][messageTag]
+        stream = userStreamData[messageSource][messageTag]
+        userStreamData[messageSource][messageTag] = []
+        return stream
       else
-        return "undefined"
+        return undefined
+
+    # () => ()
+    showPatches = () ->
+        Gallery.showPatches()
+
+    # () => ()
+    hidePatches = () ->
+        Gallery.hidePatches()
+
+    # (String) => ()
+    importWorld = (filename) ->
+        Gallery.importWorld(filename)
+
+    # (String) => ()
+    exportWorld = (filename) ->
+        Gallery.exportWorld(filename)
 
     {
       name: "gbcc"
@@ -151,6 +168,10 @@ module.exports = {
       , "ADD-TO-STREAM": addToStream
       , "GET-STREAM": getStream
       , "GET-STREAM-FROM-USER": getStreamFromUser
+      , "SHOW-PATCHES": showPatches
+      , "HIDE-PATCHES": hidePatches
+      , "IMPORT-WORLD": importWorld
+      , "EXPORT-WORLD": exportWorld
       }
     }
 }

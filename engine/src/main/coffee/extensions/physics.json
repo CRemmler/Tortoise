@@ -8,7 +8,7 @@
     }, {
       "name": "show-world",
       "actionName": "show-world",
-      "argTypes": ["list"]
+      "argTypes": []
     }, {
       "name": "set-gravity-xy",
       "actionName": "set-gravity-xy",
@@ -312,8 +312,8 @@
       "actionName": "world-off",
       "argTypes": []
     }, {
-      "name": "exists",
-      "actionName": "exists",
+      "name": "object-exists",
+      "actionName": "object-exists",
       "argTypes": ["string"],
       "returnType": "boolean"
     }, {
@@ -328,6 +328,10 @@
     }, {
       "name": "tick",
       "actionName": "tick",
+      "argTypes": []
+    }, {
+      "name": "get-tick",
+      "actionName": "get-tick",
       "argTypes": [],
       "returnType": "list"
     }, {
@@ -373,17 +377,49 @@
       "actionName": "hide-objects",
       "argTypes": []
     }, {
+      "name": "export-world",
+      "actionName": "export-world",
+      "argTypes": ["string"]
+    }, {
       "name": "import-world",
       "actionName": "import-world",
       "argTypes": ["string"]
     }, {
-      "name": "export-world",
-      "actionName": "export-world",
-      "argTypes": []
-    }, {
       "name": "set-rectangle-patch",
       "actionName": "set-rectangle-patch",
+      "argTypes": ["string", "list"]
+    }, {
+      "name": "get-rectangle-patch",
+      "actionName": "get-rectangle-patch",
+      "argTypes": ["string"],
+      "returnType": "patch"
+    }, {
+      "name": "get-world-offset",
+      "actionName": "get-world-offset",
+      "argTypes": [],
+      "returnType": "list"
+    }, {
+      "name": "set-world-offset",
+      "actionName": "set-world-offset",
       "argTypes": ["list"]
+    }, {
+      "name": "set-all",
+      "actionName": "set-all",
+      "argTypes": ["string"]
+    }, {
+      "name": "get-all",
+      "actionName": "get-all",
+      "argTypes": [],
+      "returnType": "string"
+    }, {
+      "name": "show-toolbar",
+      "actionName": "show-toolbar",
+      "argTypes": []
+    }, {
+      "name": "hide-toolbar",
+      "actionName": "hide-toolbar",
+      "argTypes": []
     }
+
   ]
 }

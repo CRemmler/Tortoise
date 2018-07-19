@@ -30,7 +30,7 @@
     }, {
       "name": "broadcast-view",
       "actionName": "broadcast-view",
-      "argTypes": [ "string", "string" ]
+      "argTypes": [ "string" ]
     }, {
       "name": "broadcast-plot",
       "actionName": "broadcast-plot",
@@ -90,6 +90,22 @@
       "actionName": "get-stream-from-user",
       "argTypes": [ "string", "string" ],
       "returnType": "wildcard"
+    }, {
+      "name": "show-patches",
+      "actionName": "show-patches",
+      "argTypes": [  ]
+    }, {
+      "name": "hide-patches",
+      "actionName": "hide-patches",
+      "argTypes": [  ]
+    }, {
+      "name": "import-world",
+      "actionName": "import-world",
+      "argTypes": [ "string" ]
+    }, {
+      "name": "export-world",
+      "actionName": "export-world",
+      "argTypes": [ "string" ]
     }
   ]
 }
