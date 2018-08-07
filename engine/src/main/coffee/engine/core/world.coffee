@@ -207,7 +207,7 @@ module.exports =
       @_updater.triggerUpdate()
       return
 
-    # () => Unit
+    # (String) => Unit
     importDrawing: (sourcePath) ->
       @_updater.importDrawing(sourcePath)
       return

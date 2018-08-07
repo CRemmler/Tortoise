@@ -251,8 +251,6 @@ object SimplePrims {
         case _: prim.etc._observercode             => ""
         case _: prim.etc._hideturtle               => "SelfManager.self().hideTurtle(true);"
         case _: prim.etc._showturtle               => "SelfManager.self().hideTurtle(false);"
-        case _: prim.etc._stopinspecting           => ""
-        case _: prim.etc._stopinspectingdeadagents => ""
       }
   }
 
@@ -321,10 +319,14 @@ object SimplePrims {
         case _: prim.etc._setupplots             => "plotManager.setupPlots"
         case _: prim.etc._updateplots            => "plotManager.updatePlots"
 
+        // Inspection
+        case _: prim.etc._inspect                  => "InspectionPrims.inspect"
+        case _: prim.etc._stopinspecting           => "InspectionPrims.stopInspecting"
+        case _: prim.etc._stopinspectingdeadagents => "InspectionPrims.clearDead"
+
         // Misc.
         case _: prim.etc._clearall         => "world.clearAll"
         case _: prim.etc._cleardrawing     => "world.clearDrawing"
-        case _: prim.etc._importdrawing    => "world.importDrawing"
         case _: prim.etc._clearglobals     => "world.observer.clearCodeGlobals"
         case _: prim.etc._clearpatches     => "world.clearPatches"
         case _: prim.etc._clearturtles     => "world.turtleManager.clearTurtles"
@@ -355,6 +357,7 @@ object SimplePrims {
         case _: prim.etc._exportview       => "ImportExportPrims.exportView"
         case _: prim.etc._exportworld      => "ImportExportPrims.exportWorld"
         case _: prim.etc._wait             => "Prims.wait"
+        case _: prim.etc._importdrawing    => "ImportExportPrims.importDrawing"
         case _: prim.etc._importworld      => "ImportExportPrims.importWorld"
 
         // Unimplemented
