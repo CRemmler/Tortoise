@@ -117,7 +117,7 @@ module.exports = {
       if myStreamData[messageTag]?
         return myStreamData[messageTag]
       else
-        return undefined
+        return []
 
     # (String, String) => Any
     getStreamFromUser = (messageSource, messageTag) ->
@@ -126,7 +126,7 @@ module.exports = {
         userStreamData[messageSource][messageTag] = []
         return stream
       else
-        return undefined
+        return []
 
     # () => ()
     showPatches = () ->
