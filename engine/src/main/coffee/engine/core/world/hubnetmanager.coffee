@@ -35,15 +35,15 @@ module.exports =
 
       processCommand: (m) ->
         #console.log(m.messageSource+" "+m.messageTag+" "+m.message);
-        if commandQueue.length == 0
+        if commandQueue.length is 0
           world.hubnetManager.hubnetMessageWaiting = false
         world.hubnetManager.hubnetEnterMessage = false
         world.hubnetManager.hubnetExitMessage = false
         world.hubnetManager.hubnetMessageSource = m.messageSource
         world.hubnetManager.hubnetMessageTag = m.messageTag
         world.hubnetManager.hubnetMessage = m.message
-        if m.messageTag == 'hubnet-enter-message'
+        if m.messageTag is 'hubnet-enter-message'
           world.hubnetManager.hubnetEnterMessage = true
-        if m.messageTag == 'hubnet-exit-message'
+        if m.messageTag is 'hubnet-exit-message'
           world.hubnetManager.hubnetExitMessage = true
         return

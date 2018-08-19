@@ -368,7 +368,6 @@ object SimplePrims {
         case _: prim.hubnet._hubnetfetchmessage => "world.hubnetManager.hubnetFetchMessage"
         case _: prim.hubnet._hubnetbroadcast    => "world.hubnetManager.hubnetBroadcast"
 
-
       }
   }
   // scalastyle:on method.length

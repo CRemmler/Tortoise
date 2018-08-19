@@ -24,7 +24,7 @@ module.exports = {
 
     # (String, String) => Any
     getFromUser = (messageSource, messageTag) ->
-      if userData[messageSource] && userData[messageSource][messageTag]?
+      if userData[messageSource] and userData[messageSource][messageTag]?
         return userData[messageSource][messageTag]
       else
         return "undefined"
@@ -121,7 +121,7 @@ module.exports = {
 
     # (String, String) => Any
     getStreamFromUser = (messageSource, messageTag) ->
-      if userStreamData[messageSource] && userStreamData[messageSource][messageTag]?
+      if userStreamData[messageSource] and userStreamData[messageSource][messageTag]?
         stream = userStreamData[messageSource][messageTag]
         userStreamData[messageSource][messageTag] = []
         return stream
@@ -143,7 +143,6 @@ module.exports = {
     # (String) => ()
     exportWorld = (filename) ->
         Gallery.exportWorld(filename)
-
     {
       name: "gbcc"
     , prims: {
