@@ -70,7 +70,7 @@ object Compiler extends CompilerLike {
     val interfaceInit = JsStatement("interfaceInit", interfaceGlobalJs, Seq("world", "procedures", "modelConfig"))
     TortoiseLoader.integrateSymbols(init ++ plotConfig ++ procedures
                                          :+ outputConfig :+ dialogConfig
-                                         :+ worldConfig :+ importExportConfig
+                                         :+ worldConfig :+ importExportConfig :+ inspectionConfig
                                          :+ interfaceInit)
   }
 
@@ -183,7 +183,6 @@ object Compiler extends CompilerLike {
                             "notify"  -> jsFunction(Seq("str")),
                             "yesOrNo" -> jsFunction(Seq("str"), "return true;")))
 
-
   private def worldConfig: JsStatement =
     genConfig("world", Map("resizeWorld" -> jsFunction(Seq("agent"))))
 
@@ -191,6 +190,34 @@ object Compiler extends CompilerLike {
     genConfig( "importExport"
              , Map( "exportOutput" -> jsFunction(Seq("filename"))
                   , "exportView"   -> jsFunction(Seq("filename"))
+                  , "exportFile"   -> jsFunction(Seq("str"),
+                                                 """    return function(filepath) {
+                                                   |      var Paths = Java.type('java.nio.file.Paths');
+                                                   |      var Files = Java.type('java.nio.file.Files');
+                                                   |      var UTF8  = Java.type('java.nio.charset.StandardCharsets').UTF_8;
+                                                   |      Files.createDirectories(Paths.get(filepath).getParent());
+                                                   |      var path  = Files.write(Paths.get(filepath), str.getBytes());
+                                                   |    }""".stripMargin)
+                  , "importDrawing" -> jsFunction(Seq("trueImportDrawing"), "return function(filepath) {}")
+                  , "importWorld" -> jsFunction(Seq("trueImportWorld"),
+                                                """    return function(filename) {
+                                                  |      var Paths = Java.type('java.nio.file.Paths');
+                                                  |      var Files = Java.type('java.nio.file.Files');
+                                                  |      var UTF8  = Java.type('java.nio.charset.StandardCharsets').UTF_8;
+                                                  |      var lines = Files.readAllLines(Paths.get(filename), UTF8);
+                                                  |      var out   = [];
+                                                  |      lines.forEach(function(line) { out.push(line); });
+                                                  |      var fileText = out.join("\n");
+                                                  |      trueImportWorld(fileText);
+                                                  |    }""".stripMargin)
+                  )
+             )
+
+  private def inspectionConfig: JsStatement =
+    genConfig( "inspection"
+             , Map( "inspect"        -> jsFunction(Seq("agent"))
+                  , "stopInspecting" -> jsFunction(Seq("agent"))
+                  , "clearDead"      -> jsFunction(Seq()       )
                   )
              )
 

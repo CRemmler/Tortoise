@@ -12,6 +12,12 @@ pipeline {
       }
     }
 
+    stage('LintEngine') {
+      steps {
+        sh "cd engine; yarn install; grunt coffeelint"
+      }
+    }
+
     stage('TestJVM') {
       steps {
         sh 'git submodule update --init --recursive'
@@ -42,6 +48,7 @@ pipeline {
 
     stage('ScalaStyle') {
       steps {
+        sh "./sbt netLogoWeb/scalastyle"
         sh "./sbt compilerCore/scalastyle"
         sh "./sbt compilerJVM/scalastyle"
         sh "./sbt compilerJS/scalastyle"

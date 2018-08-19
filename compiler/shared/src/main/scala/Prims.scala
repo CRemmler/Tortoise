@@ -164,13 +164,25 @@ trait ReporterPrims extends PrimUtils {
       case ns: Optimizer._nsum => generateOptimalNSum(r, ns.varName)
       case ns: Optimizer._nsum4 => generateOptimalNSum4(r, ns.varName)
 
+      case _: Optimizer._countotherwith =>
+        val agents = arg(0)
+        s"$agents._optimalCountOtherWith(${handlers.fun(r.args(1), true)})"
+
       case _: Optimizer._otherwith =>
         val agents = arg(0)
         s"$agents._optimalOtherWith(${handlers.fun(r.args(1), true)})"
 
+      case _: Optimizer._anyotherwith =>
+        val agents = arg(0)
+        s"$agents._optimalAnyOtherWith(${handlers.fun(r.args(1), true)})"
+
       case _: Optimizer._oneofwith =>
         val agents = arg(0)
         s"$agents._optimalOneOfWith(${handlers.fun(r.args(1), true)})"
+
+      case _: Optimizer._anywith =>
+        val agents = arg(0)
+        s"$agents._optimalAnyWith(${handlers.fun(r.args(1), true)})"
 
       // Lookup by breed
       case b: prim._breed                 => s"world.turtleManager.turtlesOfBreed(${jsString(b.breedName)})"
@@ -300,8 +312,8 @@ trait CommandPrims extends PrimUtils {
       case h: Optimizer._hatchfast       => optimalGenerateHatch(s, h.breedName)
       case _: prim._bk                   => s"SelfManager.self().fd(-${arg(0)});"
       case _: prim.etc._left             => s"SelfManager.self().right(-${arg(0)});"
-      case _: prim.etc._diffuse          => s"world.topology.diffuse(${jsString(getReferenceName(s))}, ${arg(1)})"
-      case _: prim.etc._diffuse4         => s"world.topology.diffuse4(${jsString(getReferenceName(s))}, ${arg(1)})"
+      case _: prim.etc._diffuse          => s"world.topology.diffuse(${jsString(getReferenceName(s))}, ${arg(1)}, false)"
+      case _: prim.etc._diffuse4         => s"world.topology.diffuse(${jsString(getReferenceName(s))}, ${arg(1)}, true)"
       case _: prim.etc._uphill           => s"Prims.uphill(${jsString(getReferenceName(s))})"
       case _: prim.etc._uphill4          => s"Prims.uphill4(${jsString(getReferenceName(s))})"
       case _: prim.etc._downhill         => s"Prims.downhill(${jsString(getReferenceName(s))})"

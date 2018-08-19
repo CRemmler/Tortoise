@@ -48,6 +48,10 @@ module.exports =
     getBreedName: ->
       @_breed.name
 
+    # () => String
+    getBreedNameSingular: ->
+      @_breed.singular
+
     # Tragically needed by `LinkCompare` for compliance with NetLogo's insane means of sorting links --JAB (9/6/14)
     # () => Number
     getBreedOrdinal: ->
@@ -152,9 +156,12 @@ module.exports =
 
     # (() => Any) => Unit
     ask: (f) ->
-      @world.selfManager.askAgent(f)(this)
-      if @world.selfManager.self().isDead?()
-        throw new Death
+      if not @isDead()
+        @world.selfManager.askAgent(f)(this)
+        if @world.selfManager.self().isDead?()
+          throw new Death
+      else
+        throw new Error("That #{@getBreedNameSingular()} is dead.")
       return
 
     # [Result] @ (() => Result) => Result

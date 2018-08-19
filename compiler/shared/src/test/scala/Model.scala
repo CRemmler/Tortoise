@@ -107,14 +107,14 @@ object Model {
     Model(
       path = "models/Sample Models/Biology/Wolf Sheep Predation.nlogo",
       variation = "no grass, no labels",
-      setup = """set model-version "sheep-wolves"  setup""",
+      setup = """set model-version "sheep-wolves"  setup  set max-sheep 10000""",
       repetitions = 10,
       metrics = Seq("count wolves", "count sheep", "count patches with [pcolor = green]")
     ),
     Model(
       path = "models/Sample Models/Biology/Wolf Sheep Predation.nlogo",
       variation = "grass, labels",
-      setup = """set model-version "sheep-wolves-grass"  set show-energy? true  setup""",
+      setup = """set model-version "sheep-wolves-grass"  set show-energy? true  setup  set max-sheep 10000""",
       repetitions = 10,
       metrics = Seq("count wolves", "count sheep", "count patches with [pcolor = green]")
     ),
@@ -233,7 +233,7 @@ object Model {
       repetitions = 25
     ),
     Model(
-      path = "models/Sample Models/Biology/AIDS.nlogo",
+      path = "models/Sample Models/Biology/HIV.nlogo",
       repetitions = 100
     ),
     Model(
@@ -489,6 +489,10 @@ object Model {
     Model(
       path = "models/Code Examples/Network Example.nlogo",
       repetitions = 30
+    ),
+    Model(
+      path = "models/Sample Models/Biology/Evolution/Rock Paper Scissors.nlogo",
+      repetitions = 20
     )
   )
 }

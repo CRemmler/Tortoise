@@ -29,8 +29,37 @@ if (typeof javax !== "undefined") {
 }
 if (typeof javax !== "undefined") {
   modelConfig.importExport = {
-    exportOutput: function(filename) {},
-    exportView: function(filename) {}
+    importWorld: function(trueImportWorld) {
+      return function(filename) {
+        var Paths = Java.type('java.nio.file.Paths');
+        var Files = Java.type('java.nio.file.Files');
+        var UTF8  = Java.type('java.nio.charset.StandardCharsets').UTF_8;
+        var lines = Files.readAllLines(Paths.get(filename), UTF8);
+        var out   = [];
+        lines.forEach(function(line) { out.push(line); });
+        var fileText = out.join("\n");
+        trueImportWorld(fileText);
+      }
+},
+    exportFile: function(str) {
+      return function(filepath) {
+        var Paths = Java.type('java.nio.file.Paths');
+        var Files = Java.type('java.nio.file.Files');
+        var UTF8  = Java.type('java.nio.charset.StandardCharsets').UTF_8;
+        Files.createDirectories(Paths.get(filepath).getParent());
+        var path  = Files.write(Paths.get(filepath), str.getBytes());
+      }
+},
+    importDrawing: function(trueImportDrawing) { return function(filepath) {} },
+    exportView: function(filename) {},
+    exportOutput: function(filename) {}
+  }
+}
+if (typeof javax !== "undefined") {
+  modelConfig.inspection = {
+    inspect: function(agent) {},
+    stopInspecting: function(agent) {},
+    clearDead: function() {}
   }
 }
 if (typeof javax !== "undefined") {
@@ -95,6 +124,7 @@ var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PART
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
+var InspectionPrims = workspace.inspectionPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
@@ -238,7 +268,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (!world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); }).isEmpty()) {
+      if (world.turtleManager.turtlesOfBreed("PARTICLES")._optimalAnyWith(function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); })) {
         world.observer.setGlobal("tick-length", Prims.div(1, NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))));
       }
       else {

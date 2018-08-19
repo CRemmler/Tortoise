@@ -29,8 +29,37 @@ if (typeof javax !== "undefined") {
 }
 if (typeof javax !== "undefined") {
   modelConfig.importExport = {
-    exportOutput: function(filename) {},
-    exportView: function(filename) {}
+    importWorld: function(trueImportWorld) {
+      return function(filename) {
+        var Paths = Java.type('java.nio.file.Paths');
+        var Files = Java.type('java.nio.file.Files');
+        var UTF8  = Java.type('java.nio.charset.StandardCharsets').UTF_8;
+        var lines = Files.readAllLines(Paths.get(filename), UTF8);
+        var out   = [];
+        lines.forEach(function(line) { out.push(line); });
+        var fileText = out.join("\n");
+        trueImportWorld(fileText);
+      }
+},
+    exportFile: function(str) {
+      return function(filepath) {
+        var Paths = Java.type('java.nio.file.Paths');
+        var Files = Java.type('java.nio.file.Files');
+        var UTF8  = Java.type('java.nio.charset.StandardCharsets').UTF_8;
+        Files.createDirectories(Paths.get(filepath).getParent());
+        var path  = Files.write(Paths.get(filepath), str.getBytes());
+      }
+},
+    importDrawing: function(trueImportDrawing) { return function(filepath) {} },
+    exportView: function(filename) {},
+    exportOutput: function(filename) {}
+  }
+}
+if (typeof javax !== "undefined") {
+  modelConfig.inspection = {
+    inspect: function(agent) {},
+    stopInspecting: function(agent) {},
+    clearDead: function() {}
   }
 }
 if (typeof javax !== "undefined") {
@@ -50,6 +79,7 @@ var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "GENE
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
+var InspectionPrims = workspace.inspectionPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
@@ -821,9 +851,9 @@ var procedures = (function() {
         }
         thisProteinValue = (workspace.dump('') + workspace.dump(thisProteinValue) + workspace.dump("-") + workspace.dump(theAminoAcid.projectionBy(function() { return SelfManager.self().getVariable("value"); }))); letVars['thisProteinValue'] = thisProteinValue;
       }, "[ the-amino-acid -> set this-protein-value word this-protein-value \"-\" [ value ] of the-amino-acid ]"), orderedAminoAcids); if(reporterContext && _foreach_19530_19537 !== undefined) { return _foreach_19530_19537; }
-      if (!!world.turtleManager.turtlesOfBreed("PROTEINS").agentFilter(function() {
+      if (!world.turtleManager.turtlesOfBreed("PROTEINS")._optimalAnyWith(function() {
         return (Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("value"), thisProteinValue));
-      }).isEmpty()) {
+      })) {
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PROTEINS"));
           SelfManager.self().setVariable("value", thisProteinValue);

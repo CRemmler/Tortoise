@@ -66,6 +66,10 @@ module.exports =
     getBreedName: ->
       @_breed.name
 
+    # () => String
+    getBreedNameSingular: ->
+      @_breed.singular
+
     # Unit -> String
     getName: ->
       @_name
@@ -159,9 +163,12 @@ module.exports =
 
     # (() => Any) => Unit
     ask: (f) ->
-      @world.selfManager.askAgent(f)(this)
-      if @world.selfManager.self().isDead?()
-        throw new Death
+      if not @isDead()
+        @world.selfManager.askAgent(f)(this)
+        if @world.selfManager.self().isDead?()
+          throw new Death
+      else
+        throw new Error("That #{@getBreedNameSingular()} is dead.")
       return
 
     # [Result] @ (() => Result) => Result
@@ -183,7 +190,7 @@ module.exports =
       else if distance < 0
         while remaining <= increment and @jumpIfAble(increment)
           remaining -= increment
-      if remaining != 0
+      if remaining isnt 0
         @jumpIfAble(remaining)
       return
 

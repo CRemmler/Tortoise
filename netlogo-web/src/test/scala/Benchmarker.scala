@@ -9,9 +9,10 @@ import
     util.Date
 
 import
-  scala.{ io => sio, sys },
+  scala.{ io => sio, sys, collection => sc },
     sio.Source,
-    sys.process.Process
+    sys.process.Process,
+    sc.mutable.Queue
 
 import
   scalaz.{ NonEmptyList, Validation },
@@ -36,12 +37,15 @@ object Benchmarker extends App {
       "BZ Benchmark",
       "FireBig Benchmark",
       "GridWalk Benchmark",
-      "Wolf Benchmark"
+      "Wolf Benchmark",
+      "Wealth Benchmark",
+      "Erosion Benchmark",
+      "Heatbugs Benchmark"
     )
 
   private val engineToEvalMap = Seq(Nashorn, SpiderMonkey, V8).map(engine => engine -> engine.freshEval _).toMap
 
-  val (dirStr, models, numIterations, enginesAndEvals, comment) = processArgs(args)
+  val (dirStr, models, numIterations, numTicks, enginesAndEvals, comment) = processArgs(args)
 
   val dir       = new File(dirStr)
   val benchFile = new File(dir, "engine-benchmarks.txt")
@@ -77,63 +81,97 @@ object Benchmarker extends App {
             |Version:    $versionStr
             |Models:     ${models.mkString(", ")}
             |Iterations: $numIterations
+            |Ticks:      $numTicks
             |Engines:    ${enginesAndEvals.map(_._1.getClass.getSimpleName.init).mkString(", ")}
             |$commentStr
             |
             |""".stripMargin)
 
-  gatherBenchmarks(new File(dir, "models")) map {
-    case Benchmark(name, results) =>
-      results map {
-        case Result(engineName, engineVersion, times) =>
-          val str = s"""$name ($engineName $engineVersion):
-                       |--Average: ${round(times.sum / times.size, 3)} seconds
-                       |--Min:     ${times.min} seconds
-                       |--Max:     ${times.max} seconds
-                       |
-                       |""".stripMargin
-          append(str)
-      }
-  }
+  runBenchmarks(new File(dir, "models")) // Seq[Benchmark] currently unused.
 
-
-
-
-  private def gatherBenchmarks(modelsDir: File): Seq[Benchmark] = {
+  private def runBenchmarks(modelsDir: File): Seq[Benchmark] = {
 
     val modelNameFilePairs = models map (model => (model, pathOfModel(modelsDir, model)))
 
     modelNameFilePairs map {
-      case (name, file) =>
+      case (name, file) => {
         println(s"Running $name")
         val source = Source.fromFile(file)
-        val nlogo  = source.mkString
+        val nlogo  = source.mkString.replaceAll("""\sdisplay\s""", "")
         source.close()
 
         val modelV = CompiledModel.fromNlogoContents(nlogo)
 
-        val jsV =
+        val benchmarkPattern = """(?s).*\n\s*to\s+benchmark\s+(?s).*\n\s*end(?s).*"""
+        val benchmarkable = nlogo.matches(benchmarkPattern)
+        if (!benchmarkable) {
+          println(s"No `benchmark` procedure found. Running $numTicks ticks.")
+        }
+
+        val jsV = if (benchmarkable) {
           for {
             model       <- modelV
             caJS        <- model.compileRawCommand("ca")
             benchmarkJS <- model.compileRawCommand("benchmark")
             resultJS    <- model.compileReporter("result")
           } yield s"${model.compiledCode};$caJS;$benchmarkJS;$resultJS;"
+        } else {
+          for {
+            model       <- modelV
+            caJS        <- model.compileRawCommand("ca")
+            seedJS      <- model.compileRawCommand("random-seed 0")
+            timerJS     <- model.compileRawCommand("reset-timer")
+            setupJS     <- model.compileRawCommand("setup")
+            repeatJS    <- model.compileRawCommand(s"repeat $numTicks [ go ]")
+            resultJS    <- model.compileReporter("timer")
+          } yield s"${model.compiledCode};$caJS;$seedJS;$timerJS;$setupJS;$repeatJS;$resultJS;"
+        }
 
         val js = jsV valueOr { case NonEmptyList(head, _) => throw head }
 
-        val results =
-          enginesAndEvals.toSeq map {
-            case (engine, f) => Result(engine.name, engine.version, 1 to numIterations map { _ => f(js).toDouble })
+        val results = enginesAndEvals.toSeq map {
+          case (engine, f) => {
+            val times = 1 to numIterations map (_ => {
+              val time = f(js).toDouble
+              println(time)
+              time
+            })
+            val summary =
+              s"""$name (${engine.name} ${engine.version}):
+                         |--Average: ${round(times.sum / times.size, 3)} seconds
+                         |--Min:     ${times.min} seconds
+                         |--Max:     ${times.max} seconds
+                         |
+                         |""".stripMargin
+            println(summary)
+            append(summary)
+            Result(engine.name, engine.version, times, summary)
           }
+        }
 
-        Benchmark(name, results)
-
+        Benchmark(name, results, results.foldLeft("")(_ + _.summary)) // currently not being used.
+      }
     }
 
   }
 
-  private def pathOfModel(dir: File, filename: String): File = new File(s"${dir.getAbsolutePath}/test/benchmarks/$filename.nlogo")
+  private def pathOfModel(dir: File, filename: String): File = {
+    val queue = new Queue[File]
+    queue.enqueue(dir)
+
+    while (queue.length > 0) {
+      val folder = queue.dequeue
+      for (entry <- folder.listFiles()) {
+        if (entry.isDirectory()) {
+          queue.enqueue(entry)
+        } else if (entry.getName() == s"$filename.nlogo") {
+          return new File(s"${folder.getAbsolutePath}/$filename.nlogo")
+        }
+      }
+    }
+
+    throw new Exception(s"$filename.nlogo not found in models folder.")
+  }
 
   private def round(num: Double, places: Int): Double =
     if (places >= 0)
@@ -141,7 +179,7 @@ object Benchmarker extends App {
     else
       throw new IllegalArgumentException("Invalid number of places")
 
-  private def processArgs(args: Seq[String]): (String, Seq[String], Int, Map[JSEngineCompanion, (String) => String], String) = {
+  private def processArgs(args: Seq[String]): (String, Seq[String], Int, Int, Map[JSEngineCompanion, (String) => String], String) = {
 
     def buildArgPairings(as: Seq[String], pairs: Map[String, Seq[String]] = Map()): Map[String, Seq[String]] = {
       val delimFunc = (s: String) => !s.startsWith("--")
@@ -160,6 +198,7 @@ object Benchmarker extends App {
 
     val pairings = buildArgPairings(others)
 
+    val ticks = pairings.get("--ticks") map (_.head.toInt) getOrElse 100
     val comments = pairings.get("--comment") orElse pairings.get("--comments") map (_.head) getOrElse ""
 
     val (models, iters, engines) =
@@ -177,11 +216,11 @@ object Benchmarker extends App {
         (chosenModels, iters, engines)
       }
 
-    (dirStr, models, iters, engines, comments)
+    (dirStr, models, iters, ticks, engines, comments)
 
   }
 
-  private case class Result(engineName: String, engineVersion: String, times: Seq[Double])
-  private case class Benchmark(name: String, results: Seq[Result])
+  private case class Result(engineName: String, engineVersion: String, times: Seq[Double], summary: String)
+  private case class Benchmark(name: String, results: Seq[Result], summary: String)
 
 }

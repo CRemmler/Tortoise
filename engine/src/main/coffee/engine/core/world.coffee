@@ -1,16 +1,24 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-Observer        = require('./observer')
 Patch           = require('./patch')
 PatchSet        = require('./patchset')
 topologyFactory = require('./topology/factory')
 LinkManager     = require('./world/linkmanager')
 Ticker          = require('./world/ticker')
 TurtleManager   = require('./world/turtlemanager')
-StrictMath      = require('shim/strictmath')
 NLMath          = require('util/nlmath')
 
-{ TopologyInterrupt } = require('util/exception')
+{ filter, flatMap } = require('brazier/array')
+{ pipeline }        = require('brazier/function')
+{ values }          = require('brazier/object')
+
+{ Observer                                    } = require('./observer')
+{ linkBuiltins, patchBuiltins, turtleBuiltins } = require('./structure/builtins')
+{ worldDataToCSV                              } = require('serialize/exportcsv')
+{ TopologyInterrupt                           } = require('util/exception')
+
+{ exportWorld, exportPlot, exportAllPlots } = require('./world/export')
+{ importWorld                             } = require('./world/import')
 
 module.exports =
   class World
@@ -37,9 +45,9 @@ module.exports =
     _patchesAllBlack:          undefined # Boolean
     _patchesWithLabels:        undefined # Number
 
-    # (MiniWorkspace, WorldConfig, () => Unit, (Any) => String, Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, ShapeMap, ShapeMap, () => Unit) => World
-    constructor: (miniWorkspace, @_config, @_outputClear, @dump, globalNames, interfaceGlobalNames, @patchesOwnNames
-                , minPxcor, maxPxcor, minPycor , maxPycor, @patchSize, wrappingAllowedInX, wrappingAllowedInY
+    # (MiniWorkspace, WorldConfig, () => Unit, () => String, (Any) => String, (String) => Unit, Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, ShapeMap, ShapeMap, () => Unit) => World
+    constructor: (miniWorkspace, @_config, @_outputClear, @_getOutput, @_setOutput, @dump, globalNames, interfaceGlobalNames
+                , @patchesOwnNames, minPxcor, maxPxcor, minPycor , maxPycor, @patchSize, wrappingAllowedInX, wrappingAllowedInY
                 , @turtleShapeMap, @linkShapeMap, onTickFunction) ->
       { selfManager: @selfManager, updater: @_updater, rng: @rng
       , breedManager: @breedManager, plotManager: @_plotManager } = miniWorkspace
@@ -55,13 +63,13 @@ module.exports =
         minPycor: minPycor,
         maxPxcor: maxPxcor,
         maxPycor: maxPycor,
-        linkBreeds: "XXX IMPLEMENT ME",
+        linkBreeds: @breedManager.orderedLinkBreeds(),
         linkShapeList: @linkShapeMap,
         patchSize: @patchSize,
         patchesAllBlack: @_patchesAllBlack,
         patchesWithLabels: @_patchesWithLabels,
         ticks: -1,
-        turtleBreeds: "XXX IMPLEMENT ME",
+        turtleBreeds: @breedManager.orderedTurtleBreeds(),
         turtleShapeList: @turtleShapeMap,
         unbreededLinksAreDirected: false
         wrappingAllowedInX: wrappingAllowedInX,
@@ -181,6 +189,11 @@ module.exports =
       @_updater.clearDrawing()
       return
 
+    # (String) => Unit
+    importDrawing: (sourcePath) ->
+      @_updater.importDrawing(sourcePath)
+      return
+
     # () => Unit
     clearLinks: ->
       @linkManager.clear()
@@ -194,6 +207,32 @@ module.exports =
       @_resetPatchLabelCount()
       return
 
+    # () => Object[Any]
+    exportState: ->
+      exportWorld.call(this)
+
+    # () => Object[Any]
+    exportAllPlotsCSV: ->
+      allPlotsDataToCSV(exportAllPlots.call(this))
+
+    # () => Object[Any]
+    exportPlotCSV: (name) ->
+      plotDataToCSV(exportPlot.call(this, name))
+
+    # () => Object[Any]
+    exportCSV: ->
+
+      varNamesForBreedsMatching =
+        (pred) =>
+          pipeline(values, filter(pred), flatMap((x) -> x.varNames))(@breedManager.breeds())
+
+      allTurtlesOwnsNames = varNamesForBreedsMatching((breed) -> not breed.isLinky())
+      allLinksOwnsNames   = varNamesForBreedsMatching((breed) -> breed.isLinky())
+
+      state = exportWorld.call(this)
+
+      worldDataToCSV(allTurtlesOwnsNames, allLinksOwnsNames, patchBuiltins, turtleBuiltins, linkBuiltins)(state)
+
     # (Number, Number) => PatchSet
     getNeighbors: (pxcor, pycor) ->
       new PatchSet(@topology.getNeighbors(pxcor, pycor), this)
@@ -201,6 +240,10 @@ module.exports =
     # (Number, Number) => PatchSet
     getNeighbors4: (pxcor, pycor) ->
       new PatchSet(@topology.getNeighbors4(pxcor, pycor), this)
+
+    # (WorldState) => Unit
+    importState: ->
+      importWorld.apply(this, arguments)
 
     # The wrapping and rounding below is setup to avoid creating extra anonymous functions.
     # We could just use @ and fat arrows => but CoffeeScript uses anon funcs to bind `this`.
