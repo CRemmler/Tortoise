@@ -251,10 +251,6 @@ object SimplePrims {
         case _: prim.etc._observercode             => ""
         case _: prim.etc._hideturtle               => "SelfManager.self().hideTurtle(true);"
         case _: prim.etc._showturtle               => "SelfManager.self().hideTurtle(false);"
-
-        // HubnetManager
-        case _: prim.hubnet._hubnetsendoverride     => "world.hubnetManager.hubnetSendOverride"
-        case _: prim.hubnet._hubnetsendfollow       => "world.hubnetManager.hubnetSendFollow"
       }
   }
 
@@ -370,13 +366,13 @@ object SimplePrims {
         // HubnetManager
         case _: prim.hubnet._hubnetsend         => "world.hubnetManager.hubnetSend"
         case _: prim.hubnet._hubnetfetchmessage => "world.hubnetManager.hubnetFetchMessage"
+        case _: prim.hubnet._hubnetsendfollow   => "world.hubnetManager.hubnetSendFollow"
+        case _: prim.hubnet._hubnetsendoverride => "world.hubnetManager.hubnetSendOverride"
         case _: prim.hubnet._hubnetbroadcast    => "world.hubnetManager.hubnetBroadcast"
         case _: prim.hubnet._hubnetclearoverride    => "world.hubnetManager.hubnetClearOverride"
         case _: prim.hubnet._hubnetclearoverrides   => "world.hubnetManager.hubnetClearOverrides"
         case _: prim.hubnet._hubnetsendwatch        => "world.hubnetManager.hubnetSendWatch"
         case _: prim.hubnet._hubnetresetperspective => "world.hubnetManager.hubnetResetPerspective"
-
-
       }
   }
   // scalastyle:on method.length

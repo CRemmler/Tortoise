@@ -51,16 +51,6 @@ module.exports =
           hubnetMessageSource: messageSource })
         return
 
-      # (String, TurtleSet, String, List) =>
-      hubnetSendOverride: (messageSource, agentOrSet, messageTag, message) =>
-        socket.emit('send override', {
-          hubnetMessageType: "send-override",
-          hubnetAgentOrSet: this.getAgentIds(agentOrSet),
-          hubnetMessageSource: messageSource,
-          hubnetMessageTag: messageTag,
-          hubnetMessage: message })
-        return
-
       # (String, Number) => ()
       hubnetSendWatch: (messageSource, agent) =>
         socket.emit('send override', {
@@ -84,6 +74,24 @@ module.exports =
           hubnetMessageSource: messageSource,
           hubnetMessage: radius })
         return
+
+      # (String, Agent, Radius) => ()
+      # hubnetSendFollow: (clientName, agent, radius) =>
+      #   return
+
+      # (String, TurtleSet, String, List ) =>
+      hubnetSendOverride: (messageSource, agentOrSet, messageTag, message) =>
+        socket.emit('send override', {
+          hubnetMessageType: "send-override",
+          hubnetAgentOrSet: this.getAgentIds(agentOrSet),
+          hubnetMessageSource: messageSource,
+          hubnetMessageTag: messageTag,
+          hubnetMessage: message })
+        return
+
+      # (string, agent, string) => ()
+      # hubnetSendOverride: (clientName, agentOrSet, variableName) =>
+      #   return
 
       getAgentIds: (agents) ->
         ids = []
