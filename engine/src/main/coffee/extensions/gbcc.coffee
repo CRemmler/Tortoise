@@ -143,6 +143,23 @@ module.exports = {
     # (String) => ()
     exportWorld = (filename) ->
         Gallery.exportWorld(filename)
+
+    # (String, String, Any) => ()
+    send = (messageSource, messageTag, message) ->
+        socket.emit('send message reporter', {
+            hubnetMessageSource: messageSource,
+            hubnetMessageTag: messageTag,
+            hubnetMessage: message })
+        return
+
+    # (String, Any) => ()
+    broadcast = (messageTag, message) ->
+        socket.emit('send message reporter', {
+            hubnetMessageSource: 'all-users',
+            hubnetMessageTag: messageTag,
+            hubnetMessage: message })
+        return
+
     {
       name: "gbcc"
     , prims: {
@@ -171,6 +188,8 @@ module.exports = {
       , "HIDE-PATCHES": hidePatches
       , "IMPORT-WORLD": importWorld
       , "EXPORT-WORLD": exportWorld
+      , "SEND": send
+      , "BROADCAST": broadcast
       }
     }
 }

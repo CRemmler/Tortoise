@@ -106,6 +106,14 @@
       "name": "export-world",
       "actionName": "export-world",
       "argTypes": [ "string" ]
+    }, {
+      "name": "send",
+      "actionName": "send",
+      "argTypes": [ "string", "string", "wildcard" ]
+    }, {
+      "name": "broadcast",
+      "actionName": "broadcast",
+      "argTypes": [ "string", "wildcard" ]
     }
   ]
 }

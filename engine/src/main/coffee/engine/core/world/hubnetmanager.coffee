@@ -1,3 +1,5 @@
+TurtleSet  = require('../turtleset')
+
 module.exports =
   class HubnetManager
 
@@ -32,6 +34,68 @@ module.exports =
           hubnetMessageTag: messageTag,
           hubnetMessage: message })
         return
+
+      # (String, TurtleSet, String) => ()
+      hubnetClearOverride: (messageSource, agentOrSet, messageTag) =>
+        socket.emit('send override', {
+          hubnetMessageType: "clear-override",
+          hubnetAgentOrSet: this.getAgentIds(agentOrSet),
+          hubnetMessageSource: messageSource,
+          hubnetMessageTag: messageTag })
+        return
+
+      # (String) => ()
+      hubnetClearOverrides: (messageSource) =>
+        socket.emit('send override', {
+          hubnetMessageType: "clear-overrides",
+          hubnetMessageSource: messageSource })
+        return
+
+      # (String, TurtleSet, String, List) =>
+      hubnetSendOverride: (messageSource, agentOrSet, messageTag, message) =>
+        socket.emit('send override', {
+          hubnetMessageType: "send-override",
+          hubnetAgentOrSet: this.getAgentIds(agentOrSet),
+          hubnetMessageSource: messageSource,
+          hubnetMessageTag: messageTag,
+          hubnetMessage: message })
+        return
+
+      # (String, Number) => ()
+      hubnetSendWatch: (messageSource, agent) =>
+        socket.emit('send override', {
+          hubnetMessageType: "send-watch",
+          hubnetAgentOrSet: this.getAgentIds(agent),
+          hubnetMessageSource: messageSource })
+        return
+
+      # (String) => ()
+      hubnetResetPerspective: (messageTag) =>
+        socket.emit('send override', {
+          hubnetMessageType: "reset-perspective",
+          hubnetMessageTag: messageTag })
+        return
+
+      # (String, Agent, Number) => ()
+      hubnetSendFollow: (messageSource, agent, radius) =>
+        socket.emit('send override', {
+          hubnetMessageType: "send-follow",
+          hubnetAgentOrSet: this.getAgentIds(agent),
+          hubnetMessageSource: messageSource,
+          hubnetMessage: radius })
+        return
+
+      getAgentIds: (agents) ->
+        ids = []
+        agentType = agents.constructor.name
+        if (agentType is "Turtle")
+          ids.push(agents.id)
+        else
+          if (agentType is "TurtleSet")
+            agentObj = agents._agents
+            for a in agentObj
+              ids.push(a.id)
+        return ids
 
       processCommand: (m) ->
         #console.log(m.messageSource+" "+m.messageTag+" "+m.message);
