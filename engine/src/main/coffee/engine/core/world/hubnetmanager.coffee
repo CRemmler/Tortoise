@@ -75,12 +75,9 @@ module.exports =
           hubnetMessage: radius })
         return
 
-      # (String, Agent, Radius) => ()
-      # hubnetSendFollow: (clientName, agent, radius) =>
-      #   return
-
-      # (String, TurtleSet, String, List ) =>
+      # (String, TurtleSet, String) => ()
       hubnetSendOverride: (messageSource, agentOrSet, messageTag, message) =>
+        console.log(message)
         socket.emit('send override', {
           hubnetMessageType: "send-override",
           hubnetAgentOrSet: this.getAgentIds(agentOrSet),
@@ -89,21 +86,16 @@ module.exports =
           hubnetMessage: message })
         return
 
-      # (string, agent, string) => ()
-      # hubnetSendOverride: (clientName, agentOrSet, variableName) =>
-      #   return
-
       getAgentIds: (agents) ->
         ids = []
         agentType = agents.constructor.name
-        if (agentType is "Turtle")
+        if (agentType is "Turtle" or agentType is "Patch" or agentType is "Link")
           ids.push(agents.id)
         else
-          if (agentType is "TurtleSet")
-            agentObj = agents._agents
-            for a in agentObj
-              ids.push(a.id)
-        return ids
+          agentObj = agents._agentArr
+          for a in agentObj
+            ids.push(a.id)
+        return {agentType: agentType, ids: ids }
 
       processCommand: (m) ->
         #console.log(m.messageSource+" "+m.messageTag+" "+m.message);

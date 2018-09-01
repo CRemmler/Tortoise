@@ -367,7 +367,6 @@ object SimplePrims {
         case _: prim.hubnet._hubnetsend         => "world.hubnetManager.hubnetSend"
         case _: prim.hubnet._hubnetfetchmessage => "world.hubnetManager.hubnetFetchMessage"
         case _: prim.hubnet._hubnetsendfollow   => "world.hubnetManager.hubnetSendFollow"
-        case _: prim.hubnet._hubnetsendoverride => "world.hubnetManager.hubnetSendOverride"
         case _: prim.hubnet._hubnetbroadcast    => "world.hubnetManager.hubnetBroadcast"
         case _: prim.hubnet._hubnetclearoverride    => "world.hubnetManager.hubnetClearOverride"
         case _: prim.hubnet._hubnetclearoverrides   => "world.hubnetManager.hubnetClearOverrides"

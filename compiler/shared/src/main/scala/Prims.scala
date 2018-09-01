@@ -335,6 +335,11 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._withlocalrandomness =>
         s"workspace.rng.withClone(function() { ${handlers.commands(s.args(0))} })"
 
+
+      case _: prim.hubnet._hubnetsendoverride =>
+        s"world.hubnetManager.hubnetSendOverride(${arg(0)}, ${arg(1)}, ${arg(2)}, ${arg(3)})"
+
+
       case r: prim._run => generateRunCode(false, r.token, args, procContext)
 
       case fe: prim.etc._foreach          =>
