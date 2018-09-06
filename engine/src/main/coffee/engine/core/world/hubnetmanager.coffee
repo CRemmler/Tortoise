@@ -70,7 +70,7 @@ module.exports =
       hubnetSendFollow: (messageSource, agent, radius) =>
         socket.emit('send override', {
           hubnetMessageType: "send-follow",
-          hubnetAgentOrSet: this.getAgent(agent),
+          hubnetAgentOrSet: this.getAgents(agent),
           hubnetMessageSource: messageSource,
           hubnetMessage: radius })
         return
