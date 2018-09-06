@@ -39,7 +39,7 @@ module.exports =
       hubnetClearOverride: (messageSource, agentOrSet, messageTag) =>
         socket.emit('send override', {
           hubnetMessageType: "clear-override",
-          hubnetAgentOrSet: this.getAgentIds(agentOrSet),
+          hubnetAgentOrSet: this.getAgents(agentOrSet),
           hubnetMessageSource: messageSource,
           hubnetMessageTag: messageTag })
         return
@@ -55,22 +55,22 @@ module.exports =
       hubnetSendWatch: (messageSource, agent) =>
         socket.emit('send override', {
           hubnetMessageType: "send-watch",
-          hubnetAgentOrSet: this.getAgentIds(agent),
+          hubnetAgentOrSet: this.getAgents(agent),
           hubnetMessageSource: messageSource })
         return
 
       # (String) => ()
-      hubnetResetPerspective: (messageTag) =>
+      hubnetResetPerspective: (messageSource) =>
         socket.emit('send override', {
           hubnetMessageType: "reset-perspective",
-          hubnetMessageTag: messageTag })
+          hubnetMessageSource: messageSource })
         return
 
       # (String, Agent, Number) => ()
       hubnetSendFollow: (messageSource, agent, radius) =>
         socket.emit('send override', {
           hubnetMessageType: "send-follow",
-          hubnetAgentOrSet: this.getAgentIds(agent),
+          hubnetAgentOrSet: this.getAgent(agent),
           hubnetMessageSource: messageSource,
           hubnetMessage: radius })
         return
@@ -80,13 +80,13 @@ module.exports =
         console.log(message)
         socket.emit('send override', {
           hubnetMessageType: "send-override",
-          hubnetAgentOrSet: this.getAgentIds(agentOrSet),
+          hubnetAgentOrSet: this.getAgents(agentOrSet),
           hubnetMessageSource: messageSource,
           hubnetMessageTag: messageTag,
           hubnetMessage: message })
         return
 
-      getAgentIds: (agents) ->
+      getAgents: (agents) ->
         ids = []
         agentType = agents.constructor.name
         if (agentType is "Turtle" or agentType is "Patch" or agentType is "Link")
@@ -95,7 +95,15 @@ module.exports =
           agentObj = agents._agentArr
           for a in agentObj
             ids.push(a.id)
-        return {agentType: agentType, ids: ids }
+        if (agentType.indexOf("Turtle") > -1)
+          agentType = "turtles"
+        if (agentType.indexOf("Patch") > -1)
+          agentType = "patches"
+        if (agentType.indexOf("Link") > -1)
+          agentType = "links"
+        return {
+          agentType: agentType,
+          ids: ids }
 
       processCommand: (m) ->
         #console.log(m.messageSource+" "+m.messageTag+" "+m.message);
