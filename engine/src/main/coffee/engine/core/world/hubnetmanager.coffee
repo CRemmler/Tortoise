@@ -77,7 +77,6 @@ module.exports =
 
       # (String, TurtleSet, String) => ()
       hubnetSendOverride: (messageSource, agentOrSet, messageTag, message) =>
-        console.log(message)
         socket.emit('send override', {
           hubnetMessageType: "send-override",
           hubnetAgentOrSet: this.getAgents(agentOrSet),

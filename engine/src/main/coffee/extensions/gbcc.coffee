@@ -12,13 +12,12 @@ module.exports = {
           hubnetMessageSource: "server",
           hubnetMessageTag: messageTag,
           hubnetMessage: message })
-        myData[messageTag] = message
         return
 
     # (String) => Any
     get = (messageTag) ->
-      if myData[messageTag]?
-        return myData[messageTag]
+      if userData[myUserId][messageTag]?
+        return userData[myUserId][messageTag]
       else
         return "undefined"
 
@@ -73,8 +72,12 @@ module.exports = {
         Gallery.broadcastAvatar(shape, color, text)
 
     # () => ()
+    clearBroadcasts = () ->
+        Gallery.clearBroadcasts()
+
+    # (String) => ()
     clearBroadcast = () ->
-        Gallery.clearBroadcast()
+        Gallery.clearBroadcast(name)
 
     # (String, String) => ()
     compileObserverCode = (key, value) ->
@@ -137,12 +140,28 @@ module.exports = {
         Gallery.hidePatches()
 
     # (String) => ()
-    importWorld = (filename) ->
-        Gallery.importWorld(filename)
+    importOurDataFile = (filename) ->
+        GbccFileManager.importOurDataFile(filename)
+
+    # () => ()
+    importOurData = () ->
+        GbccFileManager.importOurData()
 
     # (String) => ()
-    exportWorld = (filename) ->
-        Gallery.exportWorld(filename)
+    exportOurData = (filename) ->
+        GbccFileManager.exportOurData(filename)
+
+    # (String) => ()
+    importMyDataFile = (filename) ->
+        GbccFileManager.importMyDataFile(filename)
+
+    # () => ()
+    importMyData = () ->
+        GbccFileManager.importMyData()
+
+    # (String) => ()
+    exportMyData = (filename) ->
+        GbccFileManager.exportMyData(filename)
 
     # (String, String, Any) => ()
     send = (messageSource, messageTag, message) ->
@@ -160,6 +179,42 @@ module.exports = {
             hubnetMessage: message })
         return
 
+    # (String, Number) => ()
+    adoptCanvas = (userId, canvasId) ->
+        Gallery.adoptCanvas(userId, canvasId)
+
+    # () => (List)
+    getCanvasList = () ->
+        return Gallery.getCanvasList()
+
+    # () => (List)
+    getUserList = () ->
+        return Gallery.getUserList()
+
+    # () => (List)
+    getVacantIndices = () ->
+        return Gallery.getVacantIndices()
+
+    # () => (List)
+    getUserList = () ->
+        return Gallery.getUserList()
+
+    # () => (List)
+    getActiveUserList = () ->
+        return Gallery.getActiveUserList()
+
+    # () => (List)
+    getFileList = () ->
+      return GbccFileManager.getFileList()
+
+    # () => ()
+    cloneCanvas = () ->
+       Gallery.cloneCanvas()
+
+    # (String) => ()
+    removeCanvas = (userId) ->
+       Gallery.cloneCanvas(userId)
+
     {
       name: "gbcc"
     , prims: {
@@ -173,6 +228,7 @@ module.exports = {
       , "BROADCAST-PLOT": broadcastPlot
       , "BROADCAST-AVATAR": broadcastAvatar
       , "BROADCAST-TEXT": broadcastText
+      , "CLEAR-BROADCASTS": clearBroadcasts
       , "CLEAR-BROADCAST": clearBroadcast
       ,     "COMPILE-OBSERVER-CODE": compileObserverCode
       ,       "COMPILE-TURTLE-CODE": compileTurtleCode
@@ -186,10 +242,21 @@ module.exports = {
       , "GET-STREAM-FROM-USER": getStreamFromUser
       , "SHOW-PATCHES": showPatches
       , "HIDE-PATCHES": hidePatches
+      , "IMPORT-UNIVERSE": importUniverse
+      , "EXPORT-UNIVERSE": exportUniverse
+      , "IMPORT-UNIVERSE-FILE": importUniverseFile
       , "IMPORT-WORLD": importWorld
       , "EXPORT-WORLD": exportWorld
       , "SEND": send
       , "BROADCAST": broadcast
+      , "GET-FILE-LIST": getFileList
+      , "GET-CANVAS-LIST": getCanvasList
+      , "GET-VACANT-INDICES": getVacantIndices
+      , "GET-USER-LIST": getUserList
+      , "GET-ACTIVE-USER-LIST": getActiveUserList
+      , "ADOPT-CANVAS": adoptCanvas
+      , "CLONE-CANVAS": cloneCanvas
+      , "REMOVE-CANVAS": removeCanvas
       }
     }
 }

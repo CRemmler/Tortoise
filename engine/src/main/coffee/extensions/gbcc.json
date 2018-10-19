@@ -44,9 +44,13 @@
       "actionName": "broadcast-avatar",
       "argTypes": [ "string", "number", "string" ]
     }, {
+      "name": "clear-broadcasts",
+      "actionName": "clear-broadcasts",
+      "argTypes": [  ]
+    }, {
       "name": "clear-broadcast",
       "actionName": "clear-broadcast",
-      "argTypes": [  ]
+      "argTypes": [ "string" ]
     }, {
       "name": "compile-observer-code",
       "actionName": "compile-observer-code",
@@ -99,13 +103,29 @@
       "actionName": "hide-patches",
       "argTypes": [  ]
     }, {
-      "name": "import-world",
-      "actionName": "import-world",
+      "name": "import-our-data-file",
+      "actionName": "import-our-data-file",
       "argTypes": [ "string" ]
     }, {
-      "name": "export-world",
-      "actionName": "export-world",
+      "name": "export-our-data",
+      "actionName": "export-our-data",
       "argTypes": [ "string" ]
+    }, {
+      "name": "import-our-data",
+      "actionName": "import-our-data",
+      "argTypes": [  ]
+    }, {
+      "name": "import-myr-data-file",
+      "actionName": "import-my-data-file",
+      "argTypes": [ "string" ]
+    }, {
+      "name": "export-my-data",
+      "actionName": "export-my-data",
+      "argTypes": [ "string" ]
+    }, {
+      "name": "import-my-data",
+      "actionName": "import-my-data",
+      "argTypes": [  ]
     }, {
       "name": "send",
       "actionName": "send",
@@ -114,6 +134,43 @@
       "name": "broadcast",
       "actionName": "broadcast",
       "argTypes": [ "string", "wildcard" ]
+    }, {
+      "name": "adopt-canvas",
+      "actionName": "adopt-canvas",
+      "argTypes": [ "string", "number" ]
+    }, {
+      "name": "get-canvas-list",
+      "actionName": "get-canvas-list",
+      "argTypes": [],
+      "returnType": "list"
+    }, {
+      "name": "get-vacant-indices",
+      "actionName": "get-vacant-indices",
+      "argTypes": [],
+      "returnType": "list"
+    }, {
+      "name": "get-user-list",
+      "actionName": "get-user-list",
+      "argTypes": [],
+      "returnType": "list"
+    }, {
+      "name": "get-active-user-list",
+      "actionName": "get-active-user-list",
+      "argTypes": [],
+      "returnType": "list"
+    }, {
+      "name": "get-file-list",
+      "actionName": "get-file-list",
+      "argTypes": [],
+      "returnType": "list"
+    }, {
+      "name": "clone-canvas",
+      "actionName": "clone-canvas",
+      "argTypes": []
+    }, {
+      "name": "remove-canvas",
+      "actionName": "remove-canvas",
+      "argTypes": [ "string" ]
     }
   ]
 }

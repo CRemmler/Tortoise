@@ -14,22 +14,14 @@
     "actionName": "set-data",
     "argTypes": ["string"]
    }, {
-    "name": "import-ggb",
-    "actionName": "import-ggb",
+    "name": "import-ggb-file",
+    "actionName": "import-ggb-file",
     "argTypes": ["string"]
    }, {
     "name": "get-data",
     "actionName": "get-data",
     "argTypes": [],
     "returnType": "string"
-   }, {
-    "name": "export-file",
-    "actionName": "export-file",
-    "argTypes": ["string"]
-   }, {
-    "name": "import-file",
-    "actionName": "import-file",
-    "argTypes": ["string"]
    }, {
     "name": "create-point",
     "actionName": "create-point",
@@ -169,14 +161,6 @@
     "argTypes": [],
     "returnType": "string"
    }, {
-    "name": "import-world",
-    "actionName": "import-world",
-    "argTypes": ["string"]
-   }, {
-    "name": "export-world",
-    "actionName": "export-world",
-    "argTypes": ["string"]
-   }, {
     "name": "update-graph",
     "actionName": "update-graph",
     "argTypes": []
@@ -254,10 +238,6 @@
     "argTypes": ["string"],
     "returnType": "string"
    }, {
-    "name": "upload-ggb",
-    "actionName": "upload-ggb",
-    "argTypes": []
-   }, {
     "name": "get-ggb-list",
     "actionName": "get-ggb-list",
     "argTypes": [],
@@ -267,6 +247,10 @@
     "actionName": "get-value-string",
     "argTypes": ["string"],
     "returnType": "string"
+   }, {
+    "name": "import-ggb",
+    "actionName": "import-ggb",
+    "argTypes": []
    }
   ]
 }

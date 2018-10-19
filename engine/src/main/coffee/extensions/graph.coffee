@@ -17,20 +17,12 @@ module.exports = {
         Graph.setData(data)
 
     # (string) => ()
-    importGgb = (filename) ->
-        Graph.importGgb(filename)
+    importGgbFile = (filename) ->
+        Graph.importGgbFile(filename)
 
     # () => (string)
     getData = () ->
         return Graph.getData()
-
-    # (string) => ()
-    exportFile = (filename) ->
-        Graph.exportFile(filename)
-
-    # (string) => ()
-    importFile = (filename) ->
-        Graph.importFile(filename)
 
     # (string, list) => ()
     createPoint = (name, center) ->
@@ -156,14 +148,6 @@ module.exports = {
     getPointsString = () ->
         return Graph.getPointsString()
 
-    # (string) => ()
-    importWorld = (filename) ->
-        Graph.importWorld(filename)
-
-    # (string) => ()
-    exportWorld = (filename) ->
-        Graph.exportWorld(filename)
-
     # () => ()
     updateGraph = () ->
         Graph.updateGraph()
@@ -236,10 +220,6 @@ module.exports = {
     getCommandString = (name) ->
         return Graph.getCommandString(name)
 
-    # () => ()
-    uploadGgb = () ->
-        Graph.uploadGgb()
-
     # () => (list)
     getGgbList = () ->
         return Graph.getGgbList()
@@ -248,16 +228,18 @@ module.exports = {
     getValueString = (name) ->
         return Graph.getValueString(name)
 
+    # () => ()
+    importGgb = () ->
+        Graph.importGgb()
+
     {
       name: "graph"
     , prims: {
       "HIDE-GRAPH": hideGraph,
       "SHOW-GRAPH": showGraph,
       "SET-DATA": setData,
-      "IMPORT-GGB": importGgb,
+      "IMPORT-GGB-FILE": importGgbFile,
       "GET-DATA": getData,
-      "EXPORT-FILE": exportFile,
-      "IMPORT-FILE": importFile,
       "CREATE-POINT": createPoint,
       "SET-OPACITY": setOpacity,
       "GET-OPACITY": getOpacity,
@@ -289,8 +271,6 @@ module.exports = {
       "EVAL-COMMAND": evalCommand,
       "EVAL-REPORTER": evalReporter,
       "GET-POINTS-STRING": getPointsString,
-      "IMPORT-WORLD": importWorld,
-      "EXPORT-WORLD": exportWorld,
       "UPDATE-GRAPH": updateGraph,
       "SHOW-OBJECT-LABEL": showObjectLabel,
       "HIDE-OBJECT-LABEL": hideObjectLabel,
@@ -309,9 +289,9 @@ module.exports = {
       "MOUSE-ON": mouseOn,
       "MOUSE-OFF": mouseOff,
       "GET-COMMAND-STRING": getCommandString,
-      "UPLOAD-GGB": uploadGgb,
       "GET-GGB-LIST": getGgbList,
       "GET-VALUE-STRING": getValueString,
+      "IMPORT-GGB": importGgb
     }
     }
 }
