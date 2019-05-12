@@ -13,10 +13,10 @@ NLMath          = require('util/nlmath')
 { pipeline }        = require('brazier/function')
 { values }          = require('brazier/object')
 
-{ Observer                                    } = require('./observer')
-{ linkBuiltins, patchBuiltins, turtleBuiltins } = require('./structure/builtins')
-{ worldDataToCSV                              } = require('serialize/exportcsv')
-{ TopologyInterrupt                           } = require('util/exception')
+{ Observer                                         } = require('./observer')
+{ linkBuiltins, patchBuiltins, turtleBuiltins      } = require('./structure/builtins')
+{ allPlotsDataToCSV, plotDataToCSV, worldDataToCSV } = require('serialize/exportcsv')
+{ TopologyInterrupt                                } = require('util/exception')
 
 { exportWorld, exportPlot, exportAllPlots } = require('./world/export')
 { importWorld                             } = require('./world/import')
@@ -47,8 +47,8 @@ module.exports =
     _patchesAllBlack:          undefined # Boolean
     _patchesWithLabels:        undefined # Number
 
-    # (MiniWorkspace, WorldConfig, () => Unit, () => String, (Any) => String, (String) => Unit, Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, ShapeMap, ShapeMap, () => Unit) => World
-    constructor: (miniWorkspace, @_config, @_outputClear, @_getOutput, @_setOutput, @dump, globalNames, interfaceGlobalNames
+    # (MiniWorkspace, WorldConfig, () => String, () => Unit, () => String, (Any) => String, (String) => Unit, Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, ShapeMap, ShapeMap, () => Unit) => World
+    constructor: (miniWorkspace, @_config, @_getViewBase64, @_outputClear, @_getOutput, @_setOutput, @dump, globalNames, interfaceGlobalNames
                 , @patchesOwnNames, minPxcor, maxPxcor, minPycor , maxPycor, @patchSize, wrappingAllowedInX, wrappingAllowedInY
                 , @turtleShapeMap, @linkShapeMap, onTickFunction) ->
       { selfManager: @selfManager, updater: @_updater, rng: @rng
@@ -170,6 +170,7 @@ module.exports =
     # (Number) => Unit
     setPatchSize: (@patchSize) ->
       @_updater.updated(this)("patchSize")
+      @_updater.rescaleDrawing()
       return
 
     # () => Unit
@@ -208,8 +209,8 @@ module.exports =
       return
 
     # (String) => Unit
-    importDrawing: (sourcePath) ->
-      @_updater.importDrawing(sourcePath)
+    importDrawing: (imageBase64) ->
+      @_updater.importDrawing(imageBase64)
       return
 
     # () => Unit
@@ -229,15 +230,15 @@ module.exports =
     exportState: ->
       exportWorld.call(this)
 
-    # () => Object[Any]
+    # () => String
     exportAllPlotsCSV: ->
       allPlotsDataToCSV(exportAllPlots.call(this))
 
-    # () => Object[Any]
+    # (String) => String
     exportPlotCSV: (name) ->
       plotDataToCSV(exportPlot.call(this, name))
 
-    # () => Object[Any]
+    # () => String
     exportCSV: ->
 
       varNamesForBreedsMatching =

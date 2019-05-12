@@ -3,86 +3,133 @@
 package org.nlogo.tortoise.nlw
 package dock
 
-import scala.io.Source
-import scala.util.Try
+import java.io.{ ByteArrayInputStream, CharArrayWriter, InputStreamReader, PrintWriter }
+import java.time.{ Duration, Instant }
 
 import org.nlogo.tortoise.compiler.Model
 import org.nlogo.tortoise.tags.SlowTest
 
 class TestModels extends DockingSuite {
 
-  val usesDrawingEvents = Set("Fireworks", "GasLab Free Gas", "Hill Climbing Example", "Many Regions Example", "Tree Simple", "Turtles Circling")
-  val importsLambdas    = Set("BeeSmart Hive Finding", "State Machine Example")
+  val chunksCount = 9
 
-  val (nonExportables, exportables) = Model.models.partition((m) => (importsLambdas | usesDrawingEvents)(m.name))
+  val importsLambdas = Set("BeeSmart Hive Finding", "State Machine Example")
+
+  val (nonExportables, exportables) = Model.models.partition((m) => (importsLambdas)(m.name))
 
   for (model <- nonExportables) {
-    test(model.name, SlowTest) { implicit fixture =>
-      fixture.open(model.path, model.dimensions)
+    val testName = s"0: no export - ${model.name}"
+    test(testName, SlowTest) { implicit fixture =>
+      engine.reset
+
+      println(testName)
+
+      fixture.open(model.path, model.dimensions, true, Set())
       fixture.testCommand(model.setup)
-      for(_ <- 1 to model.repetitions)
+      println(s"  running ${model.repetitions} reps: ")
+      print("  ")
+      for(i <- 1 to model.repetitions) {
+        print(if (i % 10 == 0) "|" else ".")
         fixture.testCommand(model.go)
+      }
+      println()
       model.metrics.foreach(fixture.compare)
     }
   }
 
+  var count = 0
+
   for (model <- exportables) {
 
-    val name    = model.name
-    val tempDir = System.getProperty("java.io.tmpdir")
+    val name = model.name
 
-    sealed trait Platform
-    case object Desktop extends Platform
-    case object Web     extends Platform
+    def exportWorld(fixture: DockingFixture): (String, String) = {
 
-    sealed trait Base
-    case object Original    extends Base { override def toString = "original"     }
-    case object FromDesktop extends Base { override def toString = "from-desktop" }
-    case object FromWeb     extends Base { override def toString = "from-web"     }
+      val caw = new CharArrayWriter
+      fixture.workspace.exportWorld(new PrintWriter(caw))
+      val desktopCSV = caw.toString
 
-    def readFile(filename: String): String =
-      Try(Source.fromFile(filename).mkString).getOrElse(throw new Exception(s"Could not find $filename")).trim
+      val webCSV = fixture.evalJS("ImportExportPrims.exportWorldRaw()").asInstanceOf[String]
 
-    def csv(platform: Platform, base: Base): String =
-      s"$tempDir/NL${if (platform == Desktop) "D" else "W"}_${base}_$name.csv"
+      (desktopCSV, webCSV)
 
-    def testReimport(inPlatform: Platform, fixture: DockingFixture): Unit = {
+    }
 
-      val outBase = if (inPlatform == Web) FromWeb else FromDesktop
+    def testReimport( platformName: String, fixture: DockingFixture
+                    , desktopOriginalCSV: String, webOriginalCSV: String): Unit = {
 
-      fixture.testCommand(s"""import-world "${csv(inPlatform, Original)}" """)
-      fixture.testCommand(s"""export-world (ifelse-value netlogo-web? [ "${csv(Web, outBase)}"] [ "${csv(Desktop, outBase)}" ])""")
+      val start = Instant.now()
 
-      compareExports(readFile(csv(Desktop, outBase)), readFile(csv(Web, outBase)), outBase.toString)
+      fixture.runDocked {
+        _.importWorld(new InputStreamReader(new ByteArrayInputStream(desktopOriginalCSV.getBytes)))
+      } {
+        (engine) =>
+          engine.put("__nonsenseWorldCSV", webOriginalCSV)
+          engine.run("ImportExportPrims.importWorldRaw(__nonsenseWorldCSV)")
+      }
+
+      val importDuration = Duration.between(start, Instant.now())
+      println(s"    import time: ${importDuration.toMillis}")
+      val (desktopCSV, webCSV) = exportWorld(fixture)
+      val exportDuration = Duration.between(start, Instant.now())
+      println(s"    export time: ${exportDuration.toMillis}")
+
+      compareExports(desktopCSV, webCSV, platformName)
+      val compareDuration = Duration.between(start, Instant.now())
+      println(s"    compare time: ${compareDuration.toMillis}")
 
       if (model.repetitions > 0)
         fixture.testCommand(model.go) // Just to be sure that there were no errors or anything on import
 
       model.metrics.foreach(fixture.compare)
+      val cleanupDuration = Duration.between(start, Instant.now())
+      println(s"    metrics time: ${cleanupDuration.toMillis}")
 
     }
 
-    test(s"export-world - ${name}", SlowTest) { implicit fixture =>
+    val chunk = 1 + Integer.valueOf(chunksCount * count / exportables.size)
+    count = count + 1
+    val testName = s"$chunk: export-world - ${name}"
+    test(testName, SlowTest) { implicit fixture =>
+      engine.reset
 
-      fixture.open(model.path, model.dimensions)
+      println(testName)
+
+      fixture.open(model.path, model.dimensions, true)
       fixture.testCommand(model.setup)
-      for (_ <- 1 to model.repetitions)
+      println(s"  running ${model.repetitions} reps: ")
+      print("  ")
+      for (i <- 1 to model.repetitions) {
+        print(if (i % 10 == 0) "|" else ".")
         fixture.testCommand(model.go)
+      }
+      println()
 
+      println("  checking metrics")
       model.metrics.foreach(fixture.compare)
 
-      fixture.testCommand(s"""export-world (ifelse-value netlogo-web? [ "${csv(Web, Original)}" ] [ "${csv(Desktop, Original)}" ])""")
+      println("  running export")
 
-      compareExports(readFile(csv(Desktop, Original)), readFile(csv(Web, Original)), "First pass")
+      val (desktopOriginalCSV, webOriginalCSV) = exportWorld(fixture)
 
-      testReimport(Desktop, fixture)
-      testReimport(Web,     fixture)
+      println("  comparing exports")
+      compareExports(desktopOriginalCSV, webOriginalCSV, "First pass")
+
+      println("  running desktop imports")
+      testReimport("from-desktop", fixture, desktopOriginalCSV, webOriginalCSV)
+
+      println("  running web imports")
+      testReimport("from-web", fixture, desktopOriginalCSV, webOriginalCSV)
 
     }
 
   }
 
   private def compareExports(exportResultNLD: String, exportResultNLW: String, msgPrefix: String): Unit = {
+
+    // Just check the patch size (not the image base64) --JAB (2/12/19)
+    val transformDrawing =
+      (str: String) => str.lines.toSeq.init.mkString("\n")
 
     // Trim off plot bounds --JAB (1/3/18)
     val transformPlots =
@@ -96,7 +143,7 @@ class TestModels extends DockingSuite {
          , "TURTLES"      -> identity _
          , "PATCHES"      -> identity _
          , "LINKS"        -> identity _
-         , "DRAWING"      -> ignore
+         , "DRAWING"      -> transformDrawing
          , "PLOTS"        -> transformPlots
          , "OUTPUT"       -> identity _
          , "EXTENSIONS"   -> ignore

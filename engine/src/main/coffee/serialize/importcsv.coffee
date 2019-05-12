@@ -315,9 +315,20 @@ extensionParse = (csvBucket, schema) ->
       output[output.length - 1].push(item)
   output
 
+# Parser[(Number, String)]
+drawingParse = (csvBucket, schema) ->
+  if csvBucket.length is 0
+    ""
+  else if csvBucket.length is 2
+    [[patchSizeStr], [base64Str]] = csvBucket
+    [parseFloat(patchSizeStr), parseString(base64Str)]
+  else
+    throw new Error("NetLogo Web cannot parse `export-world` drawings from before NetLogo 6.1.")
+
 # ((String) => String, (String) => String) => Object[Parser[Any]]
 buckets = (singularToPlural, pluralToSingular) -> {
   extensions:  extensionParse
+, drawing:     drawingParse
 , globals:     globalParse(singularToPlural, pluralToSingular)
 , links:       arrayParse(singularToPlural, pluralToSingular)
 , output:      singletonParse
@@ -352,6 +363,7 @@ module.exports =
 
     parsedCSV = parse(csvText, {
       comment: '#'
+      max_limit_on_data_read: 1e12
       skip_empty_lines: true
       relax_column_count: true
     })
@@ -378,6 +390,7 @@ module.exports =
         else
           [acc, latestRows]
 
+
     [bucketToRows, _] = foldl(clusterRows)([{}, undefined])(parsedCSV)
 
     world = {}
@@ -389,7 +402,7 @@ module.exports =
     filenameRow = parsedCSV[1][0]
     dateRow     = parsedCSV[2][0]
 
-    { globals, randomState, turtles, patches, links, output, plots, extensions } = world
+    { globals, randomState, turtles, patches, links, drawing, output, plots, extensions } = world
 
     codeGlobals = globals.extraVars
     delete globals.extraVars
@@ -403,4 +416,5 @@ module.exports =
     outPlotManager = toExportedPlotManager(plots)
     outExtensions  = extensions.map(-> new ExportedExtension)
 
-    new ExportWorldData(outMetadata, randomState, outGlobals, outPatches, outTurtles, outLinks, output, outPlotManager, outExtensions)
+    new ExportWorldData( outMetadata, randomState, outGlobals, outPatches, outTurtles
+                       , outLinks, maybe(drawing), output, outPlotManager, outExtensions)

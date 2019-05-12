@@ -17,17 +17,28 @@ module.exports.ExportedColor = ExportedColor
 module.exports.ExportedRGB =
   class extends ExportedColor
     # (Number, Number, Number)
-    constructor: (@r, @g, @b) ->
+    constructor: (r, g, b) ->
+      super()
+      @r = r
+      @g = g
+      @b = b
 
 module.exports.ExportedRGBA =
   class extends ExportedColor
     # (Number, Number, Number, Number)
-    constructor: (@r, @g, @b, @a = 255) ->
+    constructor: (r, g, b, a = 255) ->
+      super()
+      @r = r
+      @g = g
+      @b = b
+      @a = a
 
 module.exports.ExportedColorNum =
   class extends ExportedColor
     # (Number)
-    constructor: (@value) ->
+    constructor: (value) ->
+      super()
+      @value = value
 
 module.exports.ExportedGlobals =
   class
@@ -163,8 +174,9 @@ module.exports.Metadata =
 module.exports.ExportWorldData =
   class
     # ( Metadata, String, ExportedGlobals, Array[ExportedPatch], Array[ExportedTurtle]
-    # , Array[ExportedLink], String, ExportedPlotManager, Array[ExportedExtension])
-    constructor: (@metadata, @randomState, @globals, @patches, @turtles, @links, @output, @plotManager, @extensions) ->
+    # , Array[ExportedLink], Maybe[(Number, String)], String, ExportedPlotManager, Array[ExportedExtension])
+    constructor: ( @metadata, @randomState, @globals, @patches, @turtles
+                 , @links, @drawingDataMaybe, @output, @plotManager, @extensions) ->
 
 module.exports.ExportPlotData =
   class

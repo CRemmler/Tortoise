@@ -2,7 +2,7 @@
 
 Cloner = require('./cloner')
 
-# We use this outside of Nashorn --JAB (4/10/15)
+# We use this outside of GraalJS --JAB (4/10/15) / JMB (11/18)
 genEnhancedMath = ->
   obj = Cloner(Math)
   # For functions that are not "close enough," or that don't exist in the browser, manually define them here!
@@ -12,4 +12,4 @@ genEnhancedMath = ->
   obj.truncate  = (x) -> if x >= 0 then Math.floor(x) else Math.ceil(x)
   obj
 
-module.exports = StrictMath ? genEnhancedMath()
+module.exports = genEnhancedMath()

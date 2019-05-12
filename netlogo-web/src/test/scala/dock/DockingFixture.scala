@@ -4,13 +4,10 @@ package org.nlogo.tortoise.nlw
 package dock
 
 import
-  javax.script.ScriptException
+  jsengine.GraalJS
 
 import
-  jdk.nashorn.internal.runtime.{ ECMAException, ScriptObject }
-
-import
-  jsengine.Nashorn
+  org.graalvm.polyglot.PolyglotException
 
 import
   org.nlogo.tortoise.compiler.{ Compiler, CompilerFlags, WidgetCompiler, json },
@@ -18,7 +15,7 @@ import
 
 import
   org.nlogo.{ core, api, headless, mirror, nvm },
-    api.{ Dump, FileIO },
+    api.{ Dump, FileIO, Workspace },
     headless.{ lang, test => headlessTest },
       lang.Fixture,
       headlessTest.{ RuntimeError, TestMode, Command, Reporter, Success },
@@ -39,7 +36,7 @@ trait DockingSuite extends FunSuite with TestLogger {
   type FixtureParam = DockingFixture
 
   override def withFixture(test: OneArgTest) = {
-    val fixture = new DockingFixture(test.name, nashorn)
+    val fixture = new DockingFixture(test.name, engine)
     try {
       loggingFailures(suiteName, test.name, {
         val outcome = withFixture(test.toNoArgTest(fixture))
@@ -54,7 +51,7 @@ trait DockingSuite extends FunSuite with TestLogger {
   }
 }
 
-class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
+class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
 
   def mirrorables: Iterable[mirror.Mirrorable] =
     mirror.Mirrorables.allMirrorables(workspace.world)
@@ -101,7 +98,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
       case Success(expected) =>
         withClue(reporter.reporter) {
           assertResult(expected) {
-            nashorn.evalAndDump(compiledJS)
+            engine.evalAndDump(compiledJS)
           }
           ()
         }
@@ -122,15 +119,14 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
     println("[View Result] " + Dump.logoObject(workspace.report(reporter)))
   }
 
-  override def runCommand(command: Command, mode: TestMode) = {
+  def runDocked(nldOp: (Workspace) => Unit)(nlwOp: (GraalJS) => (String, String)): Unit = {
+
     if (!opened) declare(Model())
-    val logo = command.command
-    netLogoCode ++= s"$logo\n"
 
     drawingActionBuffer.clear()
     val (headlessException, exceptionOccurredInHeadless) =
       try {
-        workspace.command(logo)
+        nldOp(workspace)
         (Unit, false)
       } catch {
         case ex: Exception =>
@@ -140,27 +136,19 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
     state = newState
     val expectedJson = "[" + JsonSerializer.serializeWithViewUpdates(update, drawingActionBuffer.grab()) + "]"
     val expectedOutput = workspace.outputAreaBuffer.toString
-    val compiledJS = "var letVars = { }; " + Compiler.compileRawCommands(logo, workspace.procedures, workspace.world.program)
     val (exceptionOccurredInJS, (actualOutput, actualJson)) =
       try {
-        (false, runJS(compiledJS))
+        (false, nlwOp(engine))
       } catch {
-        case e: ScriptException =>
-          e.getCause match {
-            case inner: ECMAException =>
-              inner.thrown match {
-                case obj: ScriptObject =>
-                  (true, (obj.get("message").toString, ""))
-                case _ =>
-                  if (!exceptionOccurredInHeadless)
-                    e.printStackTrace()
-                  (true, ("", ""))
-              }
-            case _ =>
-              if (!exceptionOccurredInHeadless)
-                e.printStackTrace()
-              (true, ("", ""))
-          }
+        case ex: PolyglotException =>
+          val AfterFirstColonRegex   = "^.*?: (.*)".r
+          val AfterFirstColonRegex(exMsg) = ex.getMessage
+          (true, (exMsg, ""))
+
+        case ex: Exception =>
+          if (!exceptionOccurredInHeadless)
+            ex.printStackTrace()
+          (true, ("", ""))
       }
     if(exceptionOccurredInHeadless && !exceptionOccurredInJS) {
       throw new TestFailedException("Exception occurred in headless but not JS: " + headlessException, 7)
@@ -171,46 +159,63 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
         throw new TestFailedException(s"""Exception in JS was "$actualOutput" but exception in headless was "$headlessException" """, 7)
     } else {
       assertResult(expectedOutput)(evalJS("world._getOutput()").asInstanceOf[String].replaceAllLiterally("\\n", "\n"))
-      val (expectedModel, actualModel) = updatedJsonModels(expectedJson, actualJson)
+      val removeB64 = (str: String) => str.replaceAll("""("imageBase64":\s*").*?"""", """$1"""")
+      val (expectedModel, actualModel) = updatedJsonModels(removeB64(expectedJson), removeB64(actualJson))
 
       val headlessRNGState = workspace.world.mainRNG.save
-      val nashornRNGState  = nashorn.eval("Random.save();").asInstanceOf[String]
+      val engineRNGState  = engine.eval("Random.save();").asInstanceOf[String]
 
-      assert(headlessRNGState == nashornRNGState, "divergent RNG state")
+      assert(headlessRNGState == engineRNGState, "divergent RNG state")
 
       JSONAssert.assertEquals(expectedModel, actualModel, /* strict = */ true)
 
       ()
 
     }
+
+  }
+
+  override def runCommand(command: Command, mode: TestMode) = {
+    val logo = command.command
+    netLogoCode ++= s"$logo\n"
+    val compiledJS = "var letVars = { }; " + Compiler.compileRawCommands(logo, workspace.procedures, workspace.world.program)
+    runDocked(_.command(logo))(_.run(compiledJS))
   }
 
   private def updatedJsonModels(expectedJson: String, actualJson: String) : (String, String) = {
     import play.api.libs.json.Json
 
     val processJSON = ((x: String) => Json.parse(x))// andThen render andThen compact
-    nashorn.eval(s"expectedUpdates = JSON.parse('${processJSON(expectedJson)}');")
-    nashorn.eval(s"actualUpdates   = JSON.parse('${processJSON(actualJson)}');")
-    nashorn.eval("expectedModel.updates(expectedUpdates);")
-    nashorn.eval("actualModel.updates(actualUpdates);")
-    val expectedModel = nashorn.eval("JSON.stringify(expectedModel);").asInstanceOf[String]
-    val actualModel = nashorn.eval("JSON.stringify(actualModel);").asInstanceOf[String]
+    engine.eval(s"expectedUpdates = JSON.parse('${processJSON(expectedJson)}');")
+    engine.eval(s"actualUpdates   = JSON.parse('${processJSON(actualJson)}');")
+    engine.eval("expectedModel.updates(expectedUpdates);")
+    engine.eval("actualModel.updates(actualUpdates);")
+    val expectedModel = engine.eval("JSON.stringify(expectedModel);").asInstanceOf[String]
+    val actualModel   = engine.eval("JSON.stringify(actualModel);").asInstanceOf[String]
     (expectedModel, actualModel)
   }
 
   // use single-patch world by default to keep generated JSON to a minimum
   override val defaultView = core.View.square(0)
 
-  override def open(path: String) {
+  override def open(path: String, shouldAutoInstallLibs: Boolean = false) {
     require(!opened)
-    super.open(path)
+    super.open(path, shouldAutoInstallLibs)
   }
 
-  def open(path: String, dimensions: Option[(Int, Int, Int, Int)]) {
+  def open(path: String, dimensions: Option[(Int, Int, Int, Int)], shouldAutoInstallLibs: Boolean): Unit = {
+    open(path, dimensions, shouldAutoInstallLibs, Set())
+  }
+
+  def open(path: String, dimensions: Option[(Int, Int, Int, Int)], shouldAutoInstallLibs: Boolean, requiredExts: Set[String]): Unit = {
+
     import scala.io.Codec.UTF8
+
     require(!opened)
-    super.open(path)
-    val model = ModelReader.parseModel(FileIO.fileToString(path)(UTF8), workspace.parser, Map())
+
+    val source    = FileIO.fileToString(path)(UTF8)
+    val newSource = addRequiredExtensions(source.replaceAll("""\sdisplay\s""", ""), requiredExts)
+    val model     = ModelReader.parseModel(newSource, workspace.parser, Map())
 
     val finalModel = dimensions match {
       case None => model
@@ -220,12 +225,13 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
     }
     workspace.setDimensions(finalModel.view.dimensions)
 
-    declareHelper(finalModel)
+    openModel(finalModel, shouldAutoInstallLibs)
+
   }
 
-  override def open(model: Model) {
+  override def openModel(model: Model, shouldAutoInstallLibs: Boolean = false) {
     require(!opened)
-    super.open(model)
+    super.openModel(model, shouldAutoInstallLibs)
     declareHelper(model)
   }
 
@@ -254,22 +260,36 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
     evalJS(js)
     evalJS(s"var widgets = ${WidgetCompiler.formatWidgets(result.widgets)};")
     state = Map()
-    nashorn.eval("expectedModel = new AgentModel;")
-    nashorn.eval("actualModel = new AgentModel;")
+    engine.eval("expectedModel = new AgentModel;")
+    engine.eval("actualModel = new AgentModel;")
     opened = true
     runCommand(Command("clear-all random-seed 0"))
   }
 
-  def getNashorn: Nashorn = nashorn
+  def getEngine: GraalJS = engine
 
   // these two are super helpful when running failing tests
   // to show the javascript before it gets executed.
   def evalJS(javascript: String) = {
-    nashorn.eval(javascript)
+    engine.eval(javascript)
   }
 
   def runJS(javascript: String): (String, String) = {
-    nashorn.run(javascript)
+    engine.run(javascript)
+  }
+
+  private def addRequiredExtensions(source: String, requiredExts: Set[String]): String = {
+
+    val ExtRegex = """(?s)(?i)(^|.*\n)(\s*extensions\s*\[)(.*?)(\].*?\Q@#$#@#$#@\E.*)""".r
+
+    source match {
+      case ExtRegex(prefix, extDirective, exts, suffix) =>
+        val extensions = exts.trim.split("\\s+").toSet
+        s"$prefix$extDirective${(extensions | requiredExts).mkString(" ")}$suffix"
+      case _ =>
+        s"extensions [${requiredExts.mkString(" ")}]\n$source"
+    }
+
   }
 
 }

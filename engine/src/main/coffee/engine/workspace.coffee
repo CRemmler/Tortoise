@@ -8,6 +8,7 @@ BreedManager  = require('./core/breedmanager')
 Dump          = require('./dump')
 EvalPrims     = require('./prim/evalprims')
 Hasher        = require('./hasher')
+importPColors = require('./prim/importpcolors')
 LayoutManager = require('./prim/layoutmanager')
 LinkPrims     = require('./prim/linkprims')
 ListPrims     = require('./prim/listprims')
@@ -24,7 +25,7 @@ World         = require('./core/world')
 csvToWorldState = require('serialize/importcsv')
 
 { toObject }       = require('brazier/array')
-{ fold }           = require('brazier/maybe')
+{ fold, None }     = require('brazier/maybe')
 { id }             = require('brazier/function')
 { lookup, values } = require('brazier/object')
 
@@ -46,14 +47,17 @@ module.exports =
 
     worldArgs = arguments # If you want `Workspace` to take more parameters--parameters not related to `World`--just keep returning new functions
 
-    dialogConfig       = modelConfig?.dialog       ? new UserDialogConfig
-    importExportConfig = modelConfig?.importExport ? new ImportExportConfig
-    inspectionConfig   = modelConfig?.inspection   ? new InspectionConfig
-    mouseConfig        = modelConfig?.mouse        ? new MouseConfig
-    outputConfig       = modelConfig?.output       ? new OutputConfig
-    plots              = modelConfig?.plots        ? []
-    printConfig        = modelConfig?.print        ? new PrintConfig
-    worldConfig        = modelConfig?.world        ? new WorldConfig
+    asyncDialogConfig  = modelConfig?.asyncDialog       ? { getChoice: (-> -> None), getText: (-> -> None), getYesOrNo: (-> -> None), showMessage: (-> -> None) }
+    base64ToImageData  = modelConfig?.base64ToImageData ? (-> throw new Error("Sorry, no image data converter was provided."))
+    dialogConfig       = modelConfig?.dialog            ? new UserDialogConfig
+    importExportConfig = modelConfig?.importExport      ? new ImportExportConfig
+    inspectionConfig   = modelConfig?.inspection        ? new InspectionConfig
+    ioConfig           = modelConfig?.io                ? { importFile: (-> ->), slurpFileDialogAsync: (->), slurpURL: (->), slurpURLAsync: (-> ->) }
+    mouseConfig        = modelConfig?.mouse             ? new MouseConfig
+    outputConfig       = modelConfig?.output            ? new OutputConfig
+    plots              = modelConfig?.plots             ? []
+    printConfig        = modelConfig?.print             ? new PrintConfig
+    worldConfig        = modelConfig?.world             ? new WorldConfig
 
     Meta.version = modelConfig?.version ? Meta.version
 
@@ -69,7 +73,7 @@ module.exports =
     updater      = new Updater(dump)
 
     # The world is only given `dump` for stupid `atpoints` in `AbstractAgentSet`... --JAB (8/24/17)
-    world           = new World(new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager), worldConfig, (-> outputConfig.clear(); outputStore = ""), (-> outputStore), ((text) -> outputStore = text), dump, worldArgs...)
+    world           = new World(new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager), worldConfig, (-> importExportConfig.getViewBase64()), (-> outputConfig.clear(); outputStore = ""), (-> outputStore), ((text) -> outputStore = text), dump, worldArgs...)
     layoutManager   = new LayoutManager(world, rng.nextDouble)
 
     evalPrims = new EvalPrims(code, widgets)
@@ -99,11 +103,15 @@ module.exports =
       worldState = csvToWorldState(singularToPlural, pluralToSingular)(csvText)
       world.importState(worldState)
 
+    importPatchColors =
+      importPColors((-> world.topology), (-> world.patchSize), ((x, y) -> world.getPatchAt(x, y)), base64ToImageData)
+
     importExportPrims = new ImportExportPrims( importExportConfig
                                              , (-> world.exportCSV())
                                              , (-> world.exportAllPlotsCSV())
                                              , ((plot) -> world.exportPlotCSV(plot))
                                              , ((path) -> world.importDrawing(path))
+                                             , importPatchColors
                                              , importWorldFromCSV
                                              )
 
@@ -113,6 +121,8 @@ module.exports =
       dump
       importExportPrims
       inspectionPrims
+      asyncDialogConfig
+      ioConfig
       layoutManager
       linkPrims
       listPrims

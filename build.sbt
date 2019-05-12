@@ -1,12 +1,14 @@
-import org.scalajs.sbtplugin.cross.{ CrossProject, CrossType }
+import sbtcrossproject.CrossPlugin.autoImport.CrossType
+import sbtcrossproject.CrossProject
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{ fullOptJS, packageJSDependencies }
+import org.scalajs.sbtplugin.ScalaJSCrossVersion
 import org.scalastyle.sbt.ScalastylePlugin.projectSettings
 
-val nlDependencyVersion       = "6.0.4-1fbe1c1"
+val nlDependencyVersion       = "6.1.0-RC2-72b72b1"
 
-val parserJsDependencyVersion = "0.2.2-1fbe1c1"
+val parserJsDependencyVersion = "0.3.0-RC2"
 
-val scalazVersion             = "7.2.26"
+val scalazVersion             = "7.2.27"
 
 val commonSettings =
   Seq(
@@ -15,21 +17,20 @@ val commonSettings =
     version       := "1.0",
     // Compilation settings
     crossPaths    := false, // we're not cross-building for different Scala versions
-    scalaVersion  := "2.12.6",
+    scalaVersion  := "2.12.8",
     scalacOptions ++=
       "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -Xlint -Xfatal-warnings -Ywarn-value-discard -language:_ -Xmax-classfile-name 240".split(" ").toSeq,
     // Dependencies
     resolvers           += sbt.Resolver.bintrayRepo("netlogo", "NetLogoHeadless"),
     libraryDependencies ++= Seq(
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion,
-      "org.mozilla"       %  "rhino"           % "1.7.10", // see jsengine/Rhino.scala for more information
       "org.scalaz"        %% "scalaz-core"     % scalazVersion,
       "com.lihaoyi"       %% "scalatags"       % "0.6.7"  % "test",
       "org.scalatest"     %% "scalatest"       % "3.0.5"  % "test",
       "org.skyscreamer"   %  "jsonassert"      % "1.5.0"  % "test",
       "org.reflections"   %  "reflections"     % "0.9.11" % "test",
       "org.scalacheck"    %% "scalacheck"      % "1.14.0" % "test",
-      "com.typesafe.play" %% "play-json"       % "2.6.10",
+      "com.typesafe.play" %% "play-json"       % "2.7.0",
       // Bring in headless test code/framework for our tests
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"),
     // Path Management
@@ -44,7 +45,8 @@ val commonSettings =
     onLoadMessage                := "",
     // show test failures again at end, after all tests complete.
     // T gives truncated stack traces; change to G if you need full.
-    testOptions in Test += Tests.Argument("-oT"))
+    testOptions in Test += Tests.Argument("-oT"),
+    scalacOptions in Compile in console := scalacOptions.value.filterNot(_ == "-Xlint"))
 
 lazy val stylecheck = taskKey[Unit]("Run all sub-project scalastyle checks.")
 
@@ -66,7 +68,7 @@ lazy val compilerCore = (project in file("compiler/shared")).
 lazy val macrosCore = (project in file("macros")).
   settings(skip in (Compile, compile) := true)
 
-lazy val compiler = CrossProject("compiler", file("compiler"), CrossType.Full).
+lazy val compiler = CrossProject("compiler", file("compiler"))(JSPlatform, JVMPlatform).crossType(CrossType.Full).
   dependsOn(macros % "compile-internal->compile;test-internal->test").
   settings(Depend.settings: _*).
   settings(commonSettings: _*).
@@ -87,17 +89,17 @@ lazy val compiler = CrossProject("compiler", file("compiler"), CrossType.Full).
     libraryDependencies                  ++= {
       import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.toScalaJSGroupID
       Seq(
-        "com.lihaoyi"       %%%! "utest"       % "0.4.8",
-        "org.nlogo"         %%%! "parser-js"   % parserJsDependencyVersion,
-        "com.typesafe.play" %%%  "play-json"   % "2.6.10",
-        "org.scalaz"        %%%  "scalaz-core" % scalazVersion)
+        "com.lihaoyi"       %   "utest"       % "0.4.8" cross ScalaJSCrossVersion.binary,
+        "org.nlogo"         %   "parser-js"   % parserJsDependencyVersion cross ScalaJSCrossVersion.binary,
+        "com.typesafe.play" %%% "play-json"   % "2.6.11",
+        "org.scalaz"        %%% "scalaz-core" % scalazVersion)
     })
 
 lazy val compilerJS  = compiler.js
 
 lazy val compilerJVM = compiler.jvm
 
-lazy val macros = CrossProject("macros", file("macros"), CrossType.Pure).
+lazy val macros = CrossProject("macros", file("macros"))(JSPlatform, JVMPlatform).crossType(CrossType.Pure).
   settings(commonSettings: _*).
   settings(
     libraryDependencies ++= Seq(
@@ -160,7 +162,7 @@ lazy val engine: Project =
   settings(commonSettings: _*).
   settings(
     name := "EngineScalaJS",
-    libraryDependencies += "org.nlogo" %%%! "parser-js" % parserJsDependencyVersion,
+    libraryDependencies += "org.nlogo" % "parser-js" % parserJsDependencyVersion cross ScalaJSCrossVersion.binary,
     build := {
       val engineFile  = (artifactPath in fullOptJS in Compile).value
       val destFile    = (classDirectory in Compile).value / "js" / "tortoise" / "shim" / "engine-scala.js"

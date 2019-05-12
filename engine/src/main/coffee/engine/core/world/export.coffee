@@ -40,7 +40,7 @@
 
 { difference, find, isEmpty, toObject } = require('brazierjs/array')
 { id, tee }                             = require('brazierjs/function')
-{ fold }                                = require('brazierjs/maybe')
+{ fold, maybe, None }                   = require('brazierjs/maybe')
 
 NLType = require('../typechecker')
 
@@ -220,7 +220,7 @@ module.exports.exportPlot = (plotName) ->
 
   metadata    = exportMetadata.call(this)
   miniGlobals = exportMiniGlobals.call(this)
-  plot        = fold(-> throw new Error("no such plot: \"#{plotName}\""))(desiredPlotMaybe)
+  plot        = fold(-> throw new Error("no such plot: \"#{plotName}\""))(exportPlot)(desiredPlotMaybe)
 
   new ExportPlotData(metadata, miniGlobals, plot)
 
@@ -254,8 +254,9 @@ module.exports.exportWorld = ->
   patches     =               @patches().toArray().map(exportAgent(ExportedPatch , makeMappings( patchBuiltins)( patchMapper)))
   turtles     = @turtleManager.turtles().toArray().map(exportAgent(ExportedTurtle, makeMappings(turtleBuiltins)(turtleMapper)))
   links       =     @linkManager.links().toArray().map(exportAgent(ExportedLink  , makeMappings(  linkBuiltins)(  linkMapper)))
+  drawingM    = if not @_updater.drawingWasJustCleared() then maybe([@patchSize, @_getViewBase64()]) else None
   output      = @_getOutput()
   plotManager = exportPlotManager.call(this)
   extensions  = []
 
-  new ExportWorldData(metadata, randomState, globals, patches, turtles, links, output, plotManager, extensions)
+  new ExportWorldData(metadata, randomState, globals, patches, turtles, links, drawingM, output, plotManager, extensions)

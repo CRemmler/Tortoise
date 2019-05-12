@@ -45,8 +45,9 @@ module.exports =
     # The type signatures here can be found to the right of the parameters. --JAB (4/13/15)
     constructor: (@world, @id, @_genUpdate, @_registerLineDraw, @_registerTurtleStamp, @_registerDeath, @_createTurtle   # World, Number, (Updatable) => (String*) => Unit, RegLinkDrawFunc, RegTurtleStampFunc, (Number) => Unit, GenTurtleType
                 , @_removeTurtle, @_color = 0, @_heading = 0, @xcor = 0, @ycor = 0                                       # (Number) => Unit, Number, Number, Number, Number
-                , breed = @world.breedManager.turtles(), @_label = "", @_labelcolor = 9.9, @_hidden = false              # Breed, String, Number, Boolean
+                , breed = null, @_label = "", @_labelcolor = 9.9, @_hidden = false                                       # Breed, String, Number, Boolean
                 , @_size = 1.0, @_givenShape, genPenManager = (self) => new PenManager(@_genUpdate(self))) ->            # Number, Boolean, Number, String, (Updatable) => PenManager
+      breed = breed ? @world.breedManager.turtles()
       @_updateVarsByName = @_genUpdate(this)
 
       @penManager  = genPenManager(this)
@@ -220,7 +221,7 @@ module.exports =
 
     # (Number) => Unit
     _jump: (distance) ->
-      @_drawJumpLine(@xcor, @ycor, distance)
+      @_drawJumpLine(@xcor, @ycor, distance, @_heading)
       @_setXandY(@xcor + distance * @dx(), @ycor + distance * @dy())
       return
 
@@ -244,7 +245,7 @@ module.exports =
       origYcor = @ycor
       try
         @_setXandY(x, y, seenTurtlesSet)
-        @_drawLine(origXcor, origYcor, x, y)
+        @_drawSetLine(origXcor, origYcor, x, y)
       catch error
         @_setXandY(origXcor, origYcor, seenTurtlesSet)
         if error instanceof TopologyInterrupt
@@ -403,25 +404,36 @@ module.exports =
       @_registerTurtleStamp(@xcor, @ycor, @_size, @_heading, ColorModel.colorToRGB(@_color), @_getShape(), mode.name)
       return
 
+    # (Number, Number, Number) => Unit
+    _drawJumpLine: (x, y, dist, head) ->
+      penMode = @penManager.getMode()
+      if (penMode is Down or penMode is Erase)
+        @_drawLines(x, y, dist, head)
+      return
+
     # (Number, Number, Number, Number) => Unit
-    _drawLine: (oldX, oldY, newX, newY) ->
+    _drawSetLine: (oldX, oldY, newX, newY) ->
       penMode = @penManager.getMode()
       if (penMode is Down or penMode is Erase) and (oldX isnt newX or oldY isnt newY)
-        wrappedX = @world.topology.wrapX(newX)
-        wrappedY = @world.topology.wrapY(newY)
-        @_registerLineDraw(oldX, oldY, wrappedX, wrappedY, ColorModel.colorToRGB(@_color), @penManager.getSize(), @penManager.getMode().toString())
+        wrappedX = oldX + @world.topology._shortestX(oldX, newX)
+        wrappedY = oldY + @world.topology._shortestY(oldY, newY)
+        { minPxcor, maxPxcor, minPycor, maxPycor } = @world.topology
+        if (minPxcor < wrappedX and wrappedX < maxPxcor and minPycor < wrappedY and wrappedY < maxPycor)
+          @_registerLineDraw(oldX, oldY, wrappedX, wrappedY, ColorModel.colorToRGB(@_color), @penManager.getSize(), @penManager.getMode().toString())
+        else
+          jumpDist = NLMath.sqrt(NLMath.pow(oldX - wrappedX, 2) + NLMath.pow(oldY - wrappedY, 2))
+          jumpHead = @world.topology.towards(oldX, oldY, wrappedX, wrappedY)
+          @_drawLines(oldX, oldY, jumpDist, jumpHead)
       return
 
     # (Number, Number, Number) => Unit
-    _drawJumpLine: (x, y, dist) ->
-      penMode = @penManager.getMode()
-      if (penMode is Down or penMode is Erase)
-        color = ColorModel.colorToRGB(@_color)
-        size  = @penManager.getSize()
-        mode  = @penManager.getMode().toString()
-        { minPxcor, maxPxcor, minPycor, maxPycor } = @world.topology
-        lines = makePenLines(x, y, NLMath.normalizeHeading(@_heading), dist, minPxcor - 0.5, maxPxcor + 0.5, minPycor - 0.5, maxPycor + 0.5)
-        forEach(({ x1, y1, x2, y2 }) => @_registerLineDraw(x1, y1, x2, y2, color, size, mode); return)(lines)
+    _drawLines: (x, y, dist, head) ->
+      color = ColorModel.colorToRGB(@_color)
+      size  = @penManager.getSize()
+      mode  = @penManager.getMode().toString()
+      { minPxcor, maxPxcor, minPycor, maxPycor } = @world.topology
+      lines = makePenLines(x, y, NLMath.normalizeHeading(head), dist, minPxcor - 0.5, maxPxcor + 0.5, minPycor - 0.5, maxPycor + 0.5)
+      forEach(({ x1, y1, x2, y2 }) => @_registerLineDraw(x1, y1, x2, y2, color, size, mode); return)(lines)
       return
 
     # Unfortunately, we can't just throw out `_breedShape` and grab the shape from our

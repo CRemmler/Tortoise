@@ -43,23 +43,36 @@ private object CreateExtension {
   }
 
   private def convertToExtensionPrim(jsPrim: JsValue): ExtensionPrim = {
-    val returnType = (jsPrim \ "returnType").asOpt[String].getOrElse("unit")
-    val isReporter = (returnType != "unit")
-    val args       = jsPrim("argTypes").as[JsArray].value.map(convertArgToTypeInt)
-    val returnInt  = typeNameToTypeInt(returnType)
-    val prim       = if (isReporter) {
-      val isInfix          = (jsPrim \ "isInfix").asOpt[Boolean].getOrElse(false)
-      val (left, right)    = if (isInfix) (args.head, args.tail) else (VoidType, args)
-      val precedenceOffset = (jsPrim \ "precedenceOffset").asOpt[Int].getOrElse(0)
-      val precedence       = NormalPrecedence + precedenceOffset
-      new PrimitiveReporter {
-        override def getSyntax: Syntax = Syntax.reporterSyntax(left = left, right = right.toList, ret = returnInt, precedence = precedence)
+
+    val returnType      = (jsPrim \ "returnType").asOpt[String].getOrElse("unit")
+    val isReporter      = (returnType != "unit")
+    val args            = jsPrim("argTypes").as[JsArray].value.map(convertArgToTypeInt)
+    val returnInt       = typeNameToTypeInt(returnType)
+    val defaultArgCount = (jsPrim \ "defaultArgCount").asOpt[Int]
+
+    val prim =
+      if (isReporter) {
+        val isInfix          = (jsPrim \ "isInfix").asOpt[Boolean].getOrElse(false)
+        val (left, right)    = if (isInfix) (args.head, args.tail) else (VoidType, args)
+        val precedenceOffset = (jsPrim \ "precedenceOffset").asOpt[Int].getOrElse(0)
+        val precedence       = NormalPrecedence + precedenceOffset
+        new PrimitiveReporter {
+          override def getSyntax: Syntax = Syntax.reporterSyntax(
+            left          = left,
+            right         = right.toList,
+            ret           = returnInt,
+            precedence    = precedence,
+            defaultOption = defaultArgCount
+          )
+        }
+      } else {
+        new PrimitiveCommand {
+          override def getSyntax: Syntax = Syntax.commandSyntax(right = args.toList, defaultOption = defaultArgCount)
+        }
       }
-    } else
-      new PrimitiveCommand {
-        override def getSyntax: Syntax = Syntax.commandSyntax(right = args.toList)
-      }
+
     ExtensionPrim(prim, jsPrim("name").as[String], jsPrim("actionName").as[String])
+
   }
 
   private def convertArgToTypeInt(jsArg: JsValue): Int = {
@@ -67,8 +80,16 @@ private object CreateExtension {
       case JsError(_) =>
         typeNameToTypeInt(jsArg.as[String])
       case JsSuccess(typeName, _) => {
+
         val isRepeatable = (jsArg \ "isRepeatable").asOpt[Boolean].getOrElse(false)
-        typeNameToTypeInt(typeName) | (if (isRepeatable) RepeatableType else 0)
+        val isOptional   = (jsArg \ "isOptional"  ).asOpt[Boolean].getOrElse(false)
+
+        val primaryMask      = typeNameToTypeInt(typeName)
+        val isRepeatableMask = if (isRepeatable) RepeatableType else 0
+        val isOptionalMask   = if (isOptional)   OptionalType   else 0
+
+        primaryMask | isRepeatableMask | isOptionalMask
+
       }
     }
   }
@@ -113,7 +134,7 @@ private object CreateExtension {
 object NLWExtensionManager extends ExtensionManager {
 
   import org.nlogo.core.{ CompilerException, Token }
-  import org.nlogo.tortoise.compiler.ExtDefReader
+  import org.nlogo.tortoise.macros.ExtDefReader
   import scala.collection.mutable.{ Map => MMap }
 
   private val extNameToExtMap                            = ExtDefReader.getAll().map(CreateExtension.apply).map(x => (x.getName, x)).toMap

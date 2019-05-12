@@ -187,6 +187,10 @@ module.exports = {
     index = nextInt(BaseColors.length)
     BaseColors[index]
 
+  # (Array[Number]) => RGB
+  rgbList: (components) ->
+    components.map((c) -> attenuateRGB(StrictMath.ceil(c))).slice(0, 3)
+
   # Courtesy of Paul S. at http://stackoverflow.com/a/17243070/1116979 --JAB (9/23/15)
   # (RGB...) => HSB
   rgbToHSB: (rawR, rawG, rawB) ->
@@ -283,7 +287,7 @@ module.exports = {
   # Dealwithit --JAB (9/24/15)
   # (Number, Number, Number, Number, Number, Number) => Number
   _colorDistance: (r1, g1, b1, r2, g2, b2) ->
-    rMean = r1 + r2 / 2
+    rMean = r1 + StrictMath.floor(r2 / 2)
     rDiff = r1 - r2
     gDiff = g1 - g2
     bDiff = b1 - b2

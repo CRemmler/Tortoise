@@ -28,10 +28,6 @@ sealed trait DrawingActionConverter[T <: DrawingAction] extends JsonConverter[T]
 
 object DrawingActionToJsonConverters {
 
-  private val setColorsWhining =
-    """The 'set-colors' event comes from `import-drawing`, which uses an insane format that we should never
-      |support in NLW.  If you want this to work, instead push for desktop NL to change. --Jason""".stripMargin
-
   // scalastyle:off cyclomatic.complexity
   implicit def drawingAction2Json(target: DrawingAction): JsonWritable =
     target match {
@@ -44,7 +40,7 @@ object DrawingActionToJsonConverters {
       case x: ImportDrawing => new ImportDrawingConverter(x)
       case x: ReadImage     => new ReadImageConverter(x)
       case x: SendPixels    => new SendPixelsConverter(x)
-      case x: SetColors     => throw new Exception(setColorsWhining)
+      case x: SetColors     => new SetColorsConverter(x)
       case x: StampImage    => new StampImageConverter(x)
       case x                => throw new Exception(s"Serialize this mysterious drawing action: $x")
     }
@@ -76,6 +72,11 @@ object RescaleDrawingConverter extends DrawingActionConverter[RescaleDrawing.typ
   override protected val extraProps = JsObject(fields())
 }
 
+class SetColorsConverter(override protected val target: SetColors) extends DrawingActionConverter[SetColors] {
+  override protected val `type`     = "set-colors"
+  override protected val extraProps = JsObject(fields("base64" -> JsString(target.base64)))
+}
+
 class ReadImageConverter(override protected val target: ReadImage) extends DrawingActionConverter[ReadImage] {
   override protected val `type`     = "read-image"
   override protected val extraProps = JsObject(fields("imageBytes" -> JsArray(target.imageBytes.map(x => JsInt(x)))))
@@ -88,7 +89,7 @@ class SendPixelsConverter(override protected val target: SendPixels) extends Dra
 
 class ImportDrawingConverter(override protected val target: ImportDrawing) extends DrawingActionConverter[ImportDrawing] {
   override protected val `type`     = "import-drawing"
-  override protected val extraProps = JsObject(fields("filePath" -> JsString(target.filePath)))
+  override protected val extraProps = JsObject(fields("imageBase64" -> JsString(target.imageBase64)))
 }
 
 class CreateDrawingConverter(override protected val target: CreateDrawing) extends DrawingActionConverter[CreateDrawing] {

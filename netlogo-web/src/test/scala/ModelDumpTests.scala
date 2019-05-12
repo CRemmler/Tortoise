@@ -5,16 +5,14 @@ package org.nlogo.tortoise.nlw
 import
   java.{ io => jio, util => jutil},
     jio.FileWriter,
-    jutil.{ List => JList, Map => JMap }
+    jutil.{ Map => JMap }
 
 import
   org.nlogo.tortoise.compiler.Model
 
-import
-  jsengine.Rhino
+import jsengine.GraalJS
 
-import
-  org.mozilla.javascript.{ ConsString, JavaScriptException }
+import org.graalvm.polyglot.Value
 
 import
   org.scalatest.{ exceptions, FunSuite },
@@ -28,31 +26,35 @@ import
     util.matching.Regex
 
 class ModelDumpTests extends FunSuite {
-  val rhinoEngine    = (new Rhino).engine
-  val engineSource   = resourceText("/tortoise-compiler.js")
-  rhinoEngine.eval(engineSource)
 
-  val compilationFunction: Array[AnyRef] => (JMap[String, AnyRef], JList[AnyRef]) = {
-    rhinoEngine.function("function(s) { return (new BrowserCompiler()).fromNlogo(s); }") andThen {
-      compilationObject =>
-        import scala.collection.JavaConverters.mapAsScalaMap
-        val compilation  = compilationObject.asInstanceOf[JMap[String, AnyRef]]
-        val widgetString = mapAsScalaMap(compilation)("widgets").asInstanceOf[ConsString].toString
-        val widgets      = rhinoEngine.eval(widgetString).asInstanceOf[JList[AnyRef]]
-        (compilation, widgets)
-    }
+  def graalValueToSequence(value: Value): Seq[Value] = {
+    0l.to(value.getArraySize - 1).map( value.getArrayElement )
+  }
+
+  val engine       = new GraalJS()
+  val engineSource = resourceText("/tortoise-compiler.js")
+  engine.evalRaw(engineSource)
+
+  val compilationFunction: String => (JMap[String, AnyRef], Seq[JMap[String, AnyRef]]) = modelCode => {
+    engine.evalRaw("__bc = new BrowserCompiler()")
+    engine.put("__modelCode", modelCode)
+    val value = engine.evalRaw("(function() { __compilation = __bc.fromNlogo(__modelCode); return __compilation; })()")
+    val compilation = value.as(classOf[JMap[String, AnyRef]])
+    import scala.collection.JavaConverters.mapAsScalaMap
+    val widgetString = mapAsScalaMap(compilation)("widgets").toString
+    val widgets      = graalValueToSequence(engine.evalRaw(widgetString)).map( (w) => w.as(classOf[JMap[String, AnyRef]]) )
+    (compilation, widgets)
   }
 
   for (model <- Model.models) {
     test(s"compiled model javascript tests for ${model.name}", SlowTest) {
       println(model.path)
       try {
-        import scala.collection.JavaConverters.{ collectionAsScalaIterable, mapAsScalaMap }
-        val modelContents                  = Source.fromFile(model.path).mkString
-        val (compilationResultJ, widgetsJ) = compilationFunction(Array[Object](modelContents))
-        val compilationResult              = mapAsScalaMap(compilationResultJ)
-        val widgets                        = collectionAsScalaIterable(widgetsJ)
-        val modelResult                    = compilationResult("model").asInstanceOf[JMap[String,AnyRef]]
+        import scala.collection.JavaConverters.mapAsScalaMap
+        val modelContents                 = Source.fromFile(model.path).mkString
+        val (compilationResultJ, widgets) = compilationFunction(modelContents)
+        val compilationResult             = mapAsScalaMap(compilationResultJ)
+        val modelResult                   = compilationResult("model").asInstanceOf[JMap[String,AnyRef]]
         assert(modelResult.get("success").asInstanceOf[Boolean])
 
         val generatedJs = cleanJsNumbers(modelResult.get("result").toString.trim)
@@ -64,19 +66,15 @@ class ModelDumpTests extends FunSuite {
         }
 
         assert(widgets.nonEmpty)
-        widgets.foreach {
-          widget =>
-            val widgetMap = widget.asInstanceOf[JMap[String, AnyRef]]
-            assert(widgetMap.get("type").isInstanceOf[String])
-        }
+        widgets.foreach { widget => assert(widget.get("type").isInstanceOf[String]) }
 
         assert(compilationResult("code").toString.contains("to"))
 
-        if (! model.path.contains("benchmark"))
+        if (!model.path.contains("benchmark") && !model.path.contains("test/models/"))
           assert(compilationResult("info").toString.contains("WHAT IS IT"))
       } catch {
-        case e: JavaScriptException =>
-          println(e.details)
+        case e: Exception =>
+          println(e)
           throw e
       }
     }
@@ -95,15 +93,23 @@ class ModelDumpTests extends FunSuite {
         val fw = new FileWriter(failPath)
         fw.write(generatedJs, 0, generatedJs.length)
         fw.close()
-        println(s"Failed test, actual JS written to $failPath")
+        println(s"Source dump changed, actual JS written to $failPath")
         throw e
+      case e: Exception =>
+        val failPath = s"target/${filename}.js"
+        val fw = new FileWriter(failPath)
+        fw.write(generatedJs, 0, generatedJs.length)
+        fw.close()
+        println(s"Runtime exception, reference JS written to $failPath")
+        throw e
+
     }
 
   // scala.js `toString` for numeric values gives different results than jvm scala.
   // We need do a little cleanup to match the outputs - 2/17/15 RG
   private def cleanJsNumbers(rawJs: String): String = {
     // the raw JS contains the NetLogo code, which contains escaped characters, which we have to remove to process
-    val unRawJs = rawJs.replace("\\n", " ").replace("\\\"", "\"")
+    val unRawJs = rawJs.replace("\\n", " ")
     val trailingZeroNumbers  =
       new Regex("""(\d)\.0(\D)""", "digitBefore", "nonDigitAfter")
     val scientificNotation   =

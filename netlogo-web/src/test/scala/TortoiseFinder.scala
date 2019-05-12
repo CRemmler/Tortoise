@@ -19,7 +19,7 @@ private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll wit
   override def shouldRun(t: LanguageTest, mode: TestMode) =
     mode == NormalMode && super.shouldRun(t, mode)
 
-  def genFixture(name: String): AbstractFixture = new TortoiseFixture(name, nashorn, notImplemented) {
+  def genFixture(name: String): AbstractFixture = new TortoiseFixture(name, engine, notImplemented) {
     override def checkResult(mode: TestMode, reporter: String, expectedResult: String, actualResult: AnyRef): Unit = {
       annotatePrevious(s"""NetLogo reporter for: $reporter
                           |expected result: $expectedResult
@@ -79,16 +79,16 @@ class TestCommands extends CommandTests with TortoiseFinder {
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Every::EveryLosesScope"  -> "NetLogo Web does not support distinct jobs"
-  ) ++ incErrorDetectCommands ++ evalNotSupportedCommands ++ lameCommands
+  ) ++ incErrorDetectCommands ++ preferExtensionsCommands ++ lameCommands
 }
 
 private[tortoise] object Freebies {
 
-  def incErrorDetectCommands     = asFreebieMap(incErrorDetectCommandNames,     incErrorDetectStr)
-  def evalNotSupportedCommands   = asFreebieMap(evalNotSupportedCommandNames,   evalNotSupportedStr)
-  def lameCommands               = asFreebieMap(lameCommandNames,               lameCommandStr)
+  def incErrorDetectCommands     = asFreebieMap(  incErrorDetectCommandNames, incErrorDetectStr)
+  def lameCommands               = asFreebieMap(            lameCommandNames, lameCommandStr)
+  def preferExtensionsCommands   = asFreebieMap(preferExtensionsCommandNames, preferExtensionsStr)
 
-  def incErrorDetectReporters    = asFreebieMap(incErrorDetectReporterNames,    incErrorDetectStr)
+  def incErrorDetectReporters    = asFreebieMap(incErrorDetectReporterNames, incErrorDetectStr)
 
   private def asFreebieMap(names: Seq[String], msg: String) = names.map(_ -> msg).toMap
 
@@ -138,7 +138,6 @@ private[tortoise] object Freebies {
     "Agentsets::Agentsets2",
     "Agentsets::Agentsets3",
     "Agentsets::Agentsets4_2D",
-    "Agentsets::LinkAgentsetDeadLinks",
     // The Iterator.withBoolCheck() adds a very rudimentary type check which
     // addresses some Agentsets::OtherWithOptsShowCorrectErrorName failures.
     // But in core/headless they use differing agent sets for arrays and trees.
@@ -163,7 +162,6 @@ private[tortoise] object Freebies {
     "DeadTurtles::DeadTurtles6",
     "Face::FaceAgentset",
     "Interaction::Interaction5",
-    "Interaction::Interaction13",
     "Interaction::PatchTriesTurtleReporter",
     "Links::LinksNotAllowed",
     "Links::LinkNotAllowed_2D",
@@ -191,21 +189,17 @@ private[tortoise] object Freebies {
     "TypeChecking::AgentClassChecking3b"
     )
 
-  private val evalNotSupportedStr = "An eval exception about undefined properties indicates a Nashorn bug when running Scala.js generated code (labelled breaks with throw statements). http://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8187744. These tests should pass outside Nashorn."
-  private val evalNotSupportedCommandNames = Seq(
-    "ControlStructures::Run1",
-    "ControlStructures::Run2",
-    "ControlStructures::Run3",
-    "ControlStructures::Run5",
-    "ControlStructures::Run6",
-    "ControlStructures::Run7",
-    "Run::LuisIzquierdoRunResult2",
-    "Run::run-evaluate-string-input-only-once"
-  )
-
   private val lameCommandStr = "This test is LAME!"
   private val lameCommandNames = Seq(
     "UserPrimitives::UserReporters_Headless"
   )
+
+  private val preferExtensionsStr = "Supplanted by extension-based tests (e.g. Fetch, Import-A)"
+  private val preferExtensionsCommandNames =
+    Seq(
+      "ImportPatchesAndDrawing::ImportPcolors_2D"
+    , "ImportPatchesAndDrawing::ImportPcolorsTopologyTest_2D"
+    , "ImportWorld::RoundTripWithUTF8Chars"
+    )
 
 }

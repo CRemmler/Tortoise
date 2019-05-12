@@ -9,7 +9,7 @@ import
   JsOps.{ indented, jsString, jsStringEscaped }
 
 import
-  org.nlogo.core.{ AstNode, CommandBlock, CompilerException, prim, Reporter, ReporterApp, Statement, Token }
+  org.nlogo.core.{ AstNode, CommandBlock, CompilerException, Expression, prim, Reporter, ReporterApp, ReporterBlock, Statement, Token }
 
 // The Prim traits are split apart as follows
 //                  JsOps
@@ -29,7 +29,10 @@ trait PrimUtils {
   def handlers: Handlers
 
   protected def failCompilation(msg: String, token: Token): Nothing =
-    throw new CompilerException(msg, token.start, token.end, token.filename)
+    failCompilation(msg, token.start, token.end, token.filename)
+
+  protected def failCompilation(msg: String, start: Int, end: Int, filename: String): Nothing =
+    throw new CompilerException(msg, start, end, filename)
 
   protected def fixBN(breedName: String): String =
     Option(breedName) filter (_.nonEmpty) getOrElse "LINKS"
@@ -39,7 +42,7 @@ trait PrimUtils {
 
   protected def generateRunCode(isRunResult: Boolean, token: Token, args: Seq[String], procContext: ProcedureContext): String = {
     val tmp = handlers.unusedVarname(token, "run")
-    val procVarsJS = procContext.parameters.map((pv) => s"""${tmp}Vars["$pv"] = $pv;""").mkString("\n")
+    val procVarsJS = procContext.parameters.map((pv) => s"""${tmp}Vars["${pv._1}"] = ${pv._2};""").mkString("\n")
 
     // if a run returns a value, and we're not in a raw-reporter situation, we have to then return the value. Weird, huh?
     val (pre, post) = if (!isRunResult && procContext.isProcedure)
@@ -117,13 +120,13 @@ trait ReporterPrims extends PrimUtils {
         s"""procedures["${call.name}"](${args.mkString(",")})"""
 
       // Blarg
-      case _: prim._unaryminus         => s" -${arg(0)}" // The space is important, because these can be nested --JAB (6/12/14)
+      case _: prim._unaryminus         => s" -(${arg(0)})" // The space is important, because these can be nested --JAB (6/12/14)
       case _: prim._not                => s"!${arg(0)}"
       case _: prim._count              => s"${arg(0)}.size()"
       case _: prim._any                => s"!${arg(0)}.isEmpty()"
       case _: prim._word               => ("''" +: args).map(arg => s"workspace.dump($arg)").mkString("(", " + ", ")")
       case _: prim._of                 => generateOf(r)
-      case _: prim.etc._ifelsevalue    => s"(${arg(0)} ? ${arg(1)} : ${arg(2)})"
+      case _: prim.etc._ifelsevalue    => generateIfElseValue(r.args)
       case _: prim.etc._reduce         => s"${arg(1)}.reduce(${arg(0)})"
       case _: prim.etc._filter         => s"${arg(1)}.filter(${arg(0)})"
       case _: prim.etc._nvalues        => s"Tasks.nValues(${arg(0)}, ${arg(1)})"
@@ -252,6 +255,16 @@ trait ReporterPrims extends PrimUtils {
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
     s"${handlers.task(node, isReporter, args)}, ${jsStringEscaped(source.getOrElse(""))}"
 
+  def generateIfElseValue(args: Seq[Expression])
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
+    if (args.length == 0)
+      "Prims.ifElseValueMissingElse()"
+    else if (args.length == 1)
+      handlers.reporter(args(0))
+    else
+      s"(Prims.ifElseValueBooleanCheck(${handlers.reporter(args(0))}) ? ${handlers.reporter(args(1))} : ${generateIfElseValue(args.drop(2))})"
+  }
+
   def generateOf(r: ReporterApp)
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val agents = handlers.reporter(r.args(1))
@@ -289,7 +302,10 @@ trait CommandPrims extends PrimUtils {
     def arg(i: Int) = handlers.reporter(s.args(i))
     def commaArgs = argsSep(", ")
     def args =
-      s.args.collect{ case x: ReporterApp => handlers.reporter(x) }
+      s.args.collect {
+        case x: ReporterApp  => handlers.reporter(x)
+        case z: CommandBlock => s"() => { ${handlers.commands(z)} }"
+      }
     def argsSep(sep: String) =
       args.mkString(sep)
 
@@ -320,8 +336,8 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._error            => s"throw new Error(${arg(0)});"
       case h: prim._hatch                => generateHatch(s, h.breedName)
       case h: Optimizer._hatchfast       => optimalGenerateHatch(s, h.breedName)
-      case _: prim._bk                   => s"SelfManager.self().fd(-${arg(0)});"
-      case _: prim.etc._left             => s"SelfManager.self().right(-${arg(0)});"
+      case _: prim._bk                   => s"SelfManager.self().fd(-(${arg(0)}));"
+      case _: prim.etc._left             => s"SelfManager.self().right(-(${arg(0)}));"
       case _: prim.etc._diffuse          => s"world.topology.diffuse(${jsString(getReferenceName(s))}, ${arg(1)}, false)"
       case _: prim.etc._diffuse4         => s"world.topology.diffuse(${jsString(getReferenceName(s))}, ${arg(1)}, true)"
       case _: prim.etc._uphill           => s"Prims.uphill(${jsString(getReferenceName(s))})"
@@ -445,15 +461,31 @@ trait CommandPrims extends PrimUtils {
 
   def generateIfElse(s: Statement)
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val pred      = handlers.reporter(s.args(0))
-    val thenBlock = handlers.commands(s.args(1))
-    val elseBlock = handlers.commands(s.args(2))
-    s"""|if ($pred) {
-        |${indented(thenBlock)}
-        |}
-        |else {
-        |${indented(elseBlock)}
-        |}""".stripMargin
+      val clauses = List.range(0, s.args.length - 1, 2).map { i =>
+        val bool = s.args(i)
+        if (!(bool.isInstanceOf[ReporterApp] || bool.isInstanceOf[ReporterBlock])) {
+          failCompilation("IFELSE expected a reporter here but got a block.", bool.start, bool.end, bool.filename)
+        }
+        val cmd = s.args(i + 1)
+        if (!cmd.isInstanceOf[CommandBlock]) {
+          failCompilation("IFELSE expected a command block here but got a TRUE/FALSE.", cmd.start, cmd.end, cmd.filename)
+        }
+        val pred      = handlers.reporter(bool)
+        val thenBlock = handlers.commands(cmd)
+        s"""|if ($pred) {
+            |${indented(thenBlock)}
+            |}""".stripMargin
+      }
+      val elseBlock = if (s.args.length % 2 == 0)
+        ""
+      else {
+        val elseBlock = handlers.commands(s.args(s.args.length - 1))
+        s"""|else {
+            |${indented(elseBlock)}
+            |}""".stripMargin
+      }
+      s"""|${clauses.mkString(" else ")}
+          |${elseBlock}""".stripMargin
   }
 
   def generateAsk(s: Statement, shuffle: Boolean)

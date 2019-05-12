@@ -27,6 +27,8 @@ module.exports =
     # type Updatable   = Turtle|Patch|Link|World|Observer
     # type EngineKey   = String
 
+    _drawingWasJustCleared: true # Boolean
+
     _hasUpdates: undefined # Boolean
     _updates:    undefined # Array[Update]
 
@@ -52,8 +54,8 @@ module.exports =
 
 
     # (String) => Unit
-    importDrawing: (sourcePath) ->
-      @_reportDrawingEvent({ type: "import-drawing", sourcePath })
+    importDrawing: (imageBase64) ->
+      @_reportDrawingEvent({ type: "import-drawing", imageBase64 })
       return
 
     # () => Array[Update]
@@ -61,6 +63,10 @@ module.exports =
       temp = @_updates
       @_flushUpdates()
       temp
+
+    # () => Boolean
+    drawingWasJustCleared: ->
+      @_drawingWasJustCleared
 
     # () => Boolean
     hasUpdates: ->
@@ -94,6 +100,11 @@ module.exports =
     # (UpdateEntry, Number) => Unit
     registerWorldState: (state, id = 0) ->
       @_update("world", id, state)
+      return
+
+    # () => Unit
+    rescaleDrawing: ->
+      @_reportDrawingEvent({ type: "rescale-drawing" })
       return
 
     # (Updatable) => (EngineKey*) => Unit
@@ -227,7 +238,8 @@ module.exports =
 
     # (Object[String, Any]) => Unit
     _reportDrawingEvent: (event) ->
-      @_hasUpdates = true
+      @_hasUpdates            = true
+      @_drawingWasJustCleared = event.type is "clear-drawing"
       @_updates[0].drawingEvents.push(event)
       return
 

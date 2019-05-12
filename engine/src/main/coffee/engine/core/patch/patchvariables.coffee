@@ -4,15 +4,19 @@ ColorModel = require('engine/core/colormodel')
 
 { ImmutableVariableSpec, MutableVariableSpec } = require('../structure/variablespec')
 
+{ all }               = require('brazierjs/array')
+{ isArray, isNumber } = require('brazierjs/type')
+
 # In this file: `this.type` is `Patch`
 
-# (Number) => Unit
+# (Number|(Number, Number, Number)) => Unit
 setPcolor = (color) ->
   wrappedColor = ColorModel.wrapColor(color)
   if @_pcolor isnt wrappedColor
     @_pcolor = wrappedColor
     @_genVarUpdate("pcolor")
-    if wrappedColor isnt 0
+    if (isNumber(wrappedColor) and wrappedColor isnt 0) or
+       ( isArray(wrappedColor) and not all((n) -> n % 10 is 0)(wrappedColor))
       @_declareNonBlackPatch()
   return
 

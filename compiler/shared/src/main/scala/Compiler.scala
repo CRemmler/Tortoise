@@ -3,12 +3,6 @@
 package org.nlogo.tortoise.compiler
 
 import
-  CompilerFlags.WidgetPropagation
-
-import
-  CompilerLike.Compilation
-
-import
   org.nlogo.{ core, parse },
     core.{ AgentKind, CompilerException, FrontEndInterface, Model, ProcedureDefinition, Program, SourceWrapping, StructureResults },
       FrontEndInterface.{ ProceduresMap, NoProcedures },
@@ -18,11 +12,9 @@ import
   scalaz.{ Scalaz, ValidationNel },
     Scalaz.ToValidationOps
 
-import
-  JsOps.jsFunction
-
-import
-  TortoiseSymbol.JsStatement
+import CompilerFlags.WidgetPropagation
+import CompilerLike.Compilation
+import TortoiseSymbol.JsStatement
 
 // there are four main entry points here:
 //   compile{Reporter, Commands}
@@ -68,10 +60,9 @@ object Compiler extends CompilerLike {
         identity)).mkString("\n")
 
     val interfaceInit = JsStatement("interfaceInit", interfaceGlobalJs, Seq("world", "procedures", "modelConfig"))
-    TortoiseLoader.integrateSymbols(init ++ plotConfig ++ procedures
-                                         :+ outputConfig :+ dialogConfig
-                                         :+ worldConfig :+ importExportConfig :+ inspectionConfig
-                                         :+ interfaceInit)
+    TortoiseLoader.integrateSymbols(init ++ plotConfig ++ procedures :+
+                                    JsStatement("global.modelConfig", Polyfills.content) :+
+                                    resolveModelConfig :+ interfaceInit)
   }
 
   def compileReporter(logo:          String,
@@ -157,83 +148,43 @@ object Compiler extends CompilerLike {
                       program:       Program,
                       raw:           Boolean       = false)
             (implicit compilerFlags: CompilerFlags): String = {
-    val header               = SourceWrapping.getHeader(AgentKind.Observer, commands)
-    val footer               = SourceWrapping.getFooter(commands)
-    val wrapped              = s"$header$logo$footer"
+
+    val header  = SourceWrapping.getHeader(AgentKind.Observer, commands)
+    val footer  = SourceWrapping.getFooter(commands)
+    val wrapped = s"$header$logo$footer"
+
     implicit val context     = new CompilerContext(wrapped)
     implicit val procContext = ProcedureContext(!raw, Seq())
-    val (defs, _)            = frontEnd.frontEnd(wrapped, oldProcedures = oldProcedures, program = program, extensionManager = NLWExtensionManager)
-    val pd = if (compilerFlags.optimizationsEnabled)
-      Optimizer(defs.head)
-    else
-      defs.head
+
+    val (defs, _) =
+      frontEnd.frontEnd( wrapped, oldProcedures = oldProcedures
+                       , program = program, extensionManager = NLWExtensionManager)
+
+    val pd =
+      if (compilerFlags.optimizationsEnabled)
+        Optimizer(defs.head)
+      else
+        defs.head
+
     if (commands)
       handlers.commands(pd.statements, true, !raw)
     else
       handlers.reporter(pd.statements.stmts(1).args(0))
-  }
-
-  private def outputConfig: JsStatement =
-    genConfig("output", Map("clear" -> jsFunction(),
-                            "write" -> jsFunction(Seq("str"), "context.getWriter().print(str);")))
-
-  private def dialogConfig: JsStatement =
-    genConfig("dialog", Map("confirm" -> jsFunction(Seq("str"), "return true;"),
-                            "input"   -> jsFunction(Seq("str"), "return 'dummy implementation';"),
-                            "notify"  -> jsFunction(Seq("str")),
-                            "yesOrNo" -> jsFunction(Seq("str"), "return true;")))
-
-  private def worldConfig: JsStatement =
-    genConfig("world", Map("resizeWorld" -> jsFunction(Seq("agent"))))
-
-  private def importExportConfig: JsStatement =
-    genConfig( "importExport"
-             , Map( "exportOutput" -> jsFunction(Seq("filename"))
-                  , "exportView"   -> jsFunction(Seq("filename"))
-                  , "exportFile"   -> jsFunction(Seq("str"),
-                                                 """    return function(filepath) {
-                                                   |      var Paths = Java.type('java.nio.file.Paths');
-                                                   |      var Files = Java.type('java.nio.file.Files');
-                                                   |      var UTF8  = Java.type('java.nio.charset.StandardCharsets').UTF_8;
-                                                   |      Files.createDirectories(Paths.get(filepath).getParent());
-                                                   |      var path  = Files.write(Paths.get(filepath), str.getBytes());
-                                                   |    }""".stripMargin)
-                  , "importDrawing" -> jsFunction(Seq("trueImportDrawing"), "return function(filepath) {}")
-                  , "importWorld" -> jsFunction(Seq("trueImportWorld"),
-                                                """    return function(filename) {
-                                                  |      var Paths = Java.type('java.nio.file.Paths');
-                                                  |      var Files = Java.type('java.nio.file.Files');
-                                                  |      var UTF8  = Java.type('java.nio.charset.StandardCharsets').UTF_8;
-                                                  |      var lines = Files.readAllLines(Paths.get(filename), UTF8);
-                                                  |      var out   = [];
-                                                  |      lines.forEach(function(line) { out.push(line); });
-                                                  |      var fileText = out.join("\n");
-                                                  |      trueImportWorld(fileText);
-                                                  |    }""".stripMargin)
-                  )
-             )
-
-  private def inspectionConfig: JsStatement =
-    genConfig( "inspection"
-             , Map( "inspect"        -> jsFunction(Seq("agent"))
-                  , "stopInspecting" -> jsFunction(Seq("agent"))
-                  , "clearDead"      -> jsFunction(Seq()       )
-                  )
-             )
-
-  private def genConfig(configName: String, functionDefs: Map[String, String]): JsStatement = {
-
-    val configPath = s"modelConfig.$configName"
-    val defsStr    = functionDefs.map { case (k, v) => s"$k: $v" }.mkString("{\n|    ", ",\n|    ", "\n|  }")
-
-    // If `javax` exists, we're in Nashorn, and, therefore, testing --JAB (3/2/15)
-    val configStr =
-      s"""|if (typeof javax !== "undefined") {
-          |  $configPath = $defsStr
-          |}""".stripMargin
-
-    JsStatement(configPath, configStr, Seq("modelConfig"))
 
   }
+
+  private def resolveModelConfig: JsStatement = {
+    val js = """var modelConfig =
+               |  (
+               |    (typeof global !== "undefined" && global !== null) ? global :
+               |    (typeof window !== "undefined" && window !== null) ? window :
+               |    {}
+               |  ).modelConfig || {};""".stripMargin
+    JsStatement("modelConfig", js, Seq("global.modelConfig"))
+  }
+
+  // This is a workaround for GraalJS interop - we need string bytes in `exportFile`, but GraalJS converts
+  // JVM strings to JS strings.  So convert them back!  -JMB Feb 2019
+  def getBytes(value: String): Array[Byte] = value.getBytes(java.nio.charset.StandardCharsets.UTF_8)
 
 }
