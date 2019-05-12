@@ -38,7 +38,7 @@
     }, {
       "name": "broadcast-text",
       "actionName": "broadcast-text",
-      "argTypes": [ "string" ]
+      "argTypes": [ "string", "string" ]
     }, {
       "name": "broadcast-avatar",
       "actionName": "broadcast-avatar",
@@ -115,7 +115,7 @@
       "actionName": "import-our-data",
       "argTypes": [  ]
     }, {
-      "name": "import-myr-data-file",
+      "name": "import-my-data-file",
       "actionName": "import-my-data-file",
       "argTypes": [ "string" ]
     }, {
@@ -164,12 +164,38 @@
       "argTypes": [],
       "returnType": "list"
     }, {
-      "name": "clone-canvas",
-      "actionName": "clone-canvas",
-      "argTypes": []
+      "name": "mute-canvas",
+      "actionName": "mute-canvas",
+      "argTypes": [ "number" ]
     }, {
-      "name": "remove-canvas",
-      "actionName": "remove-canvas",
+      "name": "unmute-canvas",
+      "actionName": "unmute-canvas",
+      "argTypes": [ "number" ]
+    }, {
+      "name": "my-role",
+      "actionName": "my-role",
+      "argTypes": [],
+      "returnType": "string"
+    }, {
+      "name": "mirroring",
+      "actionName": "mirroring",
+      "argTypes": [],
+      "returnType": "string"
+    }, {
+      "name": "store-state",
+      "actionName": "store-state",
+      "argTypes": [ ]
+    }, {
+      "name": "restore-state",
+      "actionName": "restore-state",
+      "argTypes": [ ]
+    }, {
+      "name": "restore-state-from-user",
+      "actionName": "restore-state-from-user",
+      "argTypes": [ "string" ]
+    }, {
+      "name": "flip-canvases-to",
+      "actionName": "flip-canvases-to",
       "argTypes": [ "string" ]
     }
   ]

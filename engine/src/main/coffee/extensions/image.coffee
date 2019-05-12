@@ -7,8 +7,8 @@ module.exports = {
   init: (workspace) ->
 
     # (string) => ()
-    importImage = (filename) ->
-      Images.importImage(filename)
+    importFile = (filename) ->
+      Images.importFile(filename)
       return
 
     # (number) => ()
@@ -39,7 +39,7 @@ module.exports = {
     {
       name: "image"
     , prims: {
-        "IMPORT": importImage,
+        "IMPORT-FILE": importFile,
         "ZOOM": zoom,
         "RESET-ZOOM": resetZoom,
         "IMPORT-PCOLORS": importPcolors,

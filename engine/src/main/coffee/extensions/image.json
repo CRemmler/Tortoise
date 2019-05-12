@@ -2,8 +2,8 @@
   "name": "image",
   "prims": [
     {
-      "name": "import",
-      "actionName": "import",
+      "name": "import-file",
+      "actionName": "import-file",
       "argTypes": [ "string" ]
     }, {
       "name": "zoom",

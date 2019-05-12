@@ -63,11 +63,11 @@ module.exports = {
     broadcastPlot = (name) ->
         Gallery.broadcastPlot(name)
 
-    # (String) => ()
-    broadcastText = (text) ->
-        Gallery.broadcastText(text)
+    # (String, String) => ()
+    broadcastText = (tag, message) ->
+        Gallery.broadcastText(tag, message)
 
-    # (List) => ()
+    # (String, String, String) => ()
     broadcastAvatar = (shape, color, text) ->
         Gallery.broadcastAvatar(shape, color, text)
 
@@ -76,7 +76,7 @@ module.exports = {
         Gallery.clearBroadcasts()
 
     # (String) => ()
-    clearBroadcast = () ->
+    clearBroadcast = (name) ->
         Gallery.clearBroadcast(name)
 
     # (String, String) => ()
@@ -208,12 +208,37 @@ module.exports = {
       return GbccFileManager.getFileList()
 
     # () => ()
-    cloneCanvas = () ->
-       Gallery.cloneCanvas()
+    muteCanvas = (canvasId) ->
+       Gallery.muteCanvas(canvasId)
 
     # (String) => ()
-    removeCanvas = (userId) ->
-       Gallery.cloneCanvas(userId)
+    unmuteCanvas = (canvasId) ->
+       Gallery.unmuteCanvas(canvasId)
+
+    # () => (String)
+    myRole = () ->
+        return Gallery.myRole()
+
+    # () => (String)
+    mirroring = () ->
+        return Gallery.mirroring()
+
+    # () => ()
+    storeState = () ->
+        Gallery.storeState()
+
+    # () => ()
+    restoreState = () ->
+        Gallery.restoreState()
+
+    # (String) => ()
+    restoreStateFromUser = (messageSource) ->
+        Gallery.restoreStateFromUser(messageSource)
+
+    # (String) => ()
+    flipCanvasesTo = (name) ->
+       Gallery.flipCanvasesTo(name)
+
 
     {
       name: "gbcc"
@@ -242,11 +267,12 @@ module.exports = {
       , "GET-STREAM-FROM-USER": getStreamFromUser
       , "SHOW-PATCHES": showPatches
       , "HIDE-PATCHES": hidePatches
-      , "IMPORT-UNIVERSE": importUniverse
-      , "EXPORT-UNIVERSE": exportUniverse
-      , "IMPORT-UNIVERSE-FILE": importUniverseFile
-      , "IMPORT-WORLD": importWorld
-      , "EXPORT-WORLD": exportWorld
+      , "IMPORT-OUR-DATA": importOurData
+      , "EXPORT-OUR-DATA": exportOurData
+      , "IMPORT-OUR-DATA-FILE": importOurDataFile
+      , "IMPORT-MY-DATA": importMyData
+      , "EXPORT-MY-DATA": exportMyData
+      , "IMPORT-MY-DATA-FILE": importMyDataFile
       , "SEND": send
       , "BROADCAST": broadcast
       , "GET-FILE-LIST": getFileList
@@ -255,8 +281,14 @@ module.exports = {
       , "GET-USER-LIST": getUserList
       , "GET-ACTIVE-USER-LIST": getActiveUserList
       , "ADOPT-CANVAS": adoptCanvas
-      , "CLONE-CANVAS": cloneCanvas
-      , "REMOVE-CANVAS": removeCanvas
+      , "MUTE-CANVAS": muteCanvas
+      , "UNMUTE-CANVAS": unmuteCanvas
+      , "MY-ROLE": myRole
+      , "MIRRORING": mirroring
+      , "STORE-STATE": storeState
+      , "RESTORE-STATE": restoreState
+      , "RESTORE-STATE-FROM-USER": restoreStateFromUser
+      , "FLIP-CANVASES-TO": flipCanvasesTo
       }
     }
 }
